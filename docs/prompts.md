@@ -182,12 +182,9 @@ R: A - Visibilidade em camadas (LGPD estrita): Busca aberta exibe apenas primeir
 
 R: B - Resposta neutra e genérica: Exibe "Não foi possível concluir o cadastro com os dados informados. Se você já possui vínculo cadastrado, tente fazer login", sem confirmar explicitamente o e-mail.
 
+## P005 — Registrar a stack na constitution ##
 
----
-
-## P005 — Emenda à Constitution com a Stack Aprovada ##
-
-/speckit-constitution 
+/speckit-constitution
 
 Atualize a constitution do Carona Univille com a stack aprovada pela
 dupla. Use Python e Django para a aplicação web, templates Django com
@@ -204,6 +201,49 @@ simulada pelo professor e a confirmação dos domínios institucionais.
 Registre a revisão conforme a governança da constitution e encerre
 após atualizar o documento.
 
-- **Artefato Alterado**: `.specify/memory/constitution.md`
-- **Versão Resultante**: `1.1.0` (Minor Bump)
-- **Decisões Associadas**: Homologação da stack oficial (Python 3.12+, Django, Django Templates HTML/CSS, PostgreSQL, pytest, pytest-django, pytest-cov). Manutenção pendente de aprovação do professor e domínios reais.
+
+---
+
+## P006 — Plano Técnico de Cadastro, Validação e Perfis ##
+
+/speckit-plan 
+
+Gere o plano técnico de specs/001-cadastro-validacao-perfis/spec.md.
+Use a stack da constitution 1.1.0 e as decisões registradas em
+docs/levantamento.md. Preserve a rastreabilidade aos REQ-001, REQ-002
+e REQ-003.
+
+Detalhe o modelo de conta, a unicidade do e-mail, o papel fixo e a
+transição de Pendente para Ativa. Explique como uma conta Pendente
+pode entrar no fluxo de ativação sem acessar caronas. Diferencie o
+status do vínculo acadêmico do campo is_active usado pelo Django.
+
+Planeje a validação simulada com uma lista de contas fictícias.
+Inclua exemplos de duas contas do mesmo domínio, uma elegível e
+outra inelegível. Mantenha como pendências a aceitação da simulação
+pelo professor e a confirmação dos domínios institucionais reais.
+
+Mapeie os cenários da spec para testes automatizados. Cubra os dois
+papéis, ativação aceita e recusada, acesso por estado da conta e
+cadastro duplicado. No caso duplicado, planeje verificar a mensagem
+neutra, a existência de uma única conta e a preservação do seu estado
+e papel. Inclua a verificação de que o e-mail institucional não fica
+visível para terceiros.
+
+Documente no quickstart como preparar o ambiente no Windows com
+PowerShell, configurar o PostgreSQL, carregar os dados fictícios,
+rodar os testes e gerar o relatório de cobertura versionável.
+Indique como obter a contagem de testes e a cobertura medida para
+atualizar o início do README.
+
+Se faltar alguma decisão funcional de login ou ativação, registre
+a pergunta para a dupla. Limite o plano ao cadastro, à validação
+e aos perfis. Encerre após gerar os artefatos de planejamento.
+
+- **Artefatos Gerados**:
+  - `specs/001-cadastro-validacao-perfis/plan.md`
+  - `specs/001-cadastro-validacao-perfis/research.md`
+  - `specs/001-cadastro-validacao-perfis/data-model.md`
+  - `specs/001-cadastro-validacao-perfis/contracts/web-routes.md`
+  - `specs/001-cadastro-validacao-perfis/quickstart.md`
+- **Decisões Associadas**: Modelagem de `AcademicUser` com `academic_status` vs `is_active`, controle de acesso com `AcademicStatusMiddleware`, validação simulada via whitelist desacoplada, suíte de testes com PostgreSQL e relatório de cobertura para o README.
