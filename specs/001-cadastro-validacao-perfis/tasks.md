@@ -63,7 +63,7 @@
 
 - [x] T009 [US3] Implementar o middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `carona_univille/settings.py` e escrever testes de integração em `tests/test_access_control.py` para bloqueio de visitante e redirecionamento compulsório de contas pendentes *(Consolidação: T024, T026, T027)*
 - [x] T010 [US3] Implementar views `LoginView` e `ProfileView` em `accounts/views.py`, templates `login.html` e `profile.html` e testes de privacidade em `tests/test_privacy_lgpd.py` validando exibição de `user.display_name` ("Lucas A.") e sigilo estrito do e-mail *(Consolidação: T025, T028, T029)*
-- [ ] T011 [US3] Criar view placeholder `/caronas/` em `carona_univille/views.py` e testes em `tests/test_access_control.py` comprovando bloqueio a pendentes e liberação para contas ativas *(Consolidação: T030 e asserções complementares de T024)*
+- [x] T011 [US3] Criar view placeholder `/caronas/` em `carona_univille/views.py` e testes em `tests/test_access_control.py` comprovando bloqueio a pendentes e liberação para contas ativas *(Consolidação: T030 e asserções complementares de T024)*
 
 **Checkpoint**: Todas as histórias de usuário da Feature 001 implementadas, isoladas e protegidas.
 
@@ -205,3 +205,14 @@
 - `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem erros nos arquivos verificados. Templates verificados pela renderização HTTP, sem inspeção visual em navegador.
 - Ajustada somente a precedência das rotas de prova no URLconf de `test_access_control.py`, mantendo os testes isolados de middleware após a introdução das rotas reais. Sem mudança das regras do middleware ou do cadastro.
 - Não existem listagens públicas nesta feature; a privacidade foi verificada no perfil próprio e na prévia abreviada, sem alegar teste de listagens de caronas futuras. T011/T012 não executadas. Logout fora do escopo desta tarefa. Alterações preexistentes preservadas; sem staging ou commit.
+
+## Evidência de conclusão — T011 (2026-11-22)
+
+- Dependências T002, US1 e US2 concluídas; middleware T009 disponível. Escopo REQ-002 e FR-006, cenários 3.1 e 3.2: placeholder `/caronas/` com acesso somente a contas ativas.
+- Criada view mínima em `carona_univille/views.py` e rota nomeada `caronas` no URLconf principal. Resposta de texto informa que as funcionalidades serão disponibilizadas posteriormente, sem dados pessoais. Nenhuma operação de oferta, busca, reserva ou cancelamento implementada.
+- Seis testes novos em `tests/test_access_control.py`, usando o URLconf real do projeto: resolução da rota para a view correta, visitante redirecionado ao login, pendentes redirecionados à ativação nos dois papéis e ativos recebendo HTTP 200 nos dois papéis. As views de prova da T009 permanecem isoladas.
+- Antes da implementação: três falhas (rota ausente e HTTP 404 para ativos), três aprovações (bloqueios já garantidos pelo middleware). Após implementação, suíte final: 152 testes aprovados no PostgreSQL, com o ambiente virtual Python 3.12.10 / Django 5.1.15.
+- Comando: `venv/Scripts/python.exe -m pytest tests --cov=accounts --cov=carona_univille.views --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- View placeholder: 100% de linhas. Medição ampliada para incluir a nova view além de `accounts/`: cobertura combinada 96,84542586750788%, linhas 259/265 e ramificações 48/52. Relatório em [coverage.json](../../coverage.json), métricas no README.
+- `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem erros nos arquivos verificados; `git diff --check` sem erros.
+- Critérios da T011 atendidos. T012 não executada. Alterações preexistentes preservadas; sem staging ou commit.

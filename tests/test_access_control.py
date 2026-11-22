@@ -6,7 +6,7 @@ As views de prova existem somente no URLconf de teste, sem antecipar T010/T011.
 import pytest
 from django.contrib.messages import get_messages
 from django.http import HttpResponse
-from django.urls import include, path
+from django.urls import include, path, resolve
 
 
 def protected_probe(request):
@@ -92,3 +92,43 @@ def test_middleware_runs_after_authentication_and_messages(settings):
     name = "accounts.middleware.AcademicStatusMiddleware"
     assert entries.index(name) > entries.index("django.contrib.auth.middleware.AuthenticationMiddleware")
     assert entries.index(name) > entries.index("django.contrib.messages.middleware.MessageMiddleware")
+
+
+@pytest.fixture
+def real_project_routes(settings):
+    """T011 testa a rota real, sem usar as views de prova da T009."""
+    settings.ROOT_URLCONF = "carona_univille.urls"
+
+
+def test_caronas_placeholder_is_real_project_route(real_project_routes):
+    match = resolve("/caronas/")
+    assert match.view_name == "caronas"
+    assert match.func.__module__ == "carona_univille.views"
+
+
+def test_caronas_real_route_blocks_visitor(real_project_routes, client):
+    response = client.get("/caronas/")
+    assert response.status_code == 302
+    assert response.url == "/accounts/login/?next=/caronas/"
+
+
+@pytest.mark.parametrize("role", ["MOTORISTA", "PASSAGEIRO"])
+def test_caronas_real_route_blocks_pending(real_project_routes, client, academic_user_factory, role):
+    user = academic_user_factory(role=role)
+    client.force_login(user)
+    response = client.get("/caronas/")
+    assert response.status_code == 302 and response.url == "/accounts/activation/"
+    user.refresh_from_db()
+    assert user.is_pending
+
+
+@pytest.mark.parametrize("role", ["MOTORISTA", "PASSAGEIRO"])
+def test_caronas_real_route_allows_active(real_project_routes, client, academic_user_factory, role):
+    user = academic_user_factory(role=role)
+    user.academic_status = "ATIVA"
+    user.save()
+    client.force_login(user)
+    response = client.get("/caronas/")
+    assert response.status_code == 200
+    assert "Área de caronas" in response.content.decode()
+    assert user.email not in response.content.decode()
