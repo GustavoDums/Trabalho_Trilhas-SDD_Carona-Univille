@@ -61,7 +61,7 @@
 
 **Independent Test**: Verificar que visitantes são redirecionados para login; que usuários `PENDENTE` são redirecionados compulsoriamente para `/accounts/activation/` ao tentar acessar caronas; que usuários `ATIVA` acessam normalmente seu perfil; e que o e-mail institucional não é exposto a terceiros.
 
-- [ ] T009 [US3] Implementar o middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `carona_univille/settings.py` e escrever testes de integração em `tests/test_access_control.py` para bloqueio de visitante e redirecionamento compulsório de contas pendentes *(Consolidação: T024, T026, T027)*
+- [x] T009 [US3] Implementar o middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `carona_univille/settings.py` e escrever testes de integração em `tests/test_access_control.py` para bloqueio de visitante e redirecionamento compulsório de contas pendentes *(Consolidação: T024, T026, T027)*
 - [ ] T010 [US3] Implementar views `LoginView` e `ProfileView` em `accounts/views.py`, templates `login.html` e `profile.html` e testes de privacidade em `tests/test_privacy_lgpd.py` validando exibição de `user.display_name` ("Lucas A.") e sigilo estrito do e-mail *(Consolidação: T025, T028, T029)*
 - [ ] T011 [US3] Criar view placeholder `/caronas/` em `carona_univille/views.py` e testes em `tests/test_access_control.py` comprovando bloqueio a pendentes e liberação para contas ativas *(Consolidação: T030 e asserções complementares de T024)*
 
@@ -180,3 +180,15 @@
 - Cobertura combinada 96,04743083003953%; linhas 207/213 e ramificações 36/40 (90%). Relatório em [coverage.json](../../coverage.json), métricas no README.
 - `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração de esquema. Editor sem erros nos arquivos Python verificados. Template validado por renderização nos testes HTTP.
 - Limites: autenticação nos testes criada pelas sessões Django; login e perfil permanecem na T010 e os testes não seguem os redirecionamentos para essas páginas ainda ausentes. Middleware da T009 não implementado. Homologação docente da simulação continua pendente. Sem staging ou commit.
+
+## Evidência de conclusão — T009 (2026-11-22)
+
+- Dependências T002, US1 e US2 atendidas. REQ-002, REQ-003 e FR-006; cenários 3.1 e 3.3. Implementado `AcademicStatusMiddleware`, registrado após AuthenticationMiddleware e MessageMiddleware.
+- Visitantes acessam login, cadastro e arquivos estáticos; demais caminhos redirecionam ao login com `next`. Pendentes são encaminhados à ativação com aviso, exceto ativação, logout e arquivos estáticos. Ativos passam ao controle da view, sem concessão adicional de papéis.
+- Exceções de ativação/logout usam caminhos exatos; `/accounts/activation/extra/` não contorna a proteção. Prefixo de estáticos inclui separador e não libera `/static-privado/`. Interceptação ocorre antes da view protegida, sem exposição do conteúdo sintético de teste.
+- 36 testes novos: visitantes GET/POST, pendentes nos dois papéis, POST protegido, exceções sem ciclos, rotas públicas, passagem de ativos e ordem do middleware. URLconf e views de prova existem exclusivamente no teste, sem antecipar perfil ou página de caronas de T010/T011.
+- Antes da implementação: 26 falhas e 10 testes aprovados. Após implementação, suíte de T002–T009: 130 testes aprovados no PostgreSQL, usando o ambiente virtual Python 3.12.10 / Django 5.1.15.
+- Comando: `venv/Scripts/python.exe -m pytest tests/test_models.py tests/test_foundation.py tests/test_registration.py tests/test_activation.py tests/test_access_control.py --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- Middleware: 100% de linhas e ramificações. Cobertura combinada 96,46643109540636%; linhas 229/235 e ramificações 44/48. Relatório em [coverage.json](../../coverage.json), métricas no README.
+- `manage.py check`: nenhum problema. `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem erros nos arquivos verificados; `git diff --check` sem erros.
+- Login e logout efetivos e perfil não foram implementados nesta tarefa; as exceções foram verificadas com rotas de teste. T010 e posteriores permanecem abertas. Alterações preexistentes preservadas; sem staging ou commit.

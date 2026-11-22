@@ -602,18 +602,34 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+## P019 — Implementar a T009
+
+Execute somente a tarefa T009 do Carona Univille.
+
+Área da tarefa — Feature 001, Cadastro acadêmico, validação e perfis.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Use a entrada T009 em specs/001-cadastro-validacao-perfis/tasks.md como
+fonte do escopo desta rodada.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
 
 Referência anexada: `docs/prompts.md`.
 
-### Confirmação da interface
-
-O agente solicitou confirmação do botão único “Validar Vínculo Institucional”,
-com e-mail da sessão autenticada e nenhum campo adicional. Resposta do usuário:
-
-sim
-
-Referência anexada: `docs/prompts.md`.
-
-Decisão registrada em 2026-11-22. Artefatos: view, rota, template, testes da T008,
-spec, plan, tasks, roadmap, README e coverage.json. Demais tarefas não executadas.
-Alterações preexistentes preservadas; sem staging ou commit.
+Artefatos: middleware acadêmico, registro nas configurações, testes de acesso,
+tasks, README e coverage.json. Sem implementação das views de T010/T011.
+Nenhuma nova decisão de negócio; alterações preexistentes preservadas.
+Sem staging ou commit.
