@@ -18,7 +18,6 @@ def public_probe(request):
 
 
 urlpatterns = [
-    path("accounts/", include("accounts.urls")),
     path("accounts/login/", public_probe),
     path("accounts/logout/", public_probe),
     path("accounts/profile/", protected_probe),
@@ -28,6 +27,7 @@ urlpatterns = [
     path("static-privado/", protected_probe),
     path("accounts/activation/extra/", protected_probe),
     path("", protected_probe),
+    path("accounts/", include("accounts.urls")),
 ]
 
 pytestmark = pytest.mark.django_db

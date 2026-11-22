@@ -62,7 +62,7 @@
 **Independent Test**: Verificar que visitantes são redirecionados para login; que usuários `PENDENTE` são redirecionados compulsoriamente para `/accounts/activation/` ao tentar acessar caronas; que usuários `ATIVA` acessam normalmente seu perfil; e que o e-mail institucional não é exposto a terceiros.
 
 - [x] T009 [US3] Implementar o middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `carona_univille/settings.py` e escrever testes de integração em `tests/test_access_control.py` para bloqueio de visitante e redirecionamento compulsório de contas pendentes *(Consolidação: T024, T026, T027)*
-- [ ] T010 [US3] Implementar views `LoginView` e `ProfileView` em `accounts/views.py`, templates `login.html` e `profile.html` e testes de privacidade em `tests/test_privacy_lgpd.py` validando exibição de `user.display_name` ("Lucas A.") e sigilo estrito do e-mail *(Consolidação: T025, T028, T029)*
+- [x] T010 [US3] Implementar views `LoginView` e `ProfileView` em `accounts/views.py`, templates `login.html` e `profile.html` e testes de privacidade em `tests/test_privacy_lgpd.py` validando exibição de `user.display_name` ("Lucas A.") e sigilo estrito do e-mail *(Consolidação: T025, T028, T029)*
 - [ ] T011 [US3] Criar view placeholder `/caronas/` em `carona_univille/views.py` e testes em `tests/test_access_control.py` comprovando bloqueio a pendentes e liberação para contas ativas *(Consolidação: T030 e asserções complementares de T024)*
 
 **Checkpoint**: Todas as histórias de usuário da Feature 001 implementadas, isoladas e protegidas.
@@ -192,3 +192,16 @@
 - Middleware: 100% de linhas e ramificações. Cobertura combinada 96,46643109540636%; linhas 229/235 e ramificações 44/48. Relatório em [coverage.json](../../coverage.json), métricas no README.
 - `manage.py check`: nenhum problema. `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem erros nos arquivos verificados; `git diff --check` sem erros.
 - Login e logout efetivos e perfil não foram implementados nesta tarefa; as exceções foram verificadas com rotas de teste. T010 e posteriores permanecem abertas. Alterações preexistentes preservadas; sem staging ou commit.
+
+## Evidência de conclusão — T010 (2026-11-22)
+
+- Dependências T002, US1 e US2 concluídas; middleware T009 disponível. REQ-002 e REQ-003, cenário 3.2 e privacidade em camadas. Login manual após cadastro confirmado na T005 e preservado; nenhuma decisão pendente afeta o escopo.
+- Implementados `LoginView`, formulário de autenticação com e-mail e senha pelo backend Django, `ProfileView`, rotas e templates. Login válido leva pendentes à ativação e ativos ao perfil. Destino definido pelo estado acadêmico, sem aceitar redirecionamento externo via `next`. Credenciais inválidas, inexistentes ou tecnicamente desabilitadas recebem o mesmo erro genérico aprovado.
+- Perfil consulta somente a sessão, exibe nome completo próprio, papel, vínculo Ativo e prévia `display_name` (Lucas A.). E-mail não renderizado; parâmetros de outra conta não alteram a identidade exibida. Visitantes e pendentes não acessam o perfil.
+- Dezesseis testes novos: renderização do login; login nos dois papéis/estados; erros genéricos e ausência de credenciais; privacidade nos dois papéis; bloqueios do perfil; CSRF; login de usuário ativo sem ciclo; fluxo completo cadastro → login manual → ativação → perfil nos dois papéis.
+- Antes da implementação, 13 testes iniciais falharam pela ausência das rotas. Após implementação, os 13 passaram; acrescentados três cenários de campos obrigatórios e fluxo completo. Verificação final: 146 testes aprovados no PostgreSQL, no ambiente virtual Python 3.12.10 / Django 5.1.15.
+- Comando: `venv/Scripts/python.exe -m pytest tests --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- Cobertura combinada 96,81528662420382%; linhas 256/262 e ramificações 48/52. Formulários: 100% de linhas e ramificações. Relatório em [coverage.json](../../coverage.json), métricas no README.
+- `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem erros nos arquivos verificados. Templates verificados pela renderização HTTP, sem inspeção visual em navegador.
+- Ajustada somente a precedência das rotas de prova no URLconf de `test_access_control.py`, mantendo os testes isolados de middleware após a introdução das rotas reais. Sem mudança das regras do middleware ou do cadastro.
+- Não existem listagens públicas nesta feature; a privacidade foi verificada no perfil próprio e na prévia abreviada, sem alegar teste de listagens de caronas futuras. T011/T012 não executadas. Logout fora do escopo desta tarefa. Alterações preexistentes preservadas; sem staging ou commit.

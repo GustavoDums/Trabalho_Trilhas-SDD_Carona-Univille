@@ -1,7 +1,7 @@
 """Cadastro acadêmico — Feature 001 / T004 / REQ-001 e REQ-002."""
 
 from django import forms
-from django.contrib.auth import password_validation
+from django.contrib.auth import authenticate, password_validation
 from django.core.exceptions import ValidationError
 
 from .models import AcademicUser
@@ -54,3 +54,32 @@ class AcademicRegistrationForm(forms.ModelForm):
             user.save()
             self.save_m2m()
         return user
+
+
+class AcademicAuthenticationForm(forms.Form):
+    """T010: credenciais por e-mail, usando o backend de autenticação Django."""
+
+    email = forms.EmailField(label="E-mail institucional", widget=forms.EmailInput(
+        attrs={"autocomplete": "username"},
+    ))
+    password = forms.CharField(label="Senha", strip=False, widget=forms.PasswordInput(
+        attrs={"autocomplete": "current-password"},
+    ))
+
+    def __init__(self, request=None, *args, **kwargs):
+        self.request = request
+        self.user_cache = None
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        data = super().clean()
+        if data.get("email") and data.get("password"):
+            self.user_cache = authenticate(
+                self.request, email=data["email"], password=data["password"],
+            )
+            if self.user_cache is None:
+                raise ValidationError("E-mail ou senha incorretos.", code="invalid_login")
+        return data
+
+    def get_user(self):
+        return self.user_cache

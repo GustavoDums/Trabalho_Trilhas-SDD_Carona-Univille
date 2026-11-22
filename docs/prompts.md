@@ -517,6 +517,7 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+
 ## P016 — Implementar a T006
 
 Execute somente a tarefa T006 do Carona Univille.
@@ -545,6 +546,7 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+
 ## P017 — Implementar a T007
 
 Execute somente a tarefa T007 do Carona Univille.
@@ -572,7 +574,8 @@ pertinentes. Registre sua conclusão no checklist somente se os critérios
 forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
-commit para minha revisão e encerre a rodada.
+commit para minha revisão e encerre a rodada.\
+
 ## P018 — Implementar a T008
 
 Execute somente a tarefa T008 do Carona Univille.
@@ -602,6 +605,7 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+
 ## P019 — Implementar a T009
 
 Execute somente a tarefa T009 do Carona Univille.
@@ -627,9 +631,31 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
-Referência anexada: `docs/prompts.md`.
+## P020 — Implementar a T010
 
-Artefatos: middleware acadêmico, registro nas configurações, testes de acesso,
-tasks, README e coverage.json. Sem implementação das views de T010/T011.
-Nenhuma nova decisão de negócio; alterações preexistentes preservadas.
-Sem staging ou commit.
+Execute somente a tarefa T010 do Carona Univille.
+
+Área da tarefa — Feature 001, Cadastro acadêmico, validação e perfis.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Use a entrada T010 em specs/001-cadastro-validacao-perfis/tasks.md como
+fonte do escopo desta rodada.
+
+Confira se a equipe já definiu login automático ou manual após o cadastro.
+Implemente somente a parte desse comportamento atribuída à T010 no checklist
+local.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.

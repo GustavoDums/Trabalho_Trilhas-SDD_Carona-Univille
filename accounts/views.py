@@ -2,13 +2,14 @@
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, transaction
 from django.views.generic.edit import CreateView
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 
-from .forms import AcademicRegistrationForm
+from .forms import AcademicAuthenticationForm, AcademicRegistrationForm
 from .services import AcademicValidationService
 
 
@@ -19,7 +20,7 @@ class RegisterView(CreateView):
     )
     form_class = AcademicRegistrationForm
     template_name = "accounts/register.html"
-    # Destino aprovado; a tela de login será implementada na T010.
+    # Cadastro aprovado com login manual.
     success_url = "/accounts/login/"
 
     def form_valid(self, form):
@@ -90,3 +91,22 @@ class ActivationView(LoginRequiredMixin, TemplateView):
             "Verifique se seu cadastro consta na lista de homologação da PoC.",
         )
         return self.render_to_response(self.get_context_data())
+
+
+class LoginView(DjangoLoginView):
+    """T010: login manual, com destino definido pelo vínculo acadêmico."""
+
+    template_name = "accounts/login.html"
+    authentication_form = AcademicAuthenticationForm
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        return "/accounts/activation/" if self.request.user.is_pending else "/accounts/profile/"
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    """T010: perfil próprio; o middleware restringe contas pendentes."""
+
+    template_name = "accounts/profile.html"
+    login_url = "/accounts/login/"
+    http_method_names = ["get", "head", "options"]

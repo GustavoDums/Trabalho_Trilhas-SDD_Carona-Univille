@@ -1,0 +1,16 @@
+{% extends "accounts/base.html" %}
+{% block title %}Meu perfil | Carona Univille{% endblock %}
+{% block content %}
+<h1>Meu perfil acadêmico</h1>
+<dl>
+    <dt>Nome completo</dt><dd>{{ user.full_name }}</dd>
+    <dt>Papel</dt><dd>{{ user.get_role_display }}</dd>
+    <dt>Vínculo acadêmico</dt><dd>Ativo</dd>
+</dl>
+<section aria-labelledby="privacy-title">
+    <h2 id="privacy-title">Sua privacidade</h2>
+    <p>Em listagens, você será apresentado como <strong>{{ user.display_name }}</strong>.</p>
+    <p>Seu e-mail institucional é confidencial e não é exibido a outros usuários.
+    Seu nome completo será compartilhado com a contraparte apenas após uma reserva confirmada.</p>
+</section>
+{% endblock %}
