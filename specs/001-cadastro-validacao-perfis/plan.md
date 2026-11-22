@@ -176,7 +176,7 @@ Durante a elaboração do plano técnico, as seguintes questões operacionais de
    - *Situação*: Como o usuário aciona a validação simulada com a whitelist?
    - *Opção Recomendada no Plano*: A tela de ativação exibe os dados cadastrados (Nome, E-mail `@univille.br`) e um botão de ação único: *"Validar Vínculo Institucional"*. Ao clicar, o sistema consulta a whitelist usando o próprio e-mail da sessão autenticada.
    - *Alternativa*: Solicitar que o usuário digite novamente sua matrícula institucional no formulário de ativação para testar o vínculo.
-   - *Status*: `Pendente de confirmação da dupla (Opção de botão único adotada provisoriamente no plano)`.
+   - *Status*: `Confirmado pelo usuário em 2026-11-22: botão único, e-mail da sessão autenticada e nenhum campo adicional`.
 
 ---
 

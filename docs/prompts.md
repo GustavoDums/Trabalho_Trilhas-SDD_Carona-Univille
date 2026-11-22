@@ -573,10 +573,47 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+## P018 — Implementar a T008
+
+Execute somente a tarefa T008 do Carona Univille.
+
+Área da tarefa — Feature 001, Cadastro acadêmico, validação e perfis.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Use a entrada T008 em specs/001-cadastro-validacao-perfis/tasks.md como
+fonte do escopo desta rodada.
+
+Confira se a dupla aprovou o acionamento por botão único ou outra interação
+registrada na spec. Cubra a ativação com a sessão e os dados previstos na
+tarefa, incluindo os resultados de aprovação e recusa que constarem dos
+critérios.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
 
 Referência anexada: `docs/prompts.md`.
 
-Artefatos: serviço de validação, testes, tasks, README e coverage.json.
-Implementada a simulação já definida nos artefatos; homologação docente
-permanece pendente. Nenhuma interface da T008 implementada.
-Alteração preexistente deste histórico preservada; sem staging ou commit.
+### Confirmação da interface
+
+O agente solicitou confirmação do botão único “Validar Vínculo Institucional”,
+com e-mail da sessão autenticada e nenhum campo adicional. Resposta do usuário:
+
+sim
+
+Referência anexada: `docs/prompts.md`.
+
+Decisão registrada em 2026-11-22. Artefatos: view, rota, template, testes da T008,
+spec, plan, tasks, roadmap, README e coverage.json. Demais tarefas não executadas.
+Alterações preexistentes preservadas; sem staging ou commit.

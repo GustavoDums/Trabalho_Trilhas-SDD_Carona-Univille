@@ -71,7 +71,7 @@ flowchart TD
 - [ ] **T007**: Implementar serviço `AcademicValidationService` em `accounts/services.py` consultando `academic_whitelist.json` e testes unitários em `tests/test_activation.py` (contas elegíveis vs inelegíveis).
   - *Requisitos*: REQ-002 | *Dependências*: T003 | *Como verificar*: Teste unitário comprova aprovação de `joao.silva@univille.br` e recusa de `visitante.externo@univille.br`.
   - *Fusão*: Agrupa antigas T018 e T020.
-- [ ] **T008**: Implementar view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` para ativação com transição para `ATIVA` ou recusa *(Pendente de decisão da dupla: botão único vs campos adicionais)*.
+- [ ] **T008**: Implementar view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` para ativação com transição para `ATIVA` ou recusa *(Confirmado em 2026-11-22: botão único, e-mail da sessão e nenhum campo adicional)*.
   - *Requisitos*: REQ-002 | *Dependências*: T007 | *Como verificar*: `pytest tests/test_activation.py` cobre Cenários 2.1 e 2.2.
   - *Fusão*: Agrupa antigas T019, T021, T022 e T023.
 - [ ] **T009**: Implementar middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `settings.py` e escrever testes de integração em `tests/test_access_control.py` para isolamento de contas pendentes e bloqueio de visitantes.
@@ -329,7 +329,7 @@ flowchart TD
 1. **Feature 001 (Cadastro)**:
    - `T004`: Senha e confirmação aprovadas pelo usuário em 2026-11-22; validar igualdade e aplicar validadores Django.
    - `T005`: Confirmado em 2026-11-22: redirecionamento para login sem autenticação automática.
-   - `T008`: Implementa ativação através de botão único de ação, aguardando confirmação da dupla sobre a necessidade de campos adicionais.
+   - `T008`: Botão único aprovado em 2026-11-22: e-mail da sessão autenticada, sem campos adicionais.
    - *Nota de Desbloqueio*: A tarefa `T001` encontra-se totalmente desbloqueada para início imediato, utilizando `python manage.py check` e tratando o código 5 de `pytest --collect-only` como ausência esperada de testes na largada.
 2. **Features 002 a 011**:
    - Permanecem detalhadas neste roadmap como referência arquitetural. Seus respectivos arquivos `tasks.md` oficiais serão gerados no momento da abertura de cada especificação (`/speckit-specify` $\rightarrow$ `/speckit-plan`).

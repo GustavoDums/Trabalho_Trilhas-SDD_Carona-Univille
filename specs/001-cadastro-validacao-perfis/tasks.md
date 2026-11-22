@@ -49,7 +49,7 @@
 **Independent Test**: Autenticar conta pendente, acionar a validação institucional em `/accounts/activation/` e verificar que contas presentes na whitelist tornam-se `ATIVA`, enquanto contas ausentes permanecem `PENDENTE`.
 
 - [x] T007 [P] [US2] Implementar o serviço desacoplado `AcademicValidationService` em `accounts/services.py` consultando `accounts/fixtures/academic_whitelist.json` com transação atômica e testes unitários em `tests/test_activation.py` (contas elegíveis vs inelegíveis) *(Consolidação: T018, T020)*
-- [ ] T008 [US2] Implementar a view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` validando transição para `ATIVA` com auditoria ou recusa mantendo `PENDENTE` *(Nota: Decisão pendente da dupla — interface com botão único vs campos adicionais) (Consolidação: T019, T021, T022, T023)*
+- [x] T008 [US2] Implementar a view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` validando transição para `ATIVA` com auditoria ou recusa mantendo `PENDENTE` *(Decisão confirmada em 2026-11-22: botão único usando o e-mail da sessão, sem campos adicionais) (Consolidação: T019, T021, T022, T023)*
 
 **Checkpoint**: User Stories 1 e 2 funcionais e integradas de forma independente.
 
@@ -90,7 +90,7 @@
 ### Dependências Funcionais Pendentes de Homologação
 - **T004 (Senha no Cadastro)**: Confirmada pelo usuário em 2026-11-22: senha e confirmação obrigatórias, com validação de igualdade e validadores de senha do Django.
 - **T005 (Fluxo Pós-Cadastro)**: Confirmado em 2026-11-22: redirecionar para /accounts/login/ sem autenticação automática.
-- **T008 (Interface de Ativação)**: Implementa ativação através de botão único de ação, aguardando alinhamento da dupla sobre a necessidade de campos adicionais (ex.: confirmação explícita de matrícula).
+- **T008 (Interface de Ativação)**: Botão único aprovado em 2026-11-22, usando exclusivamente o e-mail da sessão autenticada, sem campos adicionais.
 - **TODO(VALIDACAO_ACADEMICA)**: A validação simulada contra lista fictícia em JSON (`academic_whitelist.json`) permanece como proposta pendente de homologação pelo professor orientador.
 - **TODO(DOMINIOS_INSTITUCIONAIS)**: Confirmação de eventuais subdomínios institucionais adicionais além de `@univille.br` permanece pendente com a instituição.
 
@@ -168,3 +168,15 @@
 - Serviço: 100% de linhas e ramificações; cobertura combinada de `accounts/`: 95,65217391304348%, linhas 188/194 e ramificações 32/36. Relatório em [coverage.json](../../coverage.json), métricas no README.
 - `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. Diagnósticos do editor sem erros. Não houve mudança de esquema.
 - T008 e posteriores não executadas. View, template, botão, rotas e identificação pela sessão permanecem para a T008. Nenhuma afirmação de teste de requisições concorrentes; sem staging ou commit.
+
+## Evidência de conclusão — T008 (2026-11-22)
+
+- Dependências T002, T003 e T007 atendidas, cadastro disponível. REQ-002, FR-004 e FR-005, cenários 2.1 e 2.2 e repetição de conta ativa. Botão único, sem campos adicionais, aprovado pelo usuário e registrado na spec e no plano.
+- `ActivationView` e `/accounts/activation/` exigem sessão autenticada. GET exibe somente os dados da própria conta e orientações sobre a simulação, sem alterar estado. POST passa exclusivamente `request.user.email` ao serviço; parâmetros enviados não selecionam outra conta.
+- Aprovação gera auditoria APROVADO e estado ATIVA, mensagem contratada e redirecionamento para `/accounts/profile/`. Recusa gera RECUSADO, mantém PENDENTE e renderiza a mensagem contratada na mesma tela. Conta já ativa redireciona com aviso, sem nova auditoria.
+- Doze testes novos: GET/POST anônimos, GET sem efeitos, aprovação/recusa/ausência nos dois papéis com tentativa de injetar outra identidade, GET/POST já ativo e CSRF real (rejeição sem token e aprovação com token).
+- Antes da implementação, os 12 testes falharam pela rota ausente. A primeira regressão detectou deslocamento indevido de um método de cadastro durante a edição; corrigido antes da verificação final. Suíte final: 94 testes aprovados no PostgreSQL, usando o ambiente virtual Python 3.12.10 / Django 5.1.15.
+- Comando: `venv/Scripts/python.exe -m pytest tests/test_models.py tests/test_foundation.py tests/test_registration.py tests/test_activation.py --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- Cobertura combinada 96,04743083003953%; linhas 207/213 e ramificações 36/40 (90%). Relatório em [coverage.json](../../coverage.json), métricas no README.
+- `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração de esquema. Editor sem erros nos arquivos Python verificados. Template validado por renderização nos testes HTTP.
+- Limites: autenticação nos testes criada pelas sessões Django; login e perfil permanecem na T010 e os testes não seguem os redirecionamentos para essas páginas ainda ausentes. Middleware da T009 não implementado. Homologação docente da simulação continua pendente. Sem staging ou commit.

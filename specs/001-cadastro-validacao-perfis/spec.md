@@ -23,6 +23,9 @@ As regras aqui estabelecidas implementam diretamente os seguintes requisitos for
 
 ## Clarifications
 
+### Session 2026-11-22 — T008
+- Q: Como o usuário aciona a validação de vínculo? → A: Botão único “Validar Vínculo Institucional”, sem campos adicionais. A validação usa exclusivamente o e-mail da sessão autenticada; e-mails ou identificadores enviados no POST não selecionam outra conta. Confirmado pelo usuário. Aprovação redireciona ao perfil; recusa mantém a tela e o estado PENDENTE, com auditoria em ambos os casos.
+
 ### Session 2026-11-22 — T004
 - Q: O cadastro inicial deve incluir senha e confirmação? → A: Sim. O usuário confirmou a inclusão de `password` e `password_confirm`, ambos obrigatórios, com validação de igualdade e os validadores de senha configurados no Django. Esses campos são credenciais técnicas adicionais aos dados acadêmicos mínimos de FR-001; a confirmação não é persistida e a senha é armazenada somente como hash. Na T005, o usuário confirmou em 2026-11-22 o redirecionamento para /accounts/login/ sem autenticação automática.
 
