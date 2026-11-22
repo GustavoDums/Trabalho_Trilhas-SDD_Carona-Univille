@@ -50,7 +50,7 @@ flowchart TD
 #### Feature 001: Cadastro Acadêmico, Validação de Vínculo e Perfis (`REQ-001`, `REQ-002`, `REQ-003`)
 *Artefato Oficial*: [specs/001-cadastro-validacao-perfis/tasks.md](file:///specs/001-cadastro-validacao-perfis/tasks.md) | *Status*: **Pronta para Execução**
 
-- [ ] **T001**: Inicializar projeto Django `carona_univille/`, dependências em `requirements.txt`, configuração do pytest em `pytest.ini` e variáveis de ambiente PostgreSQL em `.env.example` e `carona_univille/settings.py`.
+- [x] **T001**: Inicializar projeto Django `carona_univille/`, dependências em `requirements.txt`, configuração do pytest em `pytest.ini` e variáveis de ambiente PostgreSQL em `.env.example` e `carona_univille/settings.py`.
   - *Requisitos*: REQ-014, REQ-018 | *Dependências*: Nenhuma | *Como verificar*: `python manage.py check` valida a integridade da configuração do Django e `pytest --collect-only` executa sem erros de configuração ou coleta (aceitando o código de saída 5 unicamente quando indicar ausência de testes coletados).
   - *Fusão*: Agrupa antigas T001, T002, T003 e T004.
 - [ ] **T002**: Implementar modelo `AcademicUser` em `accounts/models.py` (herdando de `AbstractUser` com `USERNAME_FIELD = 'email'`), migração inicial em `accounts/migrations/0001_initial.py` e testes de restrições em `tests/test_models.py` (e-mail único `@univille.br`, papel imutável, status e nome com 2 termos).

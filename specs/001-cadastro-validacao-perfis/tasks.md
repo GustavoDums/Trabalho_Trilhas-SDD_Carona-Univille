@@ -11,7 +11,7 @@
 
 **Purpose**: Inicialização completa do projeto Django, dependências, configuração do pytest e variáveis de ambiente com PostgreSQL.
 
-- [ ] T001 Inicializar projeto Django `carona_univille/`, dependências em `requirements.txt`, configuração do pytest em `pytest.ini` e variáveis de ambiente PostgreSQL em `.env.example` e `carona_univille/settings.py`; verificar a configuração do Django com `python manage.py check` e o pytest com `pytest --collect-only` (aceitando código de saída 5 unicamente quando indicar ausência de testes coletados, sem erros de configuração ou coleta) *(Consolidação: T001, T002, T003, T004)*
+- [x] T001 Inicializar projeto Django `carona_univille/`, dependências em `requirements.txt`, configuração do pytest em `pytest.ini` e variáveis de ambiente PostgreSQL em `.env.example` e `carona_univille/settings.py`; verificar a configuração do Django com `python manage.py check` e o pytest com `pytest --collect-only` (aceitando código de saída 5 unicamente quando indicar ausência de testes coletados, sem erros de configuração ou coleta) *(Consolidação: T001, T002, T003, T004)*
 
 ---
 

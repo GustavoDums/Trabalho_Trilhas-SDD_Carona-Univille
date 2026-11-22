@@ -400,3 +400,50 @@ sem iniciar a implementação.
   - `specs/001-cadastro-validacao-perfis/tasks.md` (ajustes em T001, T004, T005, T008, T012 e dependências)
   - `docs/roadmap-implementacao.md` (ajustes em T001, T004, T005, T008, T012, T043, tabela e notas)
 - **Decisões Associadas**: Validação da infraestrutura com `python manage.py check` e tolerância a ausência de testes na T001; delimitação de T012 à Feature 001 e T043 à entrega consolidada; preservação das decisões pendentes da dupla e da regra de dois termos no nome.
+
+---
+
+## P011 — Execução da Tarefa T001 (Setup Django, PostgreSQL e pytest) ##
+
+Execute somente a tarefa T001 do Carona Univille.
+
+Área da tarefa — Feature 001, Cadastro acadêmico, validação e perfis.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Use a entrada T001 em specs/001-cadastro-validacao-perfis/tasks.md como
+fonte do escopo desta rodada.
+
+Prepare a estrutura Django, as dependências, a configuração do pytest e o
+.env.example do PostgreSQL conforme a T001. Use valores fictícios no arquivo
+versionado. Execute python manage.py check e pytest --collect-only. Aceite o
+código 5 somente se a saída indicar ausência de testes, sem erros de
+configuração ou de coleta, e a verificação do Django passar. Informe
+separadamente se a conexão com o PostgreSQL foi efetivamente verificada.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+
+- **Artefatos Criados / Atualizados**:
+  - `requirements.txt`: Dependências da stack (Django, psycopg[binary], python-dotenv, pytest, pytest-django, pytest-cov).
+  - `.env.example`: Modelo de variáveis de ambiente com credenciais fictícias de desenvolvimento e testes.
+  - `.gitignore`: Exclusão de venv, cache, .env local e artefatos de teste.
+  - `manage.py`, `carona_univille/settings.py`, `carona_univille/urls.py`, `carona_univille/wsgi.py`, `carona_univille/asgi.py`: Estrutura do projeto Django com integração a variáveis de ambiente e PostgreSQL.
+  - `pytest.ini`: Configuração do pytest vinculada a `carona_univille.settings`.
+  - `tests/__init__.py`: Package inicial de testes.
+  - `specs/001-cadastro-validacao-perfis/tasks.md` e `docs/roadmap-implementacao.md`: Marcação de conclusão de T001.
+- **Verificações Realizadas**:
+  - `python manage.py check`: Sucesso (`System check identified no issues (0 silenced)`).
+  - `pytest --collect-only`: Código de saída 5 indicando ausência esperada de testes (`collected 0 items`), sem erros de configuração.
+  - Conexão PostgreSQL: Driver e configuração validados pelo Django; conexão física com servidor local reportada como não verificada devido à ausência do serviço PostgreSQL ativo na porta 5432.
