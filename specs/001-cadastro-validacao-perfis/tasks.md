@@ -35,7 +35,7 @@
 **Independent Test**: Submeter formulário em `/accounts/register/` e comprovar gravação com status `PENDENTE` no PostgreSQL para motorista e passageiro; comprovar erro em e-mail fora de `@univille.br`; comprovar resposta neutra e preservação de dados em tentativa de cadastro duplicado.
 
 - [x] T004 [P] [US1] Implementar o formulário `AcademicRegistrationForm` em `accounts/forms.py` com validações de domínio `@univille.br` e nome completo (mínimo 2 termos), template `accounts/templates/accounts/register.html` e testes de validação em `tests/test_registration.py` *(Decisão confirmada em 2026-11-22: incluir password e password_confirm, validar igualdade e aplicar os validadores de senha do Django) (Consolidação: T014, T016 e parte de T012)*
-- [ ] T005 [US1] Implementar a view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` gerando contas com status PENDENTE *(Nota: Decisão pendente da dupla — fluxo pós-cadastro: auto-login para ativação vs redirecionamento para login) (Consolidação: T012, T015, T017)*
+- [x] T005 [US1] Implementar a view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` gerando contas com status PENDENTE *(Decisão confirmada em 2026-11-22: redirecionar para /accounts/login/ sem autenticação automática) (Consolidação: T012, T015, T017)*
 - [ ] T006 [US1] Implementar proteção contra enumeração na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` validando que e-mail duplicado exibe mensagem neutra, mantém exatamente 1 registro no PostgreSQL e preserva o status e papel originais *(Consolidação: T013 e lógica neutra de T015)*
 
 **Checkpoint**: User Story 1 totalmente funcional, independente e testável via suíte automatizada.
@@ -89,7 +89,7 @@
 
 ### Dependências Funcionais Pendentes de Homologação
 - **T004 (Senha no Cadastro)**: Confirmada pelo usuário em 2026-11-22: senha e confirmação obrigatórias, com validação de igualdade e validadores de senha do Django.
-- **T005 (Fluxo Pós-Cadastro)**: Aguarda definição da dupla se o cadastro autentica imediatamente para conduzir à ativação ou redireciona para a tela de login.
+- **T005 (Fluxo Pós-Cadastro)**: Confirmado em 2026-11-22: redirecionar para /accounts/login/ sem autenticação automática.
 - **T008 (Interface de Ativação)**: Implementa ativação através de botão único de ação, aguardando alinhamento da dupla sobre a necessidade de campos adicionais (ex.: confirmação explícita de matrícula).
 - **TODO(VALIDACAO_ACADEMICA)**: A validação simulada contra lista fictícia em JSON (`academic_whitelist.json`) permanece como proposta pendente de homologação pelo professor orientador.
 - **TODO(DOMINIOS_INSTITUCIONAIS)**: Confirmação de eventuais subdomínios institucionais adicionais além de `@univille.br` permanece pendente com a instituição.
@@ -135,3 +135,13 @@
 - Cobertura de `forms.py`: 100% de linhas e ramificações. Cobertura combinada de `accounts/`: 96,02649006622516%; linhas 125/129 e ramificações 20/22. Relatório em [coverage.json](../../coverage.json).
 - `manage.py check`: nenhum problema. `makemigrations --check --dry-run`: nenhuma alteração de esquema necessária. Diagnósticos do editor sem erros nos arquivos Python novos.
 - View, rotas, redirecionamento pós-cadastro (T005) e resposta neutra de duplicidade (T006) permanecem fora desta rodada. Nenhum staging ou commit realizado.
+
+## Evidência de conclusão — T005 (2026-11-22)
+
+- Dependências T002 e T003 atendidas; formulário T004 disponível, com senha e confirmação aprovadas. Escopo REQ-001 e REQ-002, cenários 1.1, 1.2 e rejeição do cenário 1.3. Fluxo aprovado pelo usuário: redirecionamento para `/accounts/login/`, sem autenticação automática.
+- Criados `RegisterView` e `accounts/urls.py`; integrado `/accounts/register/` ao roteamento principal. GET renderiza o formulário e POST válido cria conta PENDENTE com mensagem de sucesso. Formulário e regras de senha preservados.
+- Oito novos testes HTTP: GET, ambos os papéis persistidos no PostgreSQL, ausência de autenticação automática, mensagem e destino do redirecionamento, entradas inválidas e CSRF. Tentativa de injetar status ATIVA ou privilégios administrativos é ignorada. Dados sintéticos exclusivamente.
+- Ciclo de verificação: oito testes falharam antes pela ausência do namespace da rota; após implementação, suíte de T002–T005 com 60 testes aprovados. `venv/Scripts/python.exe -m pytest tests/test_models.py tests/test_foundation.py tests/test_registration.py --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- Cobertura de views e rotas de accounts: 100%; combinada 96,3855421686747%, linhas 140/144 e ramificações 20/22. Relatório em [coverage.json](../../coverage.json).
+- `manage.py check`: nenhum problema. `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem diagnósticos nos arquivos verificados.
+- Limite desta entrega: o destino `/accounts/login/` será implementado na T010; os testes verificam o 302 sem seguir para uma tela ainda indisponível. Tratamento neutro de duplicidade permanece na T006. Nenhum staging ou commit.

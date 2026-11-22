@@ -62,7 +62,7 @@ flowchart TD
 - [ ] **T004**: Implementar formulário `AcademicRegistrationForm` em `accounts/forms.py` com validação de domínio `@univille.br` e nome com 2 termos, template `accounts/templates/accounts/register.html` e testes de formulário em `tests/test_registration.py` *(Confirmado em 2026-11-22: campos password e password_confirm, igualdade e validadores Django)*.
   - *Requisitos*: REQ-001, REQ-002 | *Dependências*: T002 | *Como verificar*: Testes unitários do formulário aprovam dados válidos e rejeitam domínios externos.
   - *Fusão*: Agrupa antigas T014, T016 e parte de T012.
-- [ ] **T005**: Implementar view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` nascendo como `PENDENTE` *(Pendente de decisão da dupla: auto-login para ativação vs redirecionamento para login)*.
+- [ ] **T005**: Implementar view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` nascendo como `PENDENTE` *(Confirmado em 2026-11-22: redirecionamento para login sem autenticação automática)*.
   - *Requisitos*: REQ-001, REQ-002 | *Dependências*: T004 | *Como verificar*: `pytest tests/test_registration.py -k "test_signup"` valida Cenários 1.1, 1.2 e 1.3.
   - *Fusão*: Agrupa antigas T012, T015 e T017.
 - [ ] **T006**: Implementar tratamento de cadastro duplicado com resposta neutra/genérica na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` comprovando unicidade e preservação de dados originais.
@@ -328,7 +328,7 @@ flowchart TD
 
 1. **Feature 001 (Cadastro)**:
    - `T004`: Senha e confirmação aprovadas pelo usuário em 2026-11-22; validar igualdade e aplicar validadores Django.
-   - `T005`: Aguarda definição da dupla se o cadastro autentica imediatamente para conduzir à ativação ou redireciona para a tela de login.
+   - `T005`: Confirmado em 2026-11-22: redirecionamento para login sem autenticação automática.
    - `T008`: Implementa ativação através de botão único de ação, aguardando confirmação da dupla sobre a necessidade de campos adicionais.
    - *Nota de Desbloqueio*: A tarefa `T001` encontra-se totalmente desbloqueada para início imediato, utilizando `python manage.py check` e tratando o código 5 de `pytest --collect-only` como ausência esperada de testes na largada.
 2. **Features 002 a 011**:

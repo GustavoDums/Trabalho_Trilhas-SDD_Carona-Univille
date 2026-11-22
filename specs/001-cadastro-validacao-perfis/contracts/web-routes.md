@@ -41,7 +41,7 @@ Este documento estabelece os contratos de interface das rotas web, formulários 
   ```
 - **Respostas Possíveis**:
   - **Sucesso (Novo Cadastro)**:
-    - Status: `302 Found` $\rightarrow$ Redireciona para `/accounts/login/` (ou efetua auto-login e redireciona para `/accounts/activation/`).
+    - Status: `302 Found` $\rightarrow$ Redireciona para `/accounts/login/`, sem autenticação automática (decisão confirmada em 2026-11-22).
     - Estado no banco: Usuário criado com `academic_status = 'PENDENTE'`, `is_active = True`.
     - Mensagem flash: *"Cadastro realizado com sucesso! Conclua a validação do seu vínculo acadêmico para ativar sua conta."*
   - **Falha de Domínio (REQ-002)**:

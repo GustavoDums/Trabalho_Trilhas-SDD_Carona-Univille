@@ -157,6 +157,13 @@ Todos os cenários de aceite descritos na especificação possuem mapeamento dir
 
 ## Decisões Funcionais Pendentes para Alinhamento da Dupla
 
+### Decisão confirmada — T005 (2026-11-22)
+
+O cadastro concluído redireciona para `/accounts/login/`, sem autenticação
+automática, conforme confirmação do usuário. A T005 entrega a view e a rota
+de cadastro; a tela e a rota de login pertencem à T010. Até essa tarefa,
+o destino do redirecionamento ainda não dispõe de uma página implementada.
+
 Durante a elaboração do plano técnico, as seguintes questões operacionais de interface foram mapeadas e permanecem registradas para deliberação da dupla antes ou durante a implementação:
 
 1. **Definição da Senha de Acesso Inicial**:

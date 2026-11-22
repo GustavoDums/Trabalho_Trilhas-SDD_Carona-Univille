@@ -488,17 +488,49 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+## P015 — Implementar a T005
+
+Execute somente a tarefa T005 do Carona Univille.
+
+Área da tarefa — Feature 001, Cadastro acadêmico, validação e perfis.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Use a entrada T005 em specs/001-cadastro-validacao-perfis/tasks.md como
+fonte do escopo desta rodada.
+
+Cubra o cadastro como Motorista e como Passageiro, com estado acadêmico
+inicial Pendente. Confira as decisões registradas sobre senha e login após o
+cadastro antes de alterar o formulário, a view, as rotas ou o
+redirecionamento previstos nesta tarefa.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+
 Referência anexada: `docs/prompts.md`.
 
-### Confirmação da decisão de senha
+### Confirmação do fluxo pós-cadastro
 
-O agente perguntou se o cadastro deveria incluir senha e confirmação, com
-validação de igualdade e os validadores de senha do Django. Resposta do usuário:
+Após recomendação de redirecionar para login sem autenticação automática,
+o usuário respondeu:
 
-confirmo
+pode fazer o recomendado mesmo
 
 Referência anexada: `docs/prompts.md`.
 
-Decisão registrada em 2026-11-22: incluir os dois campos obrigatórios na T004.
-Artefatos: formulário, template de cadastro, testes, spec, plan, tasks, roadmap,
-README e coverage.json. Fluxo pós-cadastro reservado à T005; sem staging ou commit.
+Decisão em 2026-11-22: cadastro redireciona para /accounts/login/ sem auto-login.
+Artefatos: view e rotas de cadastro, testes HTTP, spec, plan, tasks, contrato,
+roadmap, README e coverage.json. Página de login permanece na T010; resposta
+neutra de duplicidade na T006. Alteração anterior deste histórico preservada.
+Sem staging ou commit.

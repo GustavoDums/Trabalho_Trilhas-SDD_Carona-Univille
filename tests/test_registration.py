@@ -4,6 +4,10 @@ import pytest
 from django.template.loader import render_to_string
 from django.test import RequestFactory
 from django.middleware.csrf import get_token
+from django.contrib.messages import get_messages
+from django.db import connection
+from django.test import Client
+from django.urls import reverse
 
 from accounts.forms import AcademicRegistrationForm
 from accounts.models import AcademicUser
@@ -86,3 +90,60 @@ def test_registration_template_and_password_privacy():
     assert "Ficticia!Rota-2026#" not in html
     assert "As senhas não conferem." in html
     assert set(form.fields) == {"full_name", "email", "role", "password", "password_confirm"}
+
+
+def test_signup_get(client):
+    response = client.get(reverse("accounts:register"))
+    assert response.status_code == 200
+    assert response.templates[0].name == "accounts/register.html"
+    assert isinstance(response.context["form"], AcademicRegistrationForm)
+    assert b'csrfmiddlewaretoken' in response.content
+    assert not AcademicUser.objects.exists()
+
+
+@pytest.mark.parametrize("role", ["MOTORISTA", "PASSAGEIRO"])
+def test_signup_creates_pending_account_without_login(client, role):
+    response = client.post(reverse("accounts:register"), registration_data(
+        role=role, academic_status="ATIVA", is_staff="True", is_superuser="True",
+    ))
+    assert response.status_code == 302
+    assert response.url == "/accounts/login/"
+    assert "_auth_user_id" not in client.session
+    user = AcademicUser.objects.get()
+    assert user.email == "cadastro.sintetico@univille.br"
+    assert user.full_name == "Pessoa Sintética"
+    assert user.role == role
+    assert user.is_pending and user.is_active
+    assert not user.is_staff and not user.is_superuser
+    assert user.check_password("Ficticia!Rota-2026#")
+    assert connection.vendor == "postgresql"
+    assert [str(message) for message in get_messages(response.wsgi_request)] == [
+        "Cadastro realizado com sucesso! Conclua a validação do seu vínculo acadêmico para ativar sua conta."
+    ]
+
+
+@pytest.mark.parametrize("overrides,field", [
+    ({"email": "visitante@example.org"}, "email"),
+    ({"full_name": "Pessoa"}, "full_name"),
+    ({"role": "HIBRIDO"}, "role"),
+    ({"password_confirm": "diferente"}, "password_confirm"),
+])
+def test_signup_invalid_input(client, overrides, field):
+    response = client.post(reverse("accounts:register"), registration_data(**overrides))
+    assert response.status_code == 200
+    assert field in response.context["form"].errors
+    assert not AcademicUser.objects.exists()
+    assert "_auth_user_id" not in client.session
+    assert b"Ficticia!Rota-2026#" not in response.content
+
+
+def test_signup_csrf_required():
+    client = Client(enforce_csrf_checks=True)
+    url = reverse("accounts:register")
+    assert client.post(url, registration_data()).status_code == 403
+    assert not AcademicUser.objects.exists()
+    assert client.get(url).status_code == 200
+    token = client.cookies["csrftoken"].value
+    response = client.post(url, registration_data(csrfmiddlewaretoken=token))
+    assert response.status_code == 302
+    assert AcademicUser.objects.count() == 1
