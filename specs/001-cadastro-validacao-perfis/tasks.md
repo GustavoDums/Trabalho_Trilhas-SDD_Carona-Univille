@@ -34,7 +34,7 @@
 
 **Independent Test**: Submeter formulário em `/accounts/register/` e comprovar gravação com status `PENDENTE` no PostgreSQL para motorista e passageiro; comprovar erro em e-mail fora de `@univille.br`; comprovar resposta neutra e preservação de dados em tentativa de cadastro duplicado.
 
-- [ ] T004 [P] [US1] Implementar o formulário `AcademicRegistrationForm` em `accounts/forms.py` com validações de domínio `@univille.br` e nome completo (mínimo 2 termos), template `accounts/templates/accounts/register.html` e testes de validação em `tests/test_registration.py` *(Nota: Decisão pendente da dupla — inclusão de campos password e password_confirm) (Consolidação: T014, T016 e parte de T012)*
+- [x] T004 [P] [US1] Implementar o formulário `AcademicRegistrationForm` em `accounts/forms.py` com validações de domínio `@univille.br` e nome completo (mínimo 2 termos), template `accounts/templates/accounts/register.html` e testes de validação em `tests/test_registration.py` *(Decisão confirmada em 2026-11-22: incluir password e password_confirm, validar igualdade e aplicar os validadores de senha do Django) (Consolidação: T014, T016 e parte de T012)*
 - [ ] T005 [US1] Implementar a view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` gerando contas com status PENDENTE *(Nota: Decisão pendente da dupla — fluxo pós-cadastro: auto-login para ativação vs redirecionamento para login) (Consolidação: T012, T015, T017)*
 - [ ] T006 [US1] Implementar proteção contra enumeração na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` validando que e-mail duplicado exibe mensagem neutra, mantém exatamente 1 registro no PostgreSQL e preserva o status e papel originais *(Consolidação: T013 e lógica neutra de T015)*
 
@@ -88,7 +88,7 @@
 - **Phase 6 (Polish)**: `T012` depende da conclusão de todas as histórias da Feature 001.
 
 ### Dependências Funcionais Pendentes de Homologação
-- **T004 (Senha no Cadastro)**: Inclui provisoriamente campos de senha e confirmação, aguardando alinhamento formal da dupla sobre a inclusão de senha no cadastro inicial.
+- **T004 (Senha no Cadastro)**: Confirmada pelo usuário em 2026-11-22: senha e confirmação obrigatórias, com validação de igualdade e validadores de senha do Django.
 - **T005 (Fluxo Pós-Cadastro)**: Aguarda definição da dupla se o cadastro autentica imediatamente para conduzir à ativação ou redireciona para a tela de login.
 - **T008 (Interface de Ativação)**: Implementa ativação através de botão único de ação, aguardando alinhamento da dupla sobre a necessidade de campos adicionais (ex.: confirmação explícita de matrícula).
 - **TODO(VALIDACAO_ACADEMICA)**: A validação simulada contra lista fictícia em JSON (`academic_whitelist.json`) permanece como proposta pendente de homologação pelo professor orientador.
@@ -124,3 +124,14 @@
 - Cobertura combinada: 94,5945945945946%; linhas 91/95 e ramificações 14/16. Relatório em [coverage.json](../../coverage.json) e métricas atualizadas no README.
 - `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. `migrate --noinput`: nova migração aplicada em `carona_univille_db`; `showmigrations accounts` confirmou `[X] 0002_academicvalidationrecord`. Introspecção confirmou os campos e a FK para `accounts_academicuser` no PostgreSQL.
 - T004–T012 não executadas. Sem staging ou commit.
+
+## Evidência de conclusão — T004 (2026-11-22)
+
+- Dependências T002 e T003 concluídas. REQ-001 e REQ-002, com minimização de REQ-003: formulário de nome completo, e-mail institucional, papel, senha e confirmação; template e testes de validação. Decisão sobre senha confirmada pelo usuário e registrada na spec e no plano.
+- Formulário usa validações do modelo para nome com pelo menos dois termos e domínio exato `@univille.br`; valida igualdade de senhas e aplica os quatro validadores configurados no Django. Apenas os campos autorizados compõem o formulário; senha armazenada como hash e confirmação não persistida.
+- Template herda o layout base, inclui CSRF, labels, instruções e erros; senhas não são reapresentadas após erro. Verificado por renderização automatizada, sem rota ou servidor nesta tarefa.
+- Testes novos: 18 aprovados. Regressão com T002–T003: 52 aprovados no PostgreSQL, no ambiente virtual Python 3.12.10 / Django 5.1.15. Antes da implementação, a coleta detectou a ausência de `accounts.forms`.
+- Comando: `venv/Scripts/python.exe -m pytest tests/test_models.py tests/test_foundation.py tests/test_registration.py --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- Cobertura de `forms.py`: 100% de linhas e ramificações. Cobertura combinada de `accounts/`: 96,02649006622516%; linhas 125/129 e ramificações 20/22. Relatório em [coverage.json](../../coverage.json).
+- `manage.py check`: nenhum problema. `makemigrations --check --dry-run`: nenhuma alteração de esquema necessária. Diagnósticos do editor sem erros nos arquivos Python novos.
+- View, rotas, redirecionamento pós-cadastro (T005) e resposta neutra de duplicidade (T006) permanecem fora desta rodada. Nenhum staging ou commit realizado.

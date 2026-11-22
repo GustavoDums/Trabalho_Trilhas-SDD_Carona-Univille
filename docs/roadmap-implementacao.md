@@ -59,7 +59,7 @@ flowchart TD
 - [ ] **T003**: Criar modelo de auditoria `AcademicValidationRecord` em `accounts/models.py`, fixture `accounts/fixtures/academic_whitelist.json`, layout base `accounts/templates/accounts/base.html` e fixtures de teste em `tests/conftest.py`.
   - *Requisitos*: REQ-001, REQ-002 | *Dependências*: T001, T002 | *Como verificar*: `python manage.py loaddata accounts/fixtures/academic_whitelist.json` carrega dados mockados.
   - *Fusão*: Agrupa antigas T006, T008, T009 e T010.
-- [ ] **T004**: Implementar formulário `AcademicRegistrationForm` em `accounts/forms.py` com validação de domínio `@univille.br` e nome com 2 termos, template `accounts/templates/accounts/register.html` e testes de formulário em `tests/test_registration.py` *(Pendente de decisão da dupla: campos password e password_confirm)*.
+- [ ] **T004**: Implementar formulário `AcademicRegistrationForm` em `accounts/forms.py` com validação de domínio `@univille.br` e nome com 2 termos, template `accounts/templates/accounts/register.html` e testes de formulário em `tests/test_registration.py` *(Confirmado em 2026-11-22: campos password e password_confirm, igualdade e validadores Django)*.
   - *Requisitos*: REQ-001, REQ-002 | *Dependências*: T002 | *Como verificar*: Testes unitários do formulário aprovam dados válidos e rejeitam domínios externos.
   - *Fusão*: Agrupa antigas T014, T016 e parte de T012.
 - [ ] **T005**: Implementar view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` nascendo como `PENDENTE` *(Pendente de decisão da dupla: auto-login para ativação vs redirecionamento para login)*.
@@ -327,7 +327,7 @@ flowchart TD
 ## 4. Decisões Pendentes e Bloqueios Mantidos
 
 1. **Feature 001 (Cadastro)**:
-   - `T004`: Inclui provisoriamente campos de senha e confirmação, aguardando definição formal da dupla sobre a inclusão de senha no cadastro inicial.
+   - `T004`: Senha e confirmação aprovadas pelo usuário em 2026-11-22; validar igualdade e aplicar validadores Django.
    - `T005`: Aguarda definição da dupla se o cadastro autentica imediatamente para conduzir à ativação ou redireciona para a tela de login.
    - `T008`: Implementa ativação através de botão único de ação, aguardando confirmação da dupla sobre a necessidade de campos adicionais.
    - *Nota de Desbloqueio*: A tarefa `T001` encontra-se totalmente desbloqueada para início imediato, utilizando `python manage.py check` e tratando o código 5 de `pytest --collect-only` como ausência esperada de testes na largada.

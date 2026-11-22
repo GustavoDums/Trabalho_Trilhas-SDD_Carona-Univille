@@ -163,7 +163,7 @@ Durante a elaboração do plano técnico, as seguintes questões operacionais de
    - *Situação*: A spec estabelece o cadastro de Nome, E-mail e Papel.
    - *Opção Recomendada no Plano*: O próprio formulário de cadastro inclui os campos `password` e `password_confirm`, permitindo que o usuário crie sua credencial de acesso imediatamente.
    - *Alternativa*: Cadastro sem senha, gerando um link com token de ativação para definição de senha no primeiro acesso (requer serviço simulado de envio).
-   - *Status*: `Pendente de confirmação da dupla (Opção recomendada adotada provisoriamente no plano)`.
+   - *Status*: `Confirmado pelo usuário em 2026-11-22: password e password_confirm obrigatórios, igualdade entre campos e validadores de senha do Django`.
 
 2. **Interface da Tela de Ativação (`/accounts/activation/`)**:
    - *Situação*: Como o usuário aciona a validação simulada com a whitelist?

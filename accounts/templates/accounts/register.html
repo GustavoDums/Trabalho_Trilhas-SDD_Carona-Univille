@@ -1,0 +1,20 @@
+{% extends "accounts/base.html" %}
+{% block title %}Cadastro acadêmico | Carona Univille{% endblock %}
+{% block content %}
+<h1>Cadastro acadêmico</h1>
+<p>Informe seus dados institucionais e escolha seu papel. Sua conta ficará pendente até a validação do vínculo acadêmico.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    {% for field in form %}
+    <div>
+        {{ field.label_tag }}
+        {{ field.errors }}
+        {{ field }}
+        {% if field.help_text %}<div id="{{ field.auto_id }}_helptext">{{ field.help_text }}</div>{% endif %}
+    </div>
+    {% endfor %}
+    <p>O papel escolhido é fixo nesta versão. Seu e-mail institucional é confidencial.</p>
+    <button type="submit">Criar conta</button>
+</form>
+{% endblock %}
