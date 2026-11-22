@@ -517,20 +517,37 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+## P016 — Implementar a T006
+
+Execute somente a tarefa T006 do Carona Univille.
+
+Área da tarefa — Feature 001, Cadastro acadêmico, validação e perfis.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Use a entrada T006 em specs/001-cadastro-validacao-perfis/tasks.md como
+fonte do escopo desta rodada.
+
+Verifique que a tentativa duplicada retorna a mensagem neutra aprovada,
+mantém uma única conta e preserva os dados, o papel e o estado acadêmico do
+registro original.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
 
 Referência anexada: `docs/prompts.md`.
 
-### Confirmação do fluxo pós-cadastro
-
-Após recomendação de redirecionar para login sem autenticação automática,
-o usuário respondeu:
-
-pode fazer o recomendado mesmo
-
-Referência anexada: `docs/prompts.md`.
-
-Decisão em 2026-11-22: cadastro redireciona para /accounts/login/ sem auto-login.
-Artefatos: view e rotas de cadastro, testes HTTP, spec, plan, tasks, contrato,
-roadmap, README e coverage.json. Página de login permanece na T010; resposta
-neutra de duplicidade na T006. Alteração anterior deste histórico preservada.
-Sem staging ou commit.
+Artefatos alterados: RegisterView, testes de cadastro, tasks, README e coverage.json.
+Mensagem neutra aprovada reutilizada. Nenhuma decisão nova de negócio.
+Alteração anterior deste histórico preservada; sem staging ou commit.

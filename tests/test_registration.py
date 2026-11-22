@@ -6,6 +6,8 @@ from django.test import RequestFactory
 from django.middleware.csrf import get_token
 from django.contrib.messages import get_messages
 from django.db import connection
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import Client
 from django.urls import reverse
 
@@ -147,3 +149,86 @@ def test_signup_csrf_required():
     response = client.post(url, registration_data(csrfmiddlewaretoken=token))
     assert response.status_code == 302
     assert AcademicUser.objects.count() == 1
+
+
+DUPLICATE_MESSAGE = (
+    "Não foi possível concluir o cadastro com os dados informados. "
+    "Se você já possui vínculo cadastrado, tente fazer login."
+)
+
+
+@pytest.mark.parametrize("role", ["MOTORISTA", "PASSAGEIRO"])
+@pytest.mark.parametrize("status", ["PENDENTE", "ATIVA"])
+def test_duplicate_preserves_original_account(client, academic_user_factory, role, status):
+    user = academic_user_factory(email="cadastro.sintetico@univille.br", role=role)
+    if status == "ATIVA":
+        user.academic_status = status
+        user.save()
+    before = AcademicUser.objects.values().get(pk=user.pk)
+    response = client.post(reverse("accounts:register"), registration_data(
+        full_name="Outra Pessoa", role="PASSAGEIRO" if role == "MOTORISTA" else "MOTORISTA",
+    ))
+    assert response.status_code == 200
+    form = response.context["form"]
+    assert list(form.non_field_errors()) == [DUPLICATE_MESSAGE]
+    assert "email" not in form.errors
+    assert DUPLICATE_MESSAGE in response.content.decode()
+    assert not list(get_messages(response.wsgi_request))
+    assert "_auth_user_id" not in client.session
+    assert AcademicUser.objects.count() == 1
+    assert AcademicUser.objects.values().get(pk=user.pk) == before
+
+
+def test_duplicate_with_other_invalid_fields(client, academic_user_factory):
+    academic_user_factory(email="cadastro.sintetico@univille.br")
+    response = client.post(reverse("accounts:register"), registration_data(full_name="Pessoa"))
+    form = response.context["form"]
+    assert list(form.non_field_errors()) == [DUPLICATE_MESSAGE]
+    assert "full_name" in form.errors
+    assert "email" not in form.errors
+    assert AcademicUser.objects.count() == 1
+
+
+def test_duplicate_database_unique_conflict(client, academic_user_factory, monkeypatch):
+    user = academic_user_factory(email="cadastro.sintetico@univille.br")
+    before = AcademicUser.objects.values().get(pk=user.pk)
+    # Simula a janela em que a pré-validação não detecta a conta concorrente.
+    # A restrição UNIQUE real do PostgreSQL deve rejeitar a gravação.
+    monkeypatch.setattr(AcademicUser, "validate_unique", lambda *args, **kwargs: None)
+    response = client.post(reverse("accounts:register"), registration_data())
+    assert response.status_code == 200
+    assert list(response.context["form"].non_field_errors()) == [DUPLICATE_MESSAGE]
+    assert AcademicUser.objects.count() == 1
+    assert AcademicUser.objects.values().get(pk=user.pk) == before
+
+
+def test_duplicate_detected_during_save(client, academic_user_factory, monkeypatch):
+    user = academic_user_factory(email="cadastro.sintetico@univille.br")
+    before = AcademicUser.objects.values().get(pk=user.pk)
+    original_validate_unique = AcademicUser.validate_unique
+    calls = 0
+
+    def validate_after_precheck(instance, *args, **kwargs):
+        nonlocal calls
+        calls += 1
+        if calls > 1:
+            original_validate_unique(instance, *args, **kwargs)
+
+    monkeypatch.setattr(AcademicUser, "validate_unique", validate_after_precheck)
+    response = client.post(reverse("accounts:register"), registration_data())
+    assert response.status_code == 200
+    assert list(response.context["form"].non_field_errors()) == [DUPLICATE_MESSAGE]
+    assert AcademicUser.objects.count() == 1
+    assert AcademicUser.objects.values().get(pk=user.pk) == before
+
+
+@pytest.mark.parametrize("error", [ValidationError({"role": "Falha de domínio"}),
+                                  IntegrityError("Falha não relacionada ao e-mail")])
+def test_duplicate_handling_does_not_hide_other_errors(client, monkeypatch, error):
+    def fail_save(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr(AcademicRegistrationForm, "save", fail_save)
+    with pytest.raises(type(error)):
+        client.post(reverse("accounts:register"), registration_data())
+    assert not AcademicUser.objects.exists()

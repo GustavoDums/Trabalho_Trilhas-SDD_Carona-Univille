@@ -36,7 +36,7 @@
 
 - [x] T004 [P] [US1] Implementar o formulário `AcademicRegistrationForm` em `accounts/forms.py` com validações de domínio `@univille.br` e nome completo (mínimo 2 termos), template `accounts/templates/accounts/register.html` e testes de validação em `tests/test_registration.py` *(Decisão confirmada em 2026-11-22: incluir password e password_confirm, validar igualdade e aplicar os validadores de senha do Django) (Consolidação: T014, T016 e parte de T012)*
 - [x] T005 [US1] Implementar a view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` gerando contas com status PENDENTE *(Decisão confirmada em 2026-11-22: redirecionar para /accounts/login/ sem autenticação automática) (Consolidação: T012, T015, T017)*
-- [ ] T006 [US1] Implementar proteção contra enumeração na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` validando que e-mail duplicado exibe mensagem neutra, mantém exatamente 1 registro no PostgreSQL e preserva o status e papel originais *(Consolidação: T013 e lógica neutra de T015)*
+- [x] T006 [US1] Implementar proteção contra enumeração na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` validando que e-mail duplicado exibe mensagem neutra, mantém exatamente 1 registro no PostgreSQL e preserva o status e papel originais *(Consolidação: T013 e lógica neutra de T015)*
 
 **Checkpoint**: User Story 1 totalmente funcional, independente e testável via suíte automatizada.
 
@@ -145,3 +145,15 @@
 - Cobertura de views e rotas de accounts: 100%; combinada 96,3855421686747%, linhas 140/144 e ramificações 20/22. Relatório em [coverage.json](../../coverage.json).
 - `manage.py check`: nenhum problema. `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem diagnósticos nos arquivos verificados.
 - Limite desta entrega: o destino `/accounts/login/` será implementado na T010; os testes verificam o 302 sem seguir para uma tela ainda indisponível. Tratamento neutro de duplicidade permanece na T006. Nenhum staging ou commit.
+
+## Evidência de conclusão — T006 (2026-11-22)
+
+- Dependências T002 e T003 atendidas; formulário e view de T004 e T005 disponíveis. Escopo: REQ-001, REQ-003 e FR-007, proteção de duplicidade e preservação da conta original. Nenhuma decisão pendente afeta esta tarefa.
+- `RegisterView` substitui o erro de unicidade por erro geral neutro: “Não foi possível concluir o cadastro com os dados informados. Se você já possui vínculo cadastrado, tente fazer login.” Erros não relacionados permanecem disponíveis. Sem login automático ou mensagem de sucesso em duplicidade.
+- Gravação protegida por savepoint; duplicidade detectada no `save()` ou na UNIQUE nativa do PostgreSQL retorna a mesma mensagem. Outros erros de integridade e domínio são propagados. Nenhuma alteração de modelo, formulário ou esquema.
+- Nove novos testes: quatro combinações de papel MOTORISTA/PASSAGEIRO e estado PENDENTE/ATIVA; erros mistos; rejeição pela UNIQUE real; duplicidade detectada durante save; propagação de duas falhas não relacionadas. Comparação de todos os campos persistidos confirma preservação de nome, e-mail, papel, status, hash de senha, flags e timestamps, mantendo exatamente uma conta.
+- Seis testes iniciais falharam antes da correção. Suíte final de T002–T006: 69 aprovados no PostgreSQL, usando o ambiente virtual do projeto. Comando: `venv/Scripts/python.exe -m pytest tests/test_models.py tests/test_foundation.py tests/test_registration.py --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- Cobertura combinada: 95,16908212560386%; linhas 169/175 e ramificações 28/32 (87,5%). Relatório em [coverage.json](../../coverage.json), métricas no README.
+- `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem erros nos arquivos Python alterados; `git diff --check` sem erros.
+- Limite da verificação: a janela entre pré-validação e gravação foi simulada de modo determinístico; a rejeição de unicidade foi executada no PostgreSQL real, sem disparar requisições simultâneas. Não se afirma indistinguibilidade de tempo ou resposta entre cadastro novo e duplicado, além da mensagem neutra aprovada.
+- T007 e posteriores não executadas; sem staging ou commit.
