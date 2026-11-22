@@ -1,0 +1,26 @@
+[
+  {
+    "email": "joao.silva@univille.br",
+    "full_name": "João da Silva",
+    "institutional_role": "ALUNO",
+    "is_eligible": true
+  },
+  {
+    "email": "mariana.motorista@univille.br",
+    "full_name": "Mariana Souza",
+    "institutional_role": "PROFESSOR",
+    "is_eligible": true
+  },
+  {
+    "email": "lucas.aluno@univille.br",
+    "full_name": "Lucas Aluno",
+    "institutional_role": "ALUNO",
+    "is_eligible": true
+  },
+  {
+    "email": "bloqueado@univille.br",
+    "full_name": "Usuário Trancado",
+    "institutional_role": "ALUNO",
+    "is_eligible": false
+  }
+]

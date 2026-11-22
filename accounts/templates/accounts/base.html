@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Carona Univille{% endblock %}</title>
+    <style>
+        :root { font-family: system-ui, sans-serif; color: #172f28; background: #f4f7f5; }
+        body { margin: 0; line-height: 1.5; }
+        header, main, footer { max-width: 48rem; margin: auto; padding: 1.5rem; }
+        header { border-bottom: 1px solid #c7d8cf; }
+        main { min-height: 55vh; }
+        a { color: #135e42; }
+        label { display: block; margin-top: 1rem; }
+        input, select, button { font: inherit; padding: .65rem; max-width: 100%; box-sizing: border-box; }
+        button { color: white; background: #135e42; border: 0; border-radius: .3rem; cursor: pointer; }
+        :focus-visible { outline: 3px solid #a34c00; outline-offset: 3px; }
+        .messages, .errorlist { padding: 1rem 1rem 1rem 2rem; background: #fff; border: 1px solid #c7d8cf; }
+        .errorlist { color: #8f2020; }
+        .skip-link { position: absolute; left: -10000px; }
+        .skip-link:focus { position: static; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <a class="skip-link" href="#content">Ir para o conteúdo</a>
+    <header><strong>Carona Univille</strong></header>
+    <main id="content">
+        {% if messages %}
+        <ul class="messages" aria-live="polite">
+            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>Mobilidade da comunidade acadêmica Univille.</footer>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

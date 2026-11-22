@@ -1,5 +1,6 @@
 """Identidade acadêmica — Feature 001 / T002 / REQ-001, REQ-002, REQ-003."""
 
+from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
@@ -95,3 +96,20 @@ class AcademicUser(AbstractUser):
             self.set_unusable_password()
         self.full_clean()
         return super().save(*args, **kwargs)
+
+
+class AcademicValidationRecord(models.Model):
+    """Auditoria da validação simulada — Feature 001 / T003 / REQ-002."""
+
+    class SimulationResult(models.TextChoices):
+        APROVADO = "APROVADO", "Aprovado"
+        RECUSADO = "RECUSADO", "Recusado"
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name="validation_records",
+    )
+    attempted_email = models.EmailField(max_length=254)
+    simulation_result = models.CharField(max_length=20, choices=SimulationResult.choices)
+    details = models.TextField(blank=True)
+    processed_at = models.DateTimeField(auto_now_add=True)

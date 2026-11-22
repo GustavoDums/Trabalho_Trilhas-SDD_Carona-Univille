@@ -432,3 +432,47 @@ Siga TDD na T002: escreva e rode primeiro os testes do modelo de
 conta, confirme que falham pelo comportamento esperado, depois
 implemente o modelo e a migração e rode os testes novamente.
 Informe os resultados e aguarde minha revisão e meu commit.
+
+## P013 — Implementar a T003
+
+Execute somente a tarefa T003 do Carona Univille.
+
+Área da tarefa — Feature 001, Cadastro acadêmico, validação e perfis.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Use a entrada T003 em specs/001-cadastro-validacao-perfis/tasks.md como
+fonte do escopo desta rodada.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+
+Referência anexada: `docs/prompts.md`.
+
+### Resolução da divergência do catálogo
+
+Após o agente apontar a incompatibilidade entre o catálogo em memória do
+modelo de dados e o uso de `loaddata` no quickstart, o usuário respondeu:
+
+vamos fazer conforme o que achar melhor
+
+Referência anexada: `docs/prompts.md`.
+
+Decisão adotada: manter a whitelist como catálogo JSON, sem modelo persistente
+adicional, e corrigir a instrução do quickstart. A homologação docente da
+simulação continua pendente, conforme a constitution.
+
+Artefatos produzidos/alterados: modelo de auditoria e migração, catálogo,
+template base, fixtures e testes da T003, quickstart, tasks, README e relatório
+de cobertura. Sem staging ou commit.

@@ -22,7 +22,7 @@
 **⚠️ CRITICAL**: Nenhuma história de usuário pode ser iniciada antes da conclusão desta fase.
 
 - [x] T002 Implementar o modelo `AcademicUser` em `accounts/models.py` herdando de `AbstractUser` com `USERNAME_FIELD = 'email'`, gerando a migração inicial em `accounts/migrations/0001_initial.py` e testes unitários em `tests/test_models.py`, validando as restrições de `data-model.md`: `AcademicUser.email` (UNIQUE), `AcademicUser.role` (MOTORISTA/PASSAGEIRO imutável), `AcademicUser.academic_status` (PENDENTE/ATIVA) e `AcademicUser.full_name` (mínimo 2 palavras) *(Consolidação: T005, T007, T011)*
-- [ ] T003 [P] Criar o modelo `AcademicValidationRecord` em `accounts/models.py`, a base mockada em `accounts/fixtures/academic_whitelist.json`, o template base em `accounts/templates/accounts/base.html` e fixtures de banco e cliente em `tests/conftest.py` *(Consolidação: T006, T008, T009, T010)*
+- [x] T003 [P] Criar o modelo `AcademicValidationRecord` em `accounts/models.py`, a base mockada em `accounts/fixtures/academic_whitelist.json`, o template base em `accounts/templates/accounts/base.html` e fixtures de banco e cliente em `tests/conftest.py` *(Consolidação: T006, T008, T009, T010)*
 
 **Checkpoint**: Fundação de identidade pronta e testada — a implementação das histórias de usuário pode iniciar.
 
@@ -113,3 +113,14 @@
 - `python manage.py migrate --noinput`: migração inicial aplicada no PostgreSQL local `carona_univille_db`; `showmigrations accounts`: `[X] 0001_initial`. Introspecção confirmou a tabela `accounts_academicuser` e o índice UNIQUE nativo de `email`. O pytest também aplicou as migrações no banco de testes PostgreSQL.
 - As regras de nome, choices e estado inicial são validadas ao salvar; a imutabilidade segue o `save()` previsto no modelo de dados. Operações ORM em lote e SQL direto não executam essas validações Python; a unicidade permanece garantida no banco.
 - Demais tarefas permanecem abertas. Staging e commit reservados à revisão do usuário.
+
+## Evidência de conclusão — T003 (2026-11-22)
+
+- Dependência T001 satisfeita; identidade da T002 disponível. Infraestrutura para REQ-002 (FR-004 e auditoria de validação) e REQ-003 (dados sintéticos e minimização).
+- Criados `AcademicValidationRecord`, migração `0002_academicvalidationrecord`, catálogo JSON fictício, template base e fixtures compartilhadas de usuários e clientes. O banco de testes e o cliente anônimo reutilizam as fixtures `db` e `client` do pytest-django; clientes autenticados têm sessões independentes.
+- Validada a persistência de APROVADO e RECUSADO, vínculo reverso, timestamp automático, campos obrigatórios, formato de e-mail, choices e exclusão em cascata. Criar auditoria não ativa a conta; o serviço de ativação permanece na T007.
+- Validados os quatro registros do catálogo e a herança do template com escape de conteúdo. Catálogo mantido conforme `data-model.md`; quickstart corrigido para não usar `loaddata`, conforme resolução autorizada pelo usuário.
+- Testes: 10 novos da T003 e 24 de regressão da T002, todos aprovados no PostgreSQL. Comando: `venv/Scripts/python.exe -m pytest tests/test_models.py tests/test_foundation.py --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- Cobertura combinada: 94,5945945945946%; linhas 91/95 e ramificações 14/16. Relatório em [coverage.json](../../coverage.json) e métricas atualizadas no README.
+- `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. `migrate --noinput`: nova migração aplicada em `carona_univille_db`; `showmigrations accounts` confirmou `[X] 0002_academicvalidationrecord`. Introspecção confirmou os campos e a FK para `accounts_academicuser` no PostgreSQL.
+- T004–T012 não executadas. Sem staging ou commit.

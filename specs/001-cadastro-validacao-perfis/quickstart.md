@@ -4,7 +4,7 @@
 **Data**: 2026-11-21  
 **Ambiente**: Windows 11 com PowerShell
 
-Este guia descreve o passo a passo para configurar o ambiente de desenvolvimento, inicializar o banco de dados PostgreSQL, carregar a base fictícia de testes, executar a suíte automatizada de testes, gerar os relatórios de cobertura versionáveis e atualizar os indicadores de qualidade no `README.md`.
+Este guia descreve o passo a passo para configurar o ambiente de desenvolvimento, inicializar o banco de dados PostgreSQL, conferir o catálogo fictício de testes, executar a suíte automatizada de testes, gerar os relatórios de cobertura versionáveis e atualizar os indicadores de qualidade no `README.md`.
 
 ---
 
@@ -50,9 +50,14 @@ psql -U postgres -c "CREATE DATABASE carona_univille_test_db;"
 # 3. Executar as migrações estruturais do Django
 python manage.py migrate
 
-# 4. Carregar os dados fictícios da whitelist acadêmica de homologação
-python manage.py loaddata accounts/fixtures/academic_whitelist.json
+# 4. Conferir a sintaxe do catálogo fictício de homologação
+python -m json.tool accounts/fixtures/academic_whitelist.json
 ```
+
+A whitelist é um catálogo JSON consumido em memória pelo serviço de validação
+(T007), conforme `data-model.md`. Não é uma fixture do ORM Django e não deve ser
+carregada com `loaddata`. A T003 fornece o catálogo; nenhuma conta é criada ou
+ativada automaticamente a partir dele.
 
 ---
 
