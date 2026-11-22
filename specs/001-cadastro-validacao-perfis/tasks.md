@@ -73,7 +73,7 @@
 
 **Purpose**: Verificação de qualidade, conformidade com a Constitution e documentação versionada.
 
-- [ ] T012 [P] Preparar infraestrutura de medição de qualidade criando o script `scripts/check-quality-metrics.ps1`, executar a suíte de testes de `accounts/` gerando relatório inicial `coverage.json` comprovando cobertura $\ge 80\%$ da Feature 001, registrar contagem e cobertura iniciais no topo do `README.md` e validar o roteiro do `quickstart.md` *(Consolidação: T031, T032, T033, T034)*
+- [x] T012 [P] Preparar infraestrutura de medição de qualidade criando o script `scripts/check-quality-metrics.ps1`, executar a suíte de testes de `accounts/` gerando relatório inicial `coverage.json` comprovando cobertura $\ge 80\%$ da Feature 001, registrar contagem e cobertura iniciais no topo do `README.md` e validar o roteiro do `quickstart.md` *(Consolidação: T031, T032, T033, T034)*
 
 ---
 
@@ -216,3 +216,14 @@
 - View placeholder: 100% de linhas. Medição ampliada para incluir a nova view além de `accounts/`: cobertura combinada 96,84542586750788%, linhas 259/265 e ramificações 48/52. Relatório em [coverage.json](../../coverage.json), métricas no README.
 - `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem erros nos arquivos verificados; `git diff --check` sem erros.
 - Critérios da T011 atendidos. T012 não executada. Alterações preexistentes preservadas; sem staging ou commit.
+
+## Evidência de conclusão — T012 (2026-11-22)
+
+- Dependências T001–T011 concluídas. REQ-018 e REQ-019, Princípio III: medição reproduzível da Feature 001, relatório versionável e indicadores reais no início do README. Nenhuma mudança de comportamento da aplicação.
+- Criado `scripts/check-quality-metrics.ps1`, compatível com PowerShell 5.1, usando exclusivamente o Python do venv do projeto. Executa explicitamente os seis arquivos da Feature 001, mede `accounts/` e a view placeholder e gera `coverage.json` e `test-results.xml`.
+- Aplica `--cov-branch --cov-fail-under=80` e exige adicionalmente no mínimo 80% separadamente em linhas e ramificações. Falha de execução ou meta impede atualização do README. Contagem vem dos casos efetivamente aprovados no JUnit, sem usar coleta como resultado de execução. Atualização limitada ao bloco marcado de métricas.
+- Execução final do script: saída 0, 152 aprovados e 0 ignorados no PostgreSQL. Cobertura combinada 96,84542586750788%; linhas 259/265 (97,73584905660377%) e ramificações 48/52 (92,3076923076923%). Meta 80% atendida. README atualizado automaticamente e consistência com os dois relatórios conferida.
+- Comando reproduzível: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1`. A primeira execução passou nos testes mas falhou na leitura final do JSON por aspas do PowerShell; corrigido e repetido integralmente com sucesso. Script salvo com BOM UTF-8 para compatibilidade de acentos no PowerShell 5.1; análise sintática sem erros.
+- Quickstart corrigido conforme autorização do usuário: perfil próprio com prévia abreviada, sem perfil público nesta feature; resultados reais em lugar de contagem por coleta e exemplos numéricos; login manual e botão de ativação já aprovados; proteção de `.env` existente; criação do banco de testes gerida pelo pytest-django.
+- Verificação do quickstart no ambiente existente: `manage.py check` sem problemas, `migrate --check` sem pendências, catálogo validado por `json.tool`. Suíte cobriu cadastro nos dois papéis, rejeição de domínio, duplicidade, confinamento, aprovação/recusa de ativação e privacidade; fluxo HTTP completo de cadastro → login manual → ativação → perfil validado. Ambiente não recriado; credenciais não sobrescritas; sem inspeção visual manual ou medição humana de tempo de demo.
+- Artefatos versionáveis preparados para revisão, sem staging ou commit. Alteração preexistente de `docs/prompts.md` preservada. `git diff --check` sem erros. Pendências de homologação docente e domínios adicionais continuam registradas, sem decisão nova nesta tarefa.

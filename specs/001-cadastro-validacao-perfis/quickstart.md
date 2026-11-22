@@ -40,12 +40,12 @@ Certifique-se de que o serviço do PostgreSQL está em execução. No PowerShell
 
 ```powershell
 # 1. Copiar o arquivo de exemplo de variáveis de ambiente
-Copy-Item .env.example .env
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 
 # 2. Criar a base de dados principal e a base de testes via psql (ou pgAdmin)
 # Ajuste 'postgres' para o seu usuário do PostgreSQL, se aplicável:
 psql -U postgres -c "CREATE DATABASE carona_univille_db;"
-psql -U postgres -c "CREATE DATABASE carona_univille_test_db;"
+# O pytest-django cria e remove o banco de testes automaticamente.
 
 # 3. Executar as migrações estruturais do Django
 python manage.py migrate
@@ -75,56 +75,53 @@ Acesse no navegador:
 
 ---
 
-## 5. Execução dos Testes Automatizados e Geração de Cobertura
+## 5. Medição reproduzível da Feature 001
 
-Conforme exigido pelo **Princípio III da Constitution**, a base de código deve manter cobertura mínima de 80% e gerar relatórios versionados no repositório.
+Na raiz do projeto, usando o ambiente virtual já instalado:
 
-### 5.1. Executar a Suíte de Testes
 ```powershell
-# Executa todos os testes com saída verbosa
-pytest -v
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1
 ```
 
-### 5.2. Gerar Relatório de Cobertura Versionável
+O script usa `venv/Scripts/python.exe` e executa os seis arquivos de testes
+explicitamente associados à Feature 001 (modelos, fundação, cadastro, ativação,
+controle de acesso e privacidade). A cobertura inclui `accounts/` e a view
+placeholder de `carona_univille/views.py`. Não representa cobertura de features futuras.
+
+A execução gera dois relatórios versionáveis:
+
+- `coverage.json`: linhas, ramificações e percentual combinado do pytest-cov.
+- `test-results.xml`: resultado JUnit da execução real, usado para contar aprovados
+  e ignorados, sem estimar a contagem por `--collect-only`.
+
+O pytest aplica `--cov-branch --cov-fail-under=80`. O script também exige
+**80% separadamente em linhas e ramificações** e propaga falhas com saída não zero.
+Somente após sucesso ele sincroniza o bloco marcado no início do `README.md`,
+preservando o restante do documento. Uma falha não atualiza as métricas do README.
+Os relatórios devem ser revisados e incluídos no commit pela dupla.
+
+## 6. Verificações do ambiente e dos fluxos
+
 ```powershell
-# Executa testes gerando relatório em terminal, em JSON e em HTML
-pytest --cov=accounts --cov-report=term-missing --cov-report=json:coverage.json --cov-report=html:htmlcov
+.\venv\Scripts\python.exe manage.py check
+.\venv\Scripts\python.exe manage.py migrate --check
+.\venv\Scripts\python.exe -m json.tool accounts/fixtures/academic_whitelist.json
 ```
+
+A suíte exercita os cenários abaixo pelo cliente HTTP Django e pelo ORM no
+PostgreSQL de testes. O usuário do banco precisa de permissão para criar o banco
+de testes; o pytest-django gerencia sua criação e remoção. Não use dados reais.
+Não é necessário recriar ambiente, sobrescrever `.env` ou criar bancos existentes
+para repetir a medição.
+
+Para uma inspeção manual, inicie o servidor conforme a seção 4. Cadastre uma conta
+fictícia, incluindo senha e confirmação; o cadastro leva ao login **sem autenticação
+automática**. Faça login com essa credencial para abrir a ativação. O botão único
+valida o e-mail da sessão, sem matrícula ou outros campos. O catálogo não cria contas.
+Não há listagem pública de perfis nesta feature nem fluxo de logout implementado.
+Use sessões privadas distintas do navegador para demonstrar contas diferentes.
 
 ---
-
-## 6. Extração de Métricas para Atualização Contínua do `README.md`
-
-O topo do arquivo `README.md` deve exibir a quantidade real de testes executados com sucesso e o percentual exato medido de cobertura. Utilize o seguinte script no PowerShell para obter os valores exatos:
-
-```powershell
-# Script de extração de métricas de qualidade
-$covData = Get-Content coverage.json | ConvertFrom-Json
-$percent = [math]::Round($covData.totals.percent_covered, 2)
-$testCount = (pytest -q --collect-only | Select-String "test").Count
-
-Write-Host "================ METRICAS DE QUALIDADE ================" -ForegroundColor Cyan
-Write-Host "Total de Testes Automatizados: $testCount" -ForegroundColor Green
-Write-Host "Cobertura de Testes Medida:    $percent%" -ForegroundColor Green
-Write-Host "========================================================" -ForegroundColor Cyan
-```
-
-### Atualização do Cabeçalho do `README.md`
-Copie as métricas extraídas para a seção de badges / indicadores do `README.md`:
-
-```markdown
-# Carona Univille
-
-![Testes](https://img.shields.io/badge/testes-12%20passando-brightgreen)
-![Cobertura](https://img.shields.io/badge/cobertura-85.4%25-brightgreen)
-
-> **Métricas da Entrega Atual (v1.1.0)**:
-> - **Testes Automatizados**: 12 executados com 100% de sucesso
-> - **Cobertura Medida**: 85.4% (Meta mínima da Constitution: 80%)
-```
-
----
-
 ## 7. Roteiro de Validação dos Cenários da Spec 001
 
 Execute os seguintes testes ponta a ponta (manuais ou automatizados) para validar a entrega:
@@ -151,5 +148,5 @@ Execute os seguintes testes ponta a ponta (manuais ou automatizados) para valida
    - Cadastrar `estudante.inexistente@univille.br` e acionar validação.
    - Esperado: Recusa pelo simulador, manutenção do status `PENDENTE` e permanência na tela de ativação.
 8. **Cenário 8 (Privacidade e LGPD)**:
-   - Verificar a visualização pública do perfil de `Lucas Aluno`.
-   - Esperado: Nome abreviado como `Lucas A.` e e-mail institucional não renderizado.
+   - Autenticar a própria conta ativa de `Lucas Aluno` e abrir `/accounts/profile/`.
+   - Esperado: nome completo próprio, prévia abreviada `Lucas A.` e e-mail institucional não renderizado. Visitantes e pendentes são redirecionados; não existe perfil público nesta feature.
