@@ -21,7 +21,7 @@
 
 **⚠️ CRITICAL**: Nenhuma história de usuário pode ser iniciada antes da conclusão desta fase.
 
-- [ ] T002 Implementar o modelo `AcademicUser` em `accounts/models.py` herdando de `AbstractUser` com `USERNAME_FIELD = 'email'`, gerando a migração inicial em `accounts/migrations/0001_initial.py` e testes unitários em `tests/test_models.py`, validando as restrições de `data-model.md`: `AcademicUser.email` (UNIQUE), `AcademicUser.role` (MOTORISTA/PASSAGEIRO imutável), `AcademicUser.academic_status` (PENDENTE/ATIVA) e `AcademicUser.full_name` (mínimo 2 palavras) *(Consolidação: T005, T007, T011)*
+- [x] T002 Implementar o modelo `AcademicUser` em `accounts/models.py` herdando de `AbstractUser` com `USERNAME_FIELD = 'email'`, gerando a migração inicial em `accounts/migrations/0001_initial.py` e testes unitários em `tests/test_models.py`, validando as restrições de `data-model.md`: `AcademicUser.email` (UNIQUE), `AcademicUser.role` (MOTORISTA/PASSAGEIRO imutável), `AcademicUser.academic_status` (PENDENTE/ATIVA) e `AcademicUser.full_name` (mínimo 2 palavras) *(Consolidação: T005, T007, T011)*
 - [ ] T003 [P] Criar o modelo `AcademicValidationRecord` em `accounts/models.py`, a base mockada em `accounts/fixtures/academic_whitelist.json`, o template base em `accounts/templates/accounts/base.html` e fixtures de banco e cliente em `tests/conftest.py` *(Consolidação: T006, T008, T009, T010)*
 
 **Checkpoint**: Fundação de identidade pronta e testada — a implementação das histórias de usuário pode iniciar.
@@ -102,3 +102,14 @@
 - **User Story 1**: `T004` pode ser iniciado em paralelo com a estrutura da view `T005`.
 - **User Story 2**: `T007` (serviço) pode ser implementado antes ou em paralelo com `T008` (interface web).
 - **User Story 3**: `T010` (perfil/LGPD) pode ser implementado em paralelo com `T009` (middleware de redirecionamento).
+
+## Evidência de conclusão — T002 (2026-11-22)
+
+- Dependência T001 satisfeita. Escopo: modelo de identidade; REQ-001, REQ-002 e REQ-003; FR-001, FR-003, FR-007 (unicidade no banco) e FR-008.
+- TDD no ambiente virtual Python 3.12.10 / Django 5.1.15: 24 testes falharam antes da implementação (modelo ainda era `auth.User`, sem campos acadêmicos); os mesmos 24 testes passaram após o modelo e a migração.
+- `python -m pytest tests/test_models.py --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`: 24 aprovados; cobertura combinada 93,6842105263158%, linhas 75/79 e ramificações 14/16. Relatório em [coverage.json](../../coverage.json).
+- Verificados: e-mail único no PostgreSQL, login por e-mail, papéis válidos e imutáveis no `save()`, status inicial obrigatoriamente PENDENTE, nome com pelo menos dois termos, validação institucional e propriedades de domínio.
+- `python manage.py check`: nenhum problema. `python manage.py makemigrations --check --dry-run`: nenhuma alteração pendente.
+- `python manage.py migrate --noinput`: migração inicial aplicada no PostgreSQL local `carona_univille_db`; `showmigrations accounts`: `[X] 0001_initial`. Introspecção confirmou a tabela `accounts_academicuser` e o índice UNIQUE nativo de `email`. O pytest também aplicou as migrações no banco de testes PostgreSQL.
+- As regras de nome, choices e estado inicial são validadas ao salvar; a imutabilidade segue o `save()` previsto no modelo de dados. Operações ORM em lote e SQL direto não executam essas validações Python; a unicidade permanece garantida no banco.
+- Demais tarefas permanecem abertas. Staging e commit reservados à revisão do usuário.

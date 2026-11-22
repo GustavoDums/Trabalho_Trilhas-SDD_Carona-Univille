@@ -201,12 +201,9 @@ simulada pelo professor e a confirmação dos domínios institucionais.
 Registre a revisão conforme a governança da constitution e encerre
 após atualizar o documento.
 
+## P006 — Plano técnico do cadastro ##
 
----
-
-## P006 — Plano Técnico de Cadastro, Validação e Perfis ##
-
-/speckit-plan 
+/speckit-plan
 
 Gere o plano técnico de specs/001-cadastro-validacao-perfis/spec.md.
 Use a stack da constitution 1.1.0 e as decisões registradas em
@@ -240,18 +237,7 @@ Se faltar alguma decisão funcional de login ou ativação, registre
 a pergunta para a dupla. Limite o plano ao cadastro, à validação
 e aos perfis. Encerre após gerar os artefatos de planejamento.
 
-- **Artefatos Gerados**:
-  - `specs/001-cadastro-validacao-perfis/plan.md`
-  - `specs/001-cadastro-validacao-perfis/research.md`
-  - `specs/001-cadastro-validacao-perfis/data-model.md`
-  - `specs/001-cadastro-validacao-perfis/contracts/web-routes.md`
-  - `specs/001-cadastro-validacao-perfis/quickstart.md`
-- **Decisões Associadas**: Modelagem de `AcademicUser` com `academic_status` vs `is_active`, controle de acesso com `AcademicStatusMiddleware`, validação simulada via whitelist desacoplada, suíte de testes com PostgreSQL e relatório de cobertura para o README.
-
-
----
-
-## P007 — Geração de Tarefas e Roadmap Mestre de Implementação ##
+## P007 — Gerar todas as tasks ##
 
 Gere em uma única rodada todas as tarefas necessárias para implementar
 o Carona Univille. Esta rodada é apenas de planejamento.
@@ -297,15 +283,7 @@ a homologação da validação simulada e os domínios institucionais reais.
 Ao final, informe os arquivos gerados e as tarefas bloqueadas.
 Encerre após gerar os documentos, sem implementar ou commitar.
 
-- **Artefatos Gerados**:
-  - `specs/001-cadastro-validacao-perfis/tasks.md` (34 tarefas oficiais no formato Spec Kit)
-  - `docs/roadmap-implementacao.md` (Checklist completo de 125 tarefas de T001 a T125 cobrindo MVP, Escopo Completo, Bônus e Entrega)
-- **Decisões Associadas**: Dimensionamento de tarefas para commits atômicos, mapeamento exato de testes de concorrência PostgreSQL, ordem de paradas, borda de cancelamento e cálculo numérico de reputação.
-
-
----
-
-## P008 — Consolidação de Tarefas por Propósito (1 Commit por Tarefa) ##
+## P008 — Consolidar tarefas por propósito ##
 
 Consolide as tarefas do Carona Univille por propósito, mantendo
 uma tarefa por commit de implementação. Trabalhe apenas no planejamento.
@@ -345,14 +323,7 @@ Ao final, informe a contagem antes e depois, o novo total da feature
 001 e exemplos das principais fusões. Encerre após atualizar o
 planejamento, sem implementar ou commitar.
 
-- **Artefatos Atualizados**:
-  - `specs/001-cadastro-validacao-perfis/tasks.md` (consolidado para 12 tarefas: T001 a T012)
-  - `docs/roadmap-implementacao.md` (consolidado de 125 para 45 tarefas: T001 a T045)
-- **Decisões Associadas**: Agrupamento por propósito verificável (implementação + testes correspondentes no mesmo commit), mantendo rastreabilidade total das tarefas antigas.
-
----
-
-## P009 — Revisão de Consistência e Análise da Feature 001 ##
+## Rode o P009 — Revisão das tarefas ##
 
 /speckit-analyze
 
@@ -372,12 +343,7 @@ Confirme quais tarefas dependem das decisões sobre senha, login
 e botão de ativação. Informe se existe algum bloqueio para a T001.
 Entregue apenas o diagnóstico.
 
-- **Artefatos Produzidos**: Diagnóstico analítico de consistência entregue diretamente no chat.
-- **Decisões Associadas**: Confirmação da regra de dois termos preexistente na spec (`Edge Cases` e `Key Entities`), distinção entre código 5 (`ExitCode.NO_TESTS_COLLECTED`) e erro de configuração na T001, e separação de escopos entre T012 (Feature 001) e T043 (Entrega final).
-
----
-
-## P010 — Ajustes de Planejamento da Feature 001 e Roadmap ##
+## P010 — Ajustar o checklist antes de implementar ##
 
 Atualize apenas o tasks.md da feature 001 e o roadmap com os ajustes
 do relatório de análise.
@@ -396,14 +362,7 @@ nas tarefas afetadas. Preserve a regra de nome com dois termos na
 T002, já prevista na spec. Encerre após atualizar os documentos,
 sem iniciar a implementação.
 
-- **Artefatos Atualizados**:
-  - `specs/001-cadastro-validacao-perfis/tasks.md` (ajustes em T001, T004, T005, T008, T012 e dependências)
-  - `docs/roadmap-implementacao.md` (ajustes em T001, T004, T005, T008, T012, T043, tabela e notas)
-- **Decisões Associadas**: Validação da infraestrutura com `python manage.py check` e tolerância a ausência de testes na T001; delimitação de T012 à Feature 001 e T043 à entrega consolidada; preservação das decisões pendentes da dupla e da regra de dois termos no nome.
-
----
-
-## P011 — Execução da Tarefa T001 (Setup Django, PostgreSQL e pytest) ##
+## P011 — Implementar a T001 ##
 
 Execute somente a tarefa T001 do Carona Univille.
 
@@ -435,15 +394,41 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
-- **Artefatos Criados / Atualizados**:
-  - `requirements.txt`: Dependências da stack (Django, psycopg[binary], python-dotenv, pytest, pytest-django, pytest-cov).
-  - `.env.example`: Modelo de variáveis de ambiente com credenciais fictícias de desenvolvimento e testes.
-  - `.gitignore`: Exclusão de venv, cache, .env local e artefatos de teste.
-  - `manage.py`, `carona_univille/settings.py`, `carona_univille/urls.py`, `carona_univille/wsgi.py`, `carona_univille/asgi.py`: Estrutura do projeto Django com integração a variáveis de ambiente e PostgreSQL.
-  - `pytest.ini`: Configuração do pytest vinculada a `carona_univille.settings`.
-  - `tests/__init__.py`: Package inicial de testes.
-  - `specs/001-cadastro-validacao-perfis/tasks.md` e `docs/roadmap-implementacao.md`: Marcação de conclusão de T001.
-- **Verificações Realizadas**:
-  - `python manage.py check`: Sucesso (`System check identified no issues (0 silenced)`).
-  - `pytest --collect-only`: Código de saída 5 indicando ausência esperada de testes (`collected 0 items`), sem erros de configuração.
-  - Conexão PostgreSQL: Driver e configuração validados pelo Django; conexão física com servidor local reportada como não verificada devido à ausência do serviço PostgreSQL ativo na porta 5432.
+## P012 — Implementar a T002 ##
+
+Execute somente a tarefa T002 do Carona Univille.
+
+Área da tarefa — Feature 001, Cadastro acadêmico, validação e perfis.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Use a entrada T002 em specs/001-cadastro-validacao-perfis/tasks.md como
+fonte do escopo desta rodada.
+
+Implemente AcademicUser e suas migrações conforme spec.md e data-model.md.
+Cubra as restrições que a T002 atribui ao modelo, incluindo unicidade do
+e-mail, papel fixo, estado acadêmico inicial pendente e nome com pelo menos
+dois termos. Execute os testes da tarefa e verifique a migração no banco
+previsto no plano.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+
+OBS: A T001 está concluída e a conexão local com o PostgreSQL já foi
+validada pelo Django. Use o ambiente virtual do projeto.
+
+Siga TDD na T002: escreva e rode primeiro os testes do modelo de
+conta, confirme que falham pelo comportamento esperado, depois
+implemente o modelo e a migração e rode os testes novamente.
+Informe os resultados e aguarde minha revisão e meu commit.
