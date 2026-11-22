@@ -48,7 +48,7 @@
 
 **Independent Test**: Autenticar conta pendente, acionar a validação institucional em `/accounts/activation/` e verificar que contas presentes na whitelist tornam-se `ATIVA`, enquanto contas ausentes permanecem `PENDENTE`.
 
-- [ ] T007 [P] [US2] Implementar o serviço desacoplado `AcademicValidationService` em `accounts/services.py` consultando `accounts/fixtures/academic_whitelist.json` com transação atômica e testes unitários em `tests/test_activation.py` (contas elegíveis vs inelegíveis) *(Consolidação: T018, T020)*
+- [x] T007 [P] [US2] Implementar o serviço desacoplado `AcademicValidationService` em `accounts/services.py` consultando `accounts/fixtures/academic_whitelist.json` com transação atômica e testes unitários em `tests/test_activation.py` (contas elegíveis vs inelegíveis) *(Consolidação: T018, T020)*
 - [ ] T008 [US2] Implementar a view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` validando transição para `ATIVA` com auditoria ou recusa mantendo `PENDENTE` *(Nota: Decisão pendente da dupla — interface com botão único vs campos adicionais) (Consolidação: T019, T021, T022, T023)*
 
 **Checkpoint**: User Stories 1 e 2 funcionais e integradas de forma independente.
@@ -157,3 +157,14 @@
 - `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. Editor sem erros nos arquivos Python alterados; `git diff --check` sem erros.
 - Limite da verificação: a janela entre pré-validação e gravação foi simulada de modo determinístico; a rejeição de unicidade foi executada no PostgreSQL real, sem disparar requisições simultâneas. Não se afirma indistinguibilidade de tempo ou resposta entre cadastro novo e duplicado, além da mensagem neutra aprovada.
 - T007 e posteriores não executadas; sem staging ou commit.
+
+## Evidência de conclusão — T007 (2026-11-22)
+
+- Dependências de Phase 2 (T002 e T003) satisfeitas. REQ-002, FR-004 e FR-005, cenários 2.1 e 2.2: consulta do catálogo JSON fictício sem interface HTTP. A homologação docente da abordagem simulada permanece pendente, sem mudança das decisões de negócio.
+- `AcademicValidationService.validate(email)` consulta a conta persistida e retorna booleano. Transação atômica e bloqueio da conta mantêm atualização de estado e auditoria no mesmo commit. Elegível torna-se ATIVA com APROVADO; ausente ou explicitamente inelegível permanece PENDENTE com RECUSADO. Repetição em conta ativa não duplica auditoria.
+- Treze testes novos: três e-mails elegíveis em ambos os papéis; e-mail ausente e registro inelegível em ambos os papéis; repetição de validação; rollback ao falhar auditoria; catálogo JSON inválido sem ativação. Todos os dados são sintéticos. Papel, senha e flag técnica de autenticação preservados.
+- Antes da implementação, a coleta falhou pela ausência de `accounts.services`. Verificação final no ambiente virtual Python 3.12.10 / Django 5.1.15: 82 testes aprovados no PostgreSQL, incluindo regressão de T002–T006.
+- Comando: `venv/Scripts/python.exe -m pytest tests/test_models.py tests/test_foundation.py tests/test_registration.py tests/test_activation.py --cov=accounts --cov-branch --cov-report=term-missing --cov-report=json:coverage.json`.
+- Serviço: 100% de linhas e ramificações; cobertura combinada de `accounts/`: 95,65217391304348%, linhas 188/194 e ramificações 32/36. Relatório em [coverage.json](../../coverage.json), métricas no README.
+- `manage.py check`: nenhum problema; `makemigrations --check --dry-run`: nenhuma alteração pendente. Diagnósticos do editor sem erros. Não houve mudança de esquema.
+- T008 e posteriores não executadas. View, template, botão, rotas e identificação pela sessão permanecem para a T008. Nenhuma afirmação de teste de requisições concorrentes; sem staging ou commit.

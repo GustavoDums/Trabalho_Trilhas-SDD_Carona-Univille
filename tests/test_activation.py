@@ -1,0 +1,76 @@
+"""Feature 001 / T007 — REQ-002, validação simulada sem interface HTTP."""
+
+import json
+
+import pytest
+from django.db import connection
+
+from accounts.models import AcademicValidationRecord
+from accounts.services import AcademicValidationService
+
+pytestmark = pytest.mark.django_db
+
+
+@pytest.mark.parametrize("role", ["MOTORISTA", "PASSAGEIRO"])
+@pytest.mark.parametrize("email", ["joao.silva@univille.br", "mariana.motorista@univille.br",
+                                  "lucas.aluno@univille.br"])
+def test_eligible_account_activates_with_audit(academic_user_factory, role, email):
+    user = academic_user_factory(email=email, role=role)
+    before = user.password
+    assert AcademicValidationService.validate(email) is True
+    user.refresh_from_db()
+    assert user.is_activated and user.is_active
+    assert user.role == role and user.password == before
+    record = user.validation_records.get()
+    assert record.attempted_email == email
+    assert record.simulation_result == "APROVADO"
+    assert record.processed_at
+    assert connection.vendor == "postgresql"
+
+
+@pytest.mark.parametrize("role", ["MOTORISTA", "PASSAGEIRO"])
+@pytest.mark.parametrize("email", ["bloqueado@univille.br", "visitante.externo@univille.br"])
+def test_ineligible_account_remains_pending_with_audit(academic_user_factory, role, email):
+    user = academic_user_factory(email=email, role=role)
+    before = user.password
+    assert AcademicValidationService.validate(email) is False
+    user.refresh_from_db()
+    assert user.is_pending and user.is_active
+    assert user.role == role and user.password == before
+    record = user.validation_records.get()
+    assert record.attempted_email == email
+    assert record.simulation_result == "RECUSADO"
+
+
+def test_active_account_does_not_repeat_validation(academic_user_factory):
+    user = academic_user_factory(email="lucas.aluno@univille.br")
+    assert AcademicValidationService.validate(user.email) is True
+    assert AcademicValidationService.validate(user.email) is True
+    assert user.validation_records.count() == 1
+
+
+def test_activation_rolls_back_if_audit_fails(academic_user_factory, monkeypatch):
+    user = academic_user_factory(email="lucas.aluno@univille.br")
+
+    def fail_audit(*args, **kwargs):
+        raise RuntimeError("Falha sintética na auditoria")
+
+    monkeypatch.setattr(AcademicValidationRecord.objects, "create", fail_audit)
+    with pytest.raises(RuntimeError, match="Falha sintética"):
+        AcademicValidationService.validate(user.email)
+    user.refresh_from_db()
+    assert user.is_pending
+    assert not user.validation_records.exists()
+
+
+def test_invalid_catalog_does_not_activate(academic_user_factory, settings, tmp_path):
+    user = academic_user_factory(email="lucas.aluno@univille.br")
+    catalog = tmp_path / "accounts" / "fixtures" / "academic_whitelist.json"
+    catalog.parent.mkdir(parents=True)
+    catalog.write_text("invalid-json", encoding="utf-8")
+    settings.BASE_DIR = tmp_path
+    with pytest.raises(json.JSONDecodeError):
+        AcademicValidationService.validate(user.email)
+    user.refresh_from_db()
+    assert user.is_pending
+    assert not user.validation_records.exists()
