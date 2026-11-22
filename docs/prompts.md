@@ -247,3 +247,156 @@ e aos perfis. Encerre após gerar os artefatos de planejamento.
   - `specs/001-cadastro-validacao-perfis/contracts/web-routes.md`
   - `specs/001-cadastro-validacao-perfis/quickstart.md`
 - **Decisões Associadas**: Modelagem de `AcademicUser` com `academic_status` vs `is_active`, controle de acesso com `AcademicStatusMiddleware`, validação simulada via whitelist desacoplada, suíte de testes com PostgreSQL e relatório de cobertura para o README.
+
+
+---
+
+## P007 — Geração de Tarefas e Roadmap Mestre de Implementação ##
+
+Gere em uma única rodada todas as tarefas necessárias para implementar
+o Carona Univille. Esta rodada é apenas de planejamento.
+
+Leia .specify/memory/constitution.md, docs/levantamento.md e as specs
+e os plans existentes. Preserve os requisitos, as decisões aprovadas
+e os IDs de tarefas já registrados.
+
+Gere specs/001-cadastro-validacao-perfis/tasks.md no formato do Spec Kit,
+usando a spec e o plan já revisados. Cubra configuração do ambiente,
+modelo de conta, cadastro, autenticação, permissões, validação simulada,
+privacidade do perfil e testes de aceite. Sinalize as tarefas que ainda
+dependem das decisões sobre senha, login após o cadastro e ativação.
+
+Gere também docs/roadmap-implementacao.md com um checklist detalhado
+de todas as tarefas do sistema, cobrindo:
+
+- MVP (REQ-001 a REQ-007) — cadastro e validação acadêmica, perfis,
+  oferta com paradas, busca por rota e janela de horário, reserva
+  sem overbooking e cancelamento com liberação de vaga.
+- Escopo completo (REQ-008 a REQ-011) — avaliação mútua, cálculo de
+  reputação, cancelamento tardio, no-show e caronas recorrentes.
+- Bônus (REQ-012 e REQ-013) — notificações e lista de espera automática.
+- Entrega (REQ-014 a REQ-020) — artefatos SDD, rastreabilidade,
+  histórico de prompts, testes de aceite, relatório versionado de
+  cobertura mínima de 80%, métricas no início do README e pitch
+  com demo ao vivo de até 10 minutos e slides sem código.
+
+Para cada tarefa, indique a feature, os requisitos, as dependências,
+o resultado esperado e como verificá-lo. Dimensione cada tarefa para
+que sua implementação e seus testes relacionados caibam em um commit.
+
+Inclua testes para a ordem das paradas e os limites da janela de busca,
+dois passageiros disputando a última vaga no PostgreSQL, os instantes
+antes, no limite e depois do prazo de cancelamento, e exemplos
+numéricos do cálculo de reputação.
+
+Para features com spec e plan revisados, gere seu tasks.md. Para as
+demais, detalhe as tarefas no roadmap e indique quais decisões precisam
+ser fechadas antes de gerar o tasks.md oficial. Mantenha como pendentes
+a homologação da validação simulada e os domínios institucionais reais.
+
+Ao final, informe os arquivos gerados e as tarefas bloqueadas.
+Encerre após gerar os documentos, sem implementar ou commitar.
+
+- **Artefatos Gerados**:
+  - `specs/001-cadastro-validacao-perfis/tasks.md` (34 tarefas oficiais no formato Spec Kit)
+  - `docs/roadmap-implementacao.md` (Checklist completo de 125 tarefas de T001 a T125 cobrindo MVP, Escopo Completo, Bônus e Entrega)
+- **Decisões Associadas**: Dimensionamento de tarefas para commits atômicos, mapeamento exato de testes de concorrência PostgreSQL, ordem de paradas, borda de cancelamento e cálculo numérico de reputação.
+
+
+---
+
+## P008 — Consolidação de Tarefas por Propósito (1 Commit por Tarefa) ##
+
+Consolide as tarefas do Carona Univille por propósito, mantendo
+uma tarefa por commit de implementação. Trabalhe apenas no planejamento.
+
+Leia specs/001-cadastro-validacao-perfis/tasks.md,
+docs/roadmap-implementacao.md, docs/levantamento.md e os artefatos
+de spec e plan disponíveis. Use a lista atual de 125 tarefas como base.
+
+Agrupe tarefas que entreguem juntas um resultado verificável.
+Exemplos de agrupamento:
+
+- Configuração inicial do Django, dependências e configuração de testes.
+- Modelo de conta, migração e testes de suas restrições.
+- Cadastro dos dois papéis, validações do formulário e testes de aceite.
+- Validação acadêmica simulada, dados fictícios e testes de aprovação
+  e recusa.
+- Reserva transacional e teste de concorrência pela última vaga.
+- Cancelamento, liberação da vaga e testes no limite do prazo.
+- Geração do relatório de cobertura e atualização das métricas no README.
+
+Use 45 a 55 tarefas no total e 10 a 14 no cadastro como referências
+flexíveis. Priorize tarefas com um propósito, um critério de conclusão
+e um tamanho adequado para revisão em um commit. Mantenha tarefas
+separadas quando tiverem resultados, dependências ou decisões distintas.
+
+Atualize o tasks.md da feature 001 e o roadmap geral. Preserve todos
+os requisitos, cenários de aceite, dependências e pendências. Mantenha
+as futuras features no roadmap até que tenham spec e plan revisados.
+No total geral, conte as tarefas da feature 001 uma única vez.
+
+Preserve os IDs de tarefas já referenciadas em commits e mantenha
+a rastreabilidade de cada fusão. Mostre no resumo quais IDs antigos
+foram agrupados em cada nova tarefa. Mantenha as decisões pendentes
+com esse status e evite incluir regras de negócio novas.
+
+Ao final, informe a contagem antes e depois, o novo total da feature
+001 e exemplos das principais fusões. Encerre após atualizar o
+planejamento, sem implementar ou commitar.
+
+- **Artefatos Atualizados**:
+  - `specs/001-cadastro-validacao-perfis/tasks.md` (consolidado para 12 tarefas: T001 a T012)
+  - `docs/roadmap-implementacao.md` (consolidado de 125 para 45 tarefas: T001 a T045)
+- **Decisões Associadas**: Agrupamento por propósito verificável (implementação + testes correspondentes no mesmo commit), mantendo rastreabilidade total das tarefas antigas.
+
+---
+
+## P009 — Revisão de Consistência e Análise da Feature 001 ##
+
+/speckit-analyze
+
+Revise a consistência entre a constitution, a spec, o plan, o tasks.md
+consolidado da feature 001 e o roadmap de implementação.
+
+Confira três pontos:
+- T001 — Se o projeto ainda não tiver testes, pytest --collect-only
+  pode retornar código 5. Verifique se o critério de conclusão
+  distingue falta de testes de erro de configuração.
+- T002 — Confira se a regra de nome com dois termos consta na spec
+  aprovada ou se apareceu durante a consolidação.
+- T012 e T043 — Confira se uma tarefa prepara a medição da cobertura
+  e a outra registra o resultado da entrega, ou se há duplicidade.
+
+Confirme quais tarefas dependem das decisões sobre senha, login
+e botão de ativação. Informe se existe algum bloqueio para a T001.
+Entregue apenas o diagnóstico.
+
+- **Artefatos Produzidos**: Diagnóstico analítico de consistência entregue diretamente no chat.
+- **Decisões Associadas**: Confirmação da regra de dois termos preexistente na spec (`Edge Cases` e `Key Entities`), distinção entre código 5 (`ExitCode.NO_TESTS_COLLECTED`) e erro de configuração na T001, e separação de escopos entre T012 (Feature 001) e T043 (Entrega final).
+
+---
+
+## P010 — Ajustes de Planejamento da Feature 001 e Roadmap ##
+
+Atualize apenas o tasks.md da feature 001 e o roadmap com os ajustes
+do relatório de análise.
+
+Na T001, use python manage.py check para verificar a configuração
+do Django. No pytest --collect-only, aceite o código 5 somente
+quando o resultado indicar ausência de testes, sem erros de
+configuração ou coleta.
+
+Delimite a T012 como preparação da medição e fechamento da feature
+001. Defina a T043 como medição consolidada na entrega final,
+reutilizando o mesmo script.
+
+Mantenha as decisões sobre senha, login e ativação como pendentes
+nas tarefas afetadas. Preserve a regra de nome com dois termos na
+T002, já prevista na spec. Encerre após atualizar os documentos,
+sem iniciar a implementação.
+
+- **Artefatos Atualizados**:
+  - `specs/001-cadastro-validacao-perfis/tasks.md` (ajustes em T001, T004, T005, T008, T012 e dependências)
+  - `docs/roadmap-implementacao.md` (ajustes em T001, T004, T005, T008, T012, T043, tabela e notas)
+- **Decisões Associadas**: Validação da infraestrutura com `python manage.py check` e tolerância a ausência de testes na T001; delimitação de T012 à Feature 001 e T043 à entrega consolidada; preservação das decisões pendentes da dupla e da regra de dois termos no nome.
