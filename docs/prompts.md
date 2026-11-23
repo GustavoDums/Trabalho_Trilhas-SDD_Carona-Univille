@@ -201,6 +201,10 @@ simulada pelo professor e a confirmação dos domínios institucionais.
 Registre a revisão conforme a governança da constitution e encerre
 após atualizar o documento.
 
+- **Artefato Alterado**: `.specify/memory/constitution.md`
+- **Versão Resultante**: `1.1.0` (Minor Bump)
+- **Decisões Associadas**: Homologação da stack oficial (Python 3.12+, Django, Django Templates HTML/CSS, PostgreSQL, pytest, pytest-django, pytest-cov). Manutenção pendente de aprovação do professor e domínios reais.
+
 ## P006 — Plano técnico do cadastro ##
 
 /speckit-plan
@@ -236,6 +240,17 @@ atualizar o início do README.
 Se faltar alguma decisão funcional de login ou ativação, registre
 a pergunta para a dupla. Limite o plano ao cadastro, à validação
 e aos perfis. Encerre após gerar os artefatos de planejamento.
+
+- **Artefatos Gerados**:
+  - `specs/001-cadastro-validacao-perfis/plan.md`
+  - `specs/001-cadastro-validacao-perfis/research.md`
+  - `specs/001-cadastro-validacao-perfis/data-model.md`
+  - `specs/001-cadastro-validacao-perfis/contracts/web-routes.md`
+  - `specs/001-cadastro-validacao-perfis/quickstart.md`
+- **Decisões Associadas**: Modelagem de `AcademicUser` com `academic_status` vs `is_active`, controle de acesso com `AcademicStatusMiddleware`, validação simulada via whitelist desacoplada, suíte de testes com PostgreSQL e relatório de cobertura para o README.
+
+
+---
 
 ## P007 — Gerar todas as tasks ##
 
@@ -283,6 +298,14 @@ a homologação da validação simulada e os domínios institucionais reais.
 Ao final, informe os arquivos gerados e as tarefas bloqueadas.
 Encerre após gerar os documentos, sem implementar ou commitar.
 
+- **Artefatos Gerados**:
+  - `specs/001-cadastro-validacao-perfis/tasks.md` (34 tarefas oficiais no formato Spec Kit)
+  - `docs/roadmap-implementacao.md` (Checklist completo de 125 tarefas de T001 a T125 cobrindo MVP, Escopo Completo, Bônus e Entrega)
+- **Decisões Associadas**: Dimensionamento de tarefas para commits atômicos, mapeamento exato de testes de concorrência PostgreSQL, ordem de paradas, borda de cancelamento e cálculo numérico de reputação.
+
+
+---
+
 ## P008 — Consolidar tarefas por propósito ##
 
 Consolide as tarefas do Carona Univille por propósito, mantendo
@@ -323,6 +346,13 @@ Ao final, informe a contagem antes e depois, o novo total da feature
 001 e exemplos das principais fusões. Encerre após atualizar o
 planejamento, sem implementar ou commitar.
 
+- **Artefatos Atualizados**:
+  - `specs/001-cadastro-validacao-perfis/tasks.md` (consolidado para 12 tarefas: T001 a T012)
+  - `docs/roadmap-implementacao.md` (consolidado de 125 para 45 tarefas: T001 a T045)
+- **Decisões Associadas**: Agrupamento por propósito verificável (implementação + testes correspondentes no mesmo commit), mantendo rastreabilidade total das tarefas antigas.
+
+---
+
 ## Rode o P009 — Revisão das tarefas ##
 
 /speckit-analyze
@@ -343,6 +373,11 @@ Confirme quais tarefas dependem das decisões sobre senha, login
 e botão de ativação. Informe se existe algum bloqueio para a T001.
 Entregue apenas o diagnóstico.
 
+- **Artefatos Produzidos**: Diagnóstico analítico de consistência entregue diretamente no chat.
+- **Decisões Associadas**: Confirmação da regra de dois termos preexistente na spec (`Edge Cases` e `Key Entities`), distinção entre código 5 (`ExitCode.NO_TESTS_COLLECTED`) e erro de configuração na T001, e separação de escopos entre T012 (Feature 001) e T043 (Entrega final).
+
+---
+
 ## P010 — Ajustar o checklist antes de implementar ##
 
 Atualize apenas o tasks.md da feature 001 e o roadmap com os ajustes
@@ -361,6 +396,13 @@ Mantenha as decisões sobre senha, login e ativação como pendentes
 nas tarefas afetadas. Preserve a regra de nome com dois termos na
 T002, já prevista na spec. Encerre após atualizar os documentos,
 sem iniciar a implementação.
+
+- **Artefatos Atualizados**:
+  - `specs/001-cadastro-validacao-perfis/tasks.md` (ajustes em T001, T004, T005, T008, T012 e dependências)
+  - `docs/roadmap-implementacao.md` (ajustes em T001, T004, T005, T008, T012, T043, tabela e notas)
+- **Decisões Associadas**: Validação da infraestrutura com `python manage.py check` e tolerância a ausência de testes na T001; delimitação de T012 à Feature 001 e T043 à entrega consolidada; preservação das decisões pendentes da dupla e da regra de dois termos no nome.
+
+---
 
 ## P011 — Implementar a T001 ##
 
@@ -393,6 +435,19 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+
+- **Artefatos Criados / Atualizados**:
+  - `requirements.txt`: Dependências da stack (Django, psycopg[binary], python-dotenv, pytest, pytest-django, pytest-cov).
+  - `.env.example`: Modelo de variáveis de ambiente com credenciais fictícias de desenvolvimento e testes.
+  - `.gitignore`: Exclusão de venv, cache, .env local e artefatos de teste.
+  - `manage.py`, `carona_univille/settings.py`, `carona_univille/urls.py`, `carona_univille/wsgi.py`, `carona_univille/asgi.py`: Estrutura do projeto Django com integração a variáveis de ambiente e PostgreSQL.
+  - `pytest.ini`: Configuração do pytest vinculada a `carona_univille.settings`.
+  - `tests/__init__.py`: Package inicial de testes.
+  - `specs/001-cadastro-validacao-perfis/tasks.md` e `docs/roadmap-implementacao.md`: Marcação de conclusão de T001.
+- **Verificações Realizadas**:
+  - `python manage.py check`: Sucesso (`System check identified no issues (0 silenced)`).
+  - `pytest --collect-only`: Código de saída 5 indicando ausência esperada de testes (`collected 0 items`), sem erros de configuração.
+  - Conexão PostgreSQL: Driver e configuração validados pelo Django; conexão física com servidor local reportada como não verificada devido à ausência do serviço PostgreSQL ativo na porta 5432.
 
 ## P012 — Implementar a T002 ##
 
@@ -458,6 +513,25 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: `docs/prompts.md`.
+
+### Resolução da divergência do catálogo
+
+Após o agente apontar a incompatibilidade entre o catálogo em memória do
+modelo de dados e o uso de `loaddata` no quickstart, o usuário respondeu:
+
+vamos fazer conforme o que achar melhor
+
+Referência anexada: `docs/prompts.md`.
+
+Decisão adotada: manter a whitelist como catálogo JSON, sem modelo persistente
+adicional, e corrigir a instrução do quickstart. A homologação docente da
+simulação continua pendente, conforme a constitution.
+
+Artefatos produzidos/alterados: modelo de auditoria e migração, catálogo,
+template base, fixtures e testes da T003, quickstart, tasks, README e relatório
+de cobertura. Sem staging ou commit.
+
 ## P014 — Implementar a T004
 
 Execute somente a tarefa T004 do Carona Univille.
@@ -487,6 +561,21 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+
+Referência anexada: `docs/prompts.md`.
+
+### Confirmação da decisão de senha
+
+O agente perguntou se o cadastro deveria incluir senha e confirmação, com
+validação de igualdade e os validadores de senha do Django. Resposta do usuário:
+
+confirmo
+
+Referência anexada: `docs/prompts.md`.
+
+Decisão registrada em 2026-11-22: incluir os dois campos obrigatórios na T004.
+Artefatos: formulário, template de cadastro, testes, spec, plan, tasks, roadmap,
+README e coverage.json. Fluxo pós-cadastro reservado à T005; sem staging ou commit.
 
 ## P015 — Implementar a T005
 
@@ -518,6 +607,23 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: `docs/prompts.md`.
+
+### Confirmação do fluxo pós-cadastro
+
+Após recomendação de redirecionar para login sem autenticação automática,
+o usuário respondeu:
+
+pode fazer o recomendado mesmo
+
+Referência anexada: `docs/prompts.md`.
+
+Decisão em 2026-11-22: cadastro redireciona para /accounts/login/ sem auto-login.
+Artefatos: view e rotas de cadastro, testes HTTP, spec, plan, tasks, contrato,
+roadmap, README e coverage.json. Página de login permanece na T010; resposta
+neutra de duplicidade na T006. Alteração anterior deste histórico preservada.
+Sem staging ou commit.
+
 ## P016 — Implementar a T006
 
 Execute somente a tarefa T006 do Carona Univille.
@@ -547,6 +653,12 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: `docs/prompts.md`.
+
+Artefatos alterados: RegisterView, testes de cadastro, tasks, README e coverage.json.
+Mensagem neutra aprovada reutilizada. Nenhuma decisão nova de negócio.
+Alteração anterior deste histórico preservada; sem staging ou commit.
+
 ## P017 — Implementar a T007
 
 Execute somente a tarefa T007 do Carona Univille.
@@ -575,6 +687,13 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.\
+
+Referência anexada: `docs/prompts.md`.
+
+Artefatos: serviço de validação, testes, tasks, README e coverage.json.
+Implementada a simulação já definida nos artefatos; homologação docente
+permanece pendente. Nenhuma interface da T008 implementada.
+Alteração preexistente deste histórico preservada; sem staging ou commit.
 
 ## P018 — Implementar a T008
 
@@ -606,6 +725,21 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: `docs/prompts.md`.
+
+### Confirmação da interface
+
+O agente solicitou confirmação do botão único “Validar Vínculo Institucional”,
+com e-mail da sessão autenticada e nenhum campo adicional. Resposta do usuário:
+
+sim
+
+Referência anexada: `docs/prompts.md`.
+
+Decisão registrada em 2026-11-22. Artefatos: view, rota, template, testes da T008,
+spec, plan, tasks, roadmap, README e coverage.json. Demais tarefas não executadas.
+Alterações preexistentes preservadas; sem staging ou commit.
+
 ## P019 — Implementar a T009
 
 Execute somente a tarefa T009 do Carona Univille.
@@ -630,6 +764,13 @@ forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
 os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
+
+Referência anexada: `docs/prompts.md`.
+
+Artefatos: middleware acadêmico, registro nas configurações, testes de acesso,
+tasks, README e coverage.json. Sem implementação das views de T010/T011.
+Nenhuma nova decisão de negócio; alterações preexistentes preservadas.
+Sem staging ou commit.
 
 ## P020 — Implementar a T010
 
@@ -686,6 +827,12 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: `docs/prompts.md`.
+
+Artefatos: view placeholder, rota real de caronas, testes de acesso, tasks,
+README e coverage.json. Sem operações de oferta, busca ou reserva.
+Nenhuma nova decisão de negócio; alterações preexistentes preservadas.
+Sem staging ou commit.
 
 ## P022 — Implementar a T012
 
@@ -717,6 +864,21 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: `docs/prompts.md`.
+
+### Resolução do quickstart
+
+O agente recomendou corrigir a referência a perfil público para perfil próprio
+com prévia abreviada e substituir a contagem por coleta por resultados efetivos.
+Resposta do usuário:
+
+pode fazer o recomendado
+
+Referência anexada: `docs/prompts.md`.
+
+Artefatos: script de qualidade, quickstart, relatórios de cobertura e execução,
+README e tasks. Comportamento da aplicação preservado; alterações preexistentes
+preservadas. Sem staging ou commit.
 
 ## P023 — Diagnóstico da T013 e especificação da Feature 002
 
@@ -749,6 +911,14 @@ de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
 
+### Autorização para especificar a Feature 002
+
+~~~text
+pode fazer a feature 2 então
+~~~
+
+A [spec da Feature 002](../specs/002-oferta-caronas-paradas/spec.md) cita essa autorização e registra os pontos do itinerário e os dados de veículo aprovados.
+
 ## P024 — Plano técnico e tarefas da Feature 002
 
 Gere o plano técnico e as tarefas da Feature 002, sem implementar código.
@@ -765,6 +935,47 @@ T001 de preparação. Roadmap e referências da spec sincronizados.
 Sem modelos, serviços, migrações, testes ou scripts de produto implementados.
 Nenhuma suíte executada nesta rodada documental; sem staging ou commit.
 
+
+## P025 — Roadmap T013 / Feature 002 T002 local, com preparação T001
+
+de preferencia, ou podemos deixar específicado o número do roadmap e também do feature, como for melhor. vou mandá-lo novamente
+
+Execute somente a tarefa T013 do Carona Univille.
+
+Área da tarefa — Feature 002, Oferta de caronas com paradas.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T013 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+
+Referência anexada: `docs/prompts.md`.
+
+Correspondência principal única: roadmap T013 = Feature 002/T002 local.
+Preparação mínima T001 executada antes, conforme dependência explícita de tasks.md,
+e informada ao usuário no início. Escopo restrito a app, modelos, migrações e testes.
+Artefatos: rides, settings, tests/test_rides_offer.py, relatórios separados da
+Feature 002, README, tasks e roadmap. Sem formulário, serviço ou interface de oferta.
+Alterações preexistentes preservadas; sem staging ou commit.
 
 ## P026 — Roadmap T014 / Feature 002 T003 local
 
@@ -796,6 +1007,22 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: snapshot somente leitura de `file_prompts.md`.
+
+### Escolha do recorte
+
+Após informar que T014 corresponde a T003 e T004 locais e recomendar executar
+somente T003 nesta rodada, o usuário respondeu:
+
+sim
+
+Referência anexada: `docs/prompts.md`.
+
+Escopo aprovado: T003 local, publicação atômica. T004 permanece aberta.
+Artefatos: forms/services/views/urls de rides, template, JavaScript local,
+integração de rotas, testes de publicação, relatórios Feature 002, README e tasks.
+Sem listagem de ofertas, reutilização de veículo ou encerramento integral da T014.
+Alterações preexistentes preservadas; sem staging ou commit.
 
 ## P027 — Dependência da T015: concluir roadmap T014 / Feature 002 T004 local
 
@@ -827,6 +1054,22 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: `docs/prompts.md`.
+
+### Autorização para concluir a dependência
+
+O agente identificou T004 local pendente e recomendou executá-la antes da
+T015 (T005 local). Resposta do usuário:
+
+o que achar mais recomendado, desde que funcione posteriormente
+
+Referência anexada: `docs/prompts.md`.
+
+Recorte adotado e informado antes da edição: somente T004 local, encerrando o
+restante da T014 do roadmap. T015/T005 local não implementada nesta rodada.
+Artefatos: forms, views, template de oferta, testes complementares, relatórios
+Feature 002, README, tasks e roadmap. Alterações preexistentes preservadas;
+sem staging ou commit.
 
 ## P028 — Roadmap T015 / Feature 002 T005 local
 
@@ -1829,6 +2072,12 @@ Resultado final T030/T002: 820 aprovados (55 novos/765 anteriores), 89.57s; serv
 ## Rodada T031 do roadmap / T004 da Feature 007 — 2026-11-23
 
 ~~~text
+Para contextualizar, esse projeto estava sendo executado com o Antigrativity usando SpecKit
+
+Preciso continuar com as regras do Spec Kit pois isso é a exigencia
+~~~
+
+~~~text
 Execute somente a tarefa T031 do Carona Univille.\
 \
 Área da tarefa — Features 006 a 009, Escopo completo.\
@@ -2305,3 +2554,47 @@ Sim, conclua a T031 e a T041
 ~~~
 
 A autorização inclui a exibição de reputação da Feature 007/T005, dependência da auditoria. Os vínculos históricos de commits estão na [matriz da T041](auditoria-t041.md).
+
+~~~text
+A T041 foi implementada?
+~~~
+
+A confirmação referenciou o [roadmap](roadmap-implementacao.md) e a [matriz da T041](auditoria-t041.md).
+
+## T042 — Auditoria de prompts — 2026-11-23
+
+~~~text
+Execute somente a tarefa T042 do Carona Univille.\
+\
+Área da tarefa — Entrega geral, Entrega e governança.\
+\
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e\
+tasks da feature antes de editar. Confirme o requisito, as dependências e os\
+critérios de conclusão da tarefa selecionada.\
+\
+Use a entrada T042 da seção de entrega de docs/roadmap-implementacao.md e\
+consulte os artefatos que ela referencia. Execute o trabalho de\
+documentação, auditoria ou verificação definido para esse item.\
+\
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.\
+Se houver divergência entre os artefatos ou uma decisão pendente que afete\
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já\
+existentes no repositório.\
+\
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações\
+pertinentes. Registre sua conclusão no checklist somente se os critérios\
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,\
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem\
+de commit com a referência feature / task / requisito. Deixe o staging e o\
+commit para minha revisão e encerre a rodada.
+~~~
+
+### Evidência da auditoria
+
+A T042 atende ao REQ-016 e ao Princípio V. A verificação depende de todas as interações com IA, da identificação dos comandos do Spec Kit, dos artefatos produzidos e das decisões da dupla. [Roadmap](roadmap-implementacao.md) · [Levantamento](levantamento.md) · [Constitution](../.specify/memory/constitution.md).
+
+Foram examinadas as 51 versões de `docs/prompts.md` no histórico Git. O bloco P025 foi restaurado do commit `1838b1d`. As anotações sobre artefatos, decisões e autorizações de P005–P011, P013–P019, P021–P022 e P026–P027 foram restauradas das versões em que estavam registradas. A autorização de P023 foi recuperada da especificação da Feature 002. A conversa desta sessão forneceu a orientação de continuar com o Spec Kit, a consulta de status da T041 e a solicitação da T042.
+
+O arquivo consolidado contém a sequência P001–P032 e os registros disponíveis das rodadas seguintes. Foram conferidos 33 links relativos, os delimitadores Markdown e a correspondência literal de P025 com a versão recuperada. `git diff --check` passou.
+
+A validação de completude literal da etapa anterior, feita no Antigravity, depende dos registros originais das sessões. A busca no workspace e nos diretórios locais de conversas e artefatos do Antigravity não encontrou uma transcrição do projeto. O Git e os artefatos identificam os textos preservados e os resultados produzidos. A T042 permanece aberta até que seja possível conferir a transcrição com a fonte original.
