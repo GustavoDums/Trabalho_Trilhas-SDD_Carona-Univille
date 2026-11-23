@@ -166,6 +166,13 @@ class ActiveAcademicRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         return user.is_active and user.is_activated and user.role in ("MOTORISTA", "PASSAGEIRO")
 
 
+def _booking_panel_context(user):
+    return {
+        "bookings": BookingQueryService.list_for(user=user),
+        "waitlist_positions": WaitlistService.positions_for(user=user),
+    }
+
+
 class MyBookingsView(ActiveAcademicRequiredMixin, TemplateView):
     """Feature 004/T004 local — leitura própria, rotas na T005."""
 
@@ -173,9 +180,7 @@ class MyBookingsView(ActiveAcademicRequiredMixin, TemplateView):
     http_method_names = ["get"]
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["bookings"] = BookingQueryService.list_for(user=self.request.user)
-        return context
+        return super().get_context_data(**kwargs, **_booking_panel_context(self.request.user))
 
 
 class BookRideView(ActivePassengerRequiredMixin, TemplateView):
@@ -205,7 +210,7 @@ class BookRideView(ActivePassengerRequiredMixin, TemplateView):
                 messages.success(request, "Reserva confirmada com sucesso.")
                 return redirect("/caronas/minhas-reservas/")
         return self.render_to_response(self.get_context_data(
-            form=form, bookings=BookingQueryService.list_for(user=request.user),
+            form=form, **_booking_panel_context(request.user),
         ))
 
 
@@ -248,7 +253,7 @@ class CancelBookingView(ActivePassengerRequiredMixin, TemplateView):
             return redirect("/caronas/minhas-reservas/")
         return self.render_to_response(self.get_context_data(
             cancellation_error=error,
-            bookings=BookingQueryService.list_for(user=request.user),
+            **_booking_panel_context(request.user),
         ), status=400)
 
 

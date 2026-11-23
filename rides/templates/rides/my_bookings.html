@@ -16,6 +16,20 @@
 </section>
 {% endif %}
 {% timezone "America/Sao_Paulo" %}
+{% if waitlist_positions %}
+<section aria-labelledby="waitlist-title">
+    <h2 id="waitlist-title">Minhas filas de espera</h2>
+    <ul>
+        {% for entry in waitlist_positions %}
+        <li>
+            Carona #{{ entry.offer_id }} · {{ entry.boarding_point__name }} → {{ entry.alighting_point__name }}
+            · <time datetime="{{ entry.offer__departure_at|date:'c' }}">{{ entry.offer__departure_at|date:"d/m/Y H:i" }}</time>
+            · <strong>Posição na fila: {{ entry.position }}</strong>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}
 {% for booking in bookings %}
 <article data-booking-id="{{ booking.booking_id }}">
     <h2>{% if booking.counterpart_role == "MOTORISTA" %}Motorista{% else %}Passageiro{% endif %}: {{ booking.counterpart_name }}</h2>

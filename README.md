@@ -1,5 +1,11 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-011-t040-quality:start -->
+Feature 011 / T002 local / roadmap T040 — **990 testes aprovados**, 0 ignorados, com 4 novos e 986 de regressão.
+Cobertura de accounts/rides/reviews/notifications/carona_univille — **98.95776193088317% em linhas** (1804/1823) e **96.41148325358851% em ramificações** (403/418).
+Medição em 2026-11-23 no PostgreSQL 16.15. [Cobertura JSON](coverage-feature011-t040.json) · [JUnit](test-results-feature011-t040.xml) · [Evidência e reprodução](specs/011-fila-espera-fifo/evidence-t040.md).
+<!-- feature-011-t040-quality:end -->
+
 <!-- feature-011-t039-quality:start -->
 Feature 011 / T001 local / roadmap T039 — **986 testes aprovados**, 0 ignorados, com 11 novos e 975 de regressão.
 Cobertura de accounts/rides/reviews/notifications/carona_univille — **98.95085588072888% em linhas** (1792/1811) e **96.3768115942029% em ramificações** (399/414).

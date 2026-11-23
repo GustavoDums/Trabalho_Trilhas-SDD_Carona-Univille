@@ -9,6 +9,7 @@ from django.utils import timezone
 from notifications.services import NotificationService
 from reviews.services.penalty_service import PenaltyService
 from ..models import CancellationRecord, RideBooking, RideOffer
+from .waitlist_service import WaitlistService
 
 
 class CancellationRefused(ValidationError):
@@ -45,14 +46,20 @@ class CancellationService:
             raise PermissionDenied("Somente o passageiro titular ativo pode cancelar.")
         if isinstance(booking_id, bool) or not isinstance(booking_id, int) or booking_id <= 0:
             raise ValidationError({"booking_id": "Selecione uma reserva válida."})
-        reference = RideBooking.objects.filter(pk=booking_id).values("offer_id").first()
+        reference = RideBooking.objects.filter(pk=booking_id).values(
+            "offer_id", "passenger_id", "status",
+        ).first()
         if reference is None:
             raise ValidationError({"booking_id": "Selecione uma reserva existente."})
         # Serializa alterações sem impedir a validação das FKs de avaliações concorrentes.
         offer = RideOffer.objects.select_for_update(no_key=True).get(pk=reference["offer_id"])
+        account_ids = {user.pk, offer.driver_id}
+        if reference["passenger_id"] == user.pk and reference["status"] == RideBooking.Status.CONFIRMADA:
+            # A promoção reutiliza estes locks. Contas de filas cruzadas seguem a mesma ordem.
+            account_ids.update(offer.waitlist_entries.values_list("passenger_id", flat=True))
         accounts = {
             actor.pk: actor for actor in get_user_model().objects.select_for_update(no_key=True).filter(
-                pk__in=(user.pk, offer.driver_id),
+                pk__in=account_ids,
             ).order_by("pk")
         }
         actor = accounts.get(user.pk)
@@ -80,6 +87,7 @@ class CancellationService:
         )
         PenaltyService.apply_cancellation(cancellation_id=event.pk)
         NotificationService.cancellation_recorded(event)
+        WaitlistService.promote_next(offer_id=offer.pk)
         return booking
 
     @staticmethod

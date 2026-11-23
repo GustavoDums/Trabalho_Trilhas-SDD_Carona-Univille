@@ -4,7 +4,7 @@
 
 ## Pré-requisito
 
-A T020 do roadmap já entregou o modelo da reserva. A autorização para preparar a Feature 011 e executar T039 está registrada no [planejamento](../../docs/preparacao-features-004-009.md).
+A T020 do roadmap já entregou o modelo da reserva. As autorizações para T039 e T040 estão registradas no [planejamento](../../docs/preparacao-features-004-009.md).
 
 ## US1 — Ingresso e repasse FIFO
 
@@ -12,7 +12,7 @@ A T020 do roadmap já entregou o modelo da reserva. A autorização para prepara
 
 ## US2 — Repasse após cancelamento
 
-- [ ] T002 [US2] Integrar o serviço no `rides/services/cancellation_service.py`, exibir posição no painel do passageiro e validar `tests/test_waitlist_flow.py`. **Requisitos**: REQ-007, REQ-013 e REQ-017; FR-003 e SC-003. **Depende**: T001 local e T024 do roadmap. **Roadmap**: T040.
+- [x] T002 [US2] Integrar o serviço no `rides/services/cancellation_service.py`, exibir posição no painel do passageiro e validar `tests/test_waitlist_flow.py`. **Requisitos**: REQ-007, REQ-013 e REQ-017; FR-003 e SC-003. **Depende**: T001 local e T024 do roadmap. **Conclusão**: repasse, aviso, posição privada e regressão aprovados na [evidência](evidence-t040.md). **Roadmap**: T040.
 
 ## Ordem de execução
 

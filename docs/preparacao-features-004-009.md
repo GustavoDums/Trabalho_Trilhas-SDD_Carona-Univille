@@ -84,6 +84,8 @@ Esses IDs não têm correspondência local criada nesta rodada. Features 004–0
 
 **Recorte T039**. O usuário autorizou preparar a Feature 011 e executar a T039. O plano adota confirmação imediata e repasse ao primeiro passageiro ainda elegível, conforme as regras de reserva. [Plano da Feature 011](../specs/011-fila-espera-fifo/plan.md).
 
+**Recorte T040**. O usuário autorizou integrar o repasse ao cancelamento e exibir a posição ao passageiro titular. As dependências T024 e T039 estão concluídas. [Plano da Feature 011](../specs/011-fila-espera-fifo/plan.md).
+
 ## Divergências e limites de implementação
 
 - Roadmap diz fechar decisões antes de tasks.md. A instrução atual autoriza documentar as partes seguras e dúvidas: gerados checklists preliminares com T001 bloqueante, sem tratar decisões como homologadas.

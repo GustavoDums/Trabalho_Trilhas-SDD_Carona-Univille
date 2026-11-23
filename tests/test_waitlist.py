@@ -40,9 +40,9 @@ def join(scene, passenger, **overrides):
 
 
 def release(scene, booking):
-    CancellationService.cancel_booking(
-        user=booking.passenger, booking_id=booking.pk,
-        clock=lambda: scene.departure - timedelta(hours=8),
+    # Libera capacidade para exercitar o serviço isolado do gatilho da T040.
+    RideBooking.objects.filter(pk=booking.pk).update(
+        status=RideBooking.Status.CANCELADA, cancelled_at=scene.departure - timedelta(hours=8),
     )
 
 

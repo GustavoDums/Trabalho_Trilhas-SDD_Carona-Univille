@@ -40,4 +40,4 @@ O cancelamento chama o repasse e o passageiro acompanha sua posição no painel.
 
 ## Assumptions
 
-O usuário autorizou preparar a Feature 011 e executar a T039. Adota-se o repasse imediato proposto no roadmap e reaplica-se a elegibilidade da reserva no momento do repasse. A T039 verifica o serviço diretamente após a liberação de capacidade. A T040 é responsável por chamá-lo no cancelamento.
+O usuário autorizou preparar a Feature 011 e executar a T039 e, em seguida, confirmou a inclusão da T040. O repasse é imediato e reaplica a elegibilidade da reserva. A T039 verifica o serviço diretamente após a liberação de capacidade. A T040 conecta o cancelamento de uma reserva em oferta aberta ao repasse. Quando o motorista cancela a oferta, a carona encerra e sua fila sai do painel.

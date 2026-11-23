@@ -2,4 +2,8 @@
 
 Em PostgreSQL isolado, execute `python manage.py migrate --plan`, `python -m pytest tests/test_waitlist.py -k test_fifo` e `python -m pytest tests/test_waitlist.py`.
 
-Com uma oferta futura lotada e passageiros fictícios, faça dois ingressos pela busca. Ao liberar capacidade e acionar o serviço, confira que o primeiro elegível recebe a reserva e que o seguinte continua à espera. O teste integrado com o cancelamento pertence à T040.
+O teste isolado cria uma oferta futura lotada, inscreve dois passageiros fictícios e libera capacidade sem acionar o cancelamento. Ao chamar o serviço de repasse, o primeiro elegível recebe a reserva e o seguinte continua à espera.
+
+## Verificação da T040
+
+Execute `python -m pytest tests/test_waitlist_flow.py`. Abra **Minhas reservas** com as duas contas da fila e confira as posições 1 e 2. Cancele a reserva com o titular. A primeira conta recebe a confirmação em **Notificações** e a segunda passa à posição 1. Repita o cancelamento para conferir que a mesma vaga não é repassada novamente.
