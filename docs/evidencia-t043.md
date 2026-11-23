@@ -16,15 +16,15 @@ O script exige 80% de linhas, ramificações e cobertura combinada na medição 
 
 ## Resultado
 
-A medição consolidada incorpora a extensão de remoção de ofertas do painel, rastreada na [Feature 005/T008 local](../specs/005-cancelamento-liberacao-vaga/evidence-t008.md).
+A medição consolidada incorpora a remoção de ofertas do painel e a janela de recorrência de 15 dias úteis. [Feature 005/T008 local](../specs/005-cancelamento-liberacao-vaga/evidence-t008.md) · [Feature 009/T008 local](../specs/009-caronas-recorrentes/evidence-t008.md).
 
 | Verificação | Resultado |
 | --- | --- |
-| Suíte completa | 997 aprovados, 0 falhas, 0 erros e 0 ignorados no PostgreSQL 16.15. |
-| Cobertura combinada | **98.50942569048662%** |
-| Linhas | **98.97904352498657%** (1842/1861) |
-| Ramificações | **96.42857142857143%** (405/420) |
-| Módulos críticos | 37 módulos atingiram a meta em linhas, ramificações e cobertura combinada. |
+| Suíte completa | 1005 aprovados, 0 falhas, 0 erros e 0 ignorados no PostgreSQL 16.15. |
+| Cobertura combinada | **98.55564995751912%** |
+| Linhas | **99.01041666666667%** (1901/1920) |
+| Ramificações | **96.54377880184332%** (419/434) |
+| Módulos críticos | 38 módulos atingiram a meta em linhas, ramificações e cobertura combinada. |
 | Arquivos abaixo de 80% | `carona_univille/asgi.py` e `carona_univille/wsgi.py` ficaram com 0% de linhas e de cobertura combinada. Ambos entram no total global como inicializadores de implantação. |
 | Validação da meta | Um relatório sintético confirmou a rejeição de ramificações globais e de linhas de um módulo crítico abaixo de 80%. |
 | Consistência dos artefatos | Contagem do JUnit e percentuais do JSON conferidos no topo do README. O JSON histórico da T012 está idêntico à versão anterior no Git. |

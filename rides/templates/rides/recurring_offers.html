@@ -5,7 +5,7 @@
 <div class="page-heading"><h1>Caronas recorrentes</h1></div>
 <section class="panel panel--narrow" aria-labelledby="new-rule">
     <h2 id="new-rule">Criar regra</h2>
-    <p>As caronas serão geradas nos dias escolhidos dentro dos próximos 16 dias corridos.</p>
+    <p>As caronas serão geradas nos dias escolhidos até o {{ horizon_business_days }}º dia útil. A contagem começa hoje e segue o calendário de feriados da BrasilAPI para o Brasil e Santa Catarina.</p>
     <form method="post">
         {% csrf_token %}
         {% if form.is_bound %}<p role="status">Informe novamente a placa após corrigir os dados.</p>{% endif %}
@@ -28,6 +28,7 @@
 </section>
 <section class="panel" aria-labelledby="my-rules">
     <h2 id="my-rules">Minhas regras</h2>
+    {% if calendar_unavailable %}<p role="status">Calendário indisponível. Exibindo as caronas já geradas a partir de hoje.</p>{% endif %}
     {% for rule in rules %}
     <article class="record-card">
         <h3>{{ rule.origin.name }} → {{ rule.destination.name }}</h3>

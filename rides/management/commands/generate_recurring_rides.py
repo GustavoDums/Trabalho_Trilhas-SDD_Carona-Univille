@@ -1,10 +1,13 @@
 """Entrada do operador para completar a janela das regras recorrentes."""
+from contextlib import closing, nullcontext
+
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import DatabaseError
 from django.utils import timezone
 
 from rides.models import RecurringRideRule
+from rides.services.holiday_calendar import HolidayCalendarUnavailable
 from rides.services.recurring_ride_service import RecurringRideService
 
 
@@ -23,31 +26,34 @@ class Command(BaseCommand):
     def handle(self, *, rule, **options):
         rules = RecurringRideRule.objects.select_related("driver").order_by("pk")
         if rule is None:
-            selection = rules.filter(active=True).iterator()
+            selection = closing(rules.filter(active=True).iterator())
         else:
             if rule <= 0:
                 raise CommandError("Informe um identificador positivo para --rule.")
             try:
-                selection = (rules.get(pk=rule),)
+                selection = nullcontext((rules.get(pk=rule),))
             except RecurringRideRule.DoesNotExist:
                 raise CommandError("Regra recorrente inexistente.") from None
 
         reference = timezone.now()
         failed = False
-        for item in selection:
-            try:
-                result = RecurringRideService.generate(
-                    rule_id=item.pk, driver=item.driver, clock=lambda: reference,
-                )
-            except PermissionDenied:
-                self.stdout.write(f"regra={item.pk} ignorada por inelegibilidade")
-            except (ValidationError, DatabaseError):
-                failed = True
-                self.stderr.write(f"regra={item.pk} falhou")
-            else:
-                self.stdout.write(
-                    f"regra={item.pk} criadas={format_dates(result.created_dates)} "
-                    f"existentes={format_dates(result.existing_dates)}",
-                )
+        with selection as items:
+            for item in items:
+                try:
+                    result = RecurringRideService.generate(
+                        rule_id=item.pk, driver=item.driver, clock=lambda: reference,
+                    )
+                except PermissionDenied:
+                    self.stdout.write(f"regra={item.pk} ignorada por inelegibilidade")
+                except HolidayCalendarUnavailable as error:
+                    raise CommandError(error.message) from None
+                except (ValidationError, DatabaseError):
+                    failed = True
+                    self.stderr.write(f"regra={item.pk} falhou")
+                else:
+                    self.stdout.write(
+                        f"regra={item.pk} criadas={format_dates(result.created_dates)} "
+                        f"existentes={format_dates(result.existing_dates)}",
+                    )
         if failed:
             raise CommandError("Falha na geração de uma ou mais regras recorrentes.")

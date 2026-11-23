@@ -12,4 +12,6 @@
 
 ## Decisões homologadas
 
-A [spec](spec.md) registra 16 dias corridos em America/Sao_Paulo e geração automática na criação da regra e diariamente. A T035 fornece o gerador reutilizado pela interface e pelo comando interno da T036.
+A T035 forneceu o gerador reutilizado pela interface e pelo comando interno da T036. A T008 revisou o horizonte para 15 dias úteis em America/Sao_Paulo. A geração continua automática na criação da regra e na rotina diária. [D009-01 e D009-02](spec.md).
+
+O contrato de feriados da BrasilAPI aceita o ano e a UF. A consulta com `uf=SC` retorna as datas nacionais e estaduais fornecidas pela API, incluindo datas móveis. A integração usa a biblioteca padrão do Python, mantém o cache por ano e envia somente o ano e a UF. Feriados municipais e calendário acadêmico ficam fora dessa fonte. [Documentação da BrasilAPI](https://brasilapi.com.br/docs#tag/Feriados-Nacionais).

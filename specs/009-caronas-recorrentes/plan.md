@@ -39,6 +39,10 @@ Feature 002 para publicação atômica; Feature 003/T001 para pacote de serviço
 
 T001 fecha decisões → testes/modelo → serviço → interface → integração → qualidade, seguindo dependências explícitas em [tasks.md](tasks.md). Bônus 010/011 não são pré-requisitos. T041–T045 são marcos gerais, não concluídos por esta feature.
 
+## Atualização de calendário — T008 local
+
+Consultar `GET https://brasilapi.com.br/api/feriados/v1/{ano}?uf=SC` com timeout de cinco segundos e cache Django de 24 horas por ano. A consulta transmite somente ano e UF. Validar as datas antes de armazenar respostas bem-sucedidas. Formulário, listagem e comando compartilham o cálculo da data limite. Sem calendário válido, a publicação é recusada e a listagem continua exibindo as ocorrências futuras já gravadas. A alteração reaproveita a stack e o esquema atuais. Cobrir a virada do ano, feriados, validade do cache, indisponibilidade e paridade entre formulário e comando.
+
 ## Verification Strategy
 
 TDD: falha comportamental esperada antes, implementação e verde; regressão pertinente após cada mudança. Serviço sem HTTP e interface com sessão/CSRF reais; constraints no banco, rollback e conexões independentes para concorrência. Relógio injetado, sem sleep para bordas. Cobrir todos os SC; seguir [quickstart](quickstart.md). Separar testes novos/regressão e não inventar métricas.

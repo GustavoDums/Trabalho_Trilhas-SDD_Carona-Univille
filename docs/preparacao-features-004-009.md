@@ -67,7 +67,7 @@ São 40 tarefas locais abertas: 004=7, 005=7, 006=6, 007=6, 008=7, 009=7. Cada f
 
 ### Feature 009
 
-- **D009-01**: Homologar horizonte proposto de 14 dias úteis, dias da semana, feriados, início/fim inclusivos, fuso e referência do horário local; definir se hoje conta e como tratar horário já passado.
+- **D009-01**: A proposta inicial de 14 dias úteis foi sucedida pela política de 15 dias úteis com calendário da BrasilAPI na Feature 009/T008. [Decisão vigente](../specs/009-caronas-recorrentes/spec.md).
 - **D009-02**: Definir geração manual/periódica, autorização do comando e edição/desativação da regra. Proposta técnica: comando manual idempotente na PoC, sem scheduler externo; mudanças não alteram instâncias existentes.
 
 ## Bônus condicionados à confirmação

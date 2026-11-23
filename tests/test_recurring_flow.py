@@ -1,5 +1,5 @@
 """Feature 009/T036, REQ-011, REQ-003 e REQ-017."""
-from datetime import time, timedelta
+from datetime import date, time, timedelta
 from io import StringIO
 from zoneinfo import ZoneInfo
 
@@ -14,9 +14,9 @@ from django.urls import reverse
 
 from reviews.models import ConductProfile
 from rides.models import RecurringRideRule, RecurringRideStop, RideBooking, RideOffer
-from rides.services import recurring_ride_service
+from rides.services import holiday_calendar, recurring_ride_service
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("recurring_holiday_calendar")]
 LOCAL = ZoneInfo('America/Sao_Paulo')
 RECURRING_URL = '/caronas/recorrentes/'
 
@@ -53,12 +53,13 @@ def test_driver_creates_rule_with_csrf_and_sees_generated_dates(flow):
     assert response.redirect_chain == [(RECURRING_URL, 302)]
     rule = RecurringRideRule.objects.get(driver=scene.driver)
     assert rule.active and rule.timezone == 'America/Sao_Paulo'
-    expected = [at.astimezone(LOCAL).date() + timedelta(days=n) for n in range(16)
+    expected = [at.astimezone(LOCAL).date() + timedelta(days=n) for n in range(21)
                 if (at.astimezone(LOCAL).date() + timedelta(days=n)).weekday() in (0, 4, 6)]
     assert list(rule.occurrences.order_by('local_date').values_list('local_date', flat=True)) == expected
     for occurrence in rule.occurrences.all():
         assert list(occurrence.offer.waypoints.values_list('point_id', flat=True)) == [scene.points[1].pk]
     html = response.content.decode()
+    assert '15º dia útil' in html
     assert 'Datas geradas' in html and expected[-1].strftime('%d/%m/%Y') in html
     assert data['vehicle_plate'] not in html and scene.driver.email not in html
 
@@ -191,7 +192,7 @@ def test_command_and_form_agree_and_daily_rerun_completes_horizon(flow, academic
     later = at + timedelta(days=1)
     monkeypatch.setattr('django.utils.timezone.now', lambda: later)
     call_command('generate_recurring_rides', '--rule', str(rule.pk), stdout=StringIO())
-    new_day = later.astimezone(LOCAL).date() + timedelta(days=15)
+    new_day = date(2030, 1, 25)
     assert dates_of(rule) == (*dates, new_day)
     assert all(rule.occurrences.get(local_date=day).offer_id == pk for day, pk in original.items())
 
@@ -210,6 +211,30 @@ def test_daily_all_skips_inactive_rules_and_revalidates_driver(flow, academic_us
     assert f'regra={suspended_rule.pk} ignorada' in output.getvalue()
     assert f'regra={disabled_rule.pk} ' not in output.getvalue()
     assert suspended.email not in output.getvalue()
+
+
+def test_calendar_outage_rejects_generation_and_keeps_existing_occurrences(flow, client, monkeypatch):
+    scene, _ = flow
+    client.force_login(scene.driver)
+    assert client.post(RECURRING_URL, rule_payload(scene)).status_code == 302
+    rule = RecurringRideRule.objects.get(driver=scene.driver)
+    before = dict(rule.occurrences.values_list('local_date', 'offer_id'))
+
+    def unavailable(year):
+        raise holiday_calendar.HolidayCalendarUnavailable()
+
+    monkeypatch.setattr(holiday_calendar, 'holiday_dates', unavailable)
+    response = client.get(RECURRING_URL)
+    assert response.status_code == 200
+    assert 'Exibindo as caronas já geradas' in response.content.decode()
+    assert 'Datas geradas' in response.content.decode()
+
+    response = client.post(RECURRING_URL, rule_payload(scene))
+    assert response.status_code == 503 and 'calendário de feriados está indisponível' in response.content.decode()
+    assert RecurringRideRule.objects.count() == 1
+    with pytest.raises(CommandError, match='calendário de feriados está indisponível'):
+        call_command('generate_recurring_rides', '--all', stdout=StringIO())
+    assert dict(rule.occurrences.values_list('local_date', 'offer_id')) == before
 
 
 @pytest.mark.parametrize('options', [(), ('--rule', '0'), ('--rule', '999999'), ('--rule', '1', '--all')])

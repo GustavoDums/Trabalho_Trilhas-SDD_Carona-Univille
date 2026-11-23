@@ -1,10 +1,10 @@
 # Carona Univille
 
 <!-- t043-quality:start -->
-Entrega geral / T043 — **997 testes aprovados**, 0 ignorados. Meta: **80%**.
-Cobertura combinada de accounts, rides, reviews, notifications, carona_univille — **98.50942569048662%**.
-Linhas: 1842/1861 (**98.97904352498657%**). Ramificações: 405/420 (**96.42857142857143%**).
-Escopo de 11 features. Meta atingida globalmente e nos 37 módulos críticos.
+Entrega geral / T043 — **1005 testes aprovados**, 0 ignorados. Meta: **80%**.
+Cobertura combinada de accounts, rides, reviews, notifications, carona_univille — **98.55564995751912%**.
+Linhas: 1901/1920 (**99.01041666666667%**). Ramificações: 419/434 (**96.54377880184332%**).
+Escopo de 11 features. Meta atingida globalmente e nos 38 módulos críticos.
 Relatórios: [coverage.json](coverage.json) e [test-results-t043.xml](test-results-t043.xml). Medição: 2026-11-23.
 Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1 -Consolidado`.
 <!-- t043-quality:end -->
@@ -27,7 +27,7 @@ O ambiente de demonstração usa contas fictícias. A validação de vínculo ac
 | Avaliações | Avaliação mútua após a conclusão registrada da viagem, com nota de 1 a 5, comentário opcional e janela de 48 h. |
 | Reputação | Pontuação recalculada após avaliações ou infrações, exibida no perfil próprio e nos resultados da busca. |
 | Conduta | Registro de cancelamentos tardios e faltas, penalidades, suspensão temporária conforme as regras de conduta e extrato privado. |
-| Caronas recorrentes | Regras semanais com geração de ocorrências futuras em uma janela de 16 dias corridos. Cada ocorrência tem suas próprias reservas e pode ser cancelada separadamente. |
+| Caronas recorrentes | Regras semanais com geração até o 15º dia útil. Fins de semana e feriados nacionais e de Santa Catarina fornecidos pela BrasilAPI ficam fora da contagem. Cada ocorrência tem suas próprias reservas e pode ser cancelada separadamente. |
 | Notificações | Avisos internos de confirmação e cancelamento, contador de não lidas e marcação como lida. A política de lembretes de partida segue pendente na especificação. |
 | Fila de espera | Ingresso em carona lotada, posição visível ao titular e repasse imediato ao primeiro passageiro elegível após cancelamento de uma reserva. |
 
@@ -88,6 +88,8 @@ Abra o [cadastro local](http://127.0.0.1:8000/accounts/register/), use um e-mail
 | Notificações e conduta | `/notificacoes/` e `/conta/conduta/` | Acessar avisos ou consultar o extrato próprio. |
 
 Para reproduzir a disputa pela última vaga via requisições autenticadas, siga o [roteiro da demonstração](docs/roteiro-live-demo.md). A geração de ocorrências recorrentes pode ser acionada com `manage.py generate_recurring_rides --all`. O [guia da Feature 009](specs/009-caronas-recorrentes/quickstart.md) descreve como agendar esse comando.
+
+A criação de regras e a rotina diária usam o calendário da BrasilAPI, consultado por ano e reutilizado por até 24 horas. A contagem começa hoje se for dia útil. Dentro da janela, as caronas seguem os dias da semana marcados pelo motorista. O ambiente precisa de acesso HTTPS à BrasilAPI para consultar anos fora do cache. [Política de recorrência](specs/009-caronas-recorrentes/spec.md).
 
 Em **Minhas ofertas**, use a lixeira vermelha no canto do cartão e confirme. Uma carona cancelada sai diretamente do painel. Uma carona aberta é cancelada antes de ser removida, respeitando o horário limite. O histórico é preservado. [Regras da Feature 005/T008](specs/005-cancelamento-liberacao-vaga/spec.md#functional-requirements).
 

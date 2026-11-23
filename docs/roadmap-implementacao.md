@@ -217,7 +217,9 @@ Extensão de painel acompanhada na [Feature 005/T008 local](../specs/005-cancela
 #### Feature 009: Caronas Recorrentes (`REQ-011`)
 *Status*: D009-01 e D009-02 homologadas. [T035 concluída](../specs/009-caronas-recorrentes/evidence-t035.md) com modelos, gerador e cancelamento independente. [T036 concluída](../specs/009-caronas-recorrentes/evidence-t036.md) com formulário, comando diário e integração de busca e reserva.
 
-- [x] **T035**: Implementar modelos de regras, paradas e ocorrências em `rides/models.py`, gerador de instâncias independentes para 16 dias corridos (`RecurringRideService`) e verificar autonomia de cancelamento em `tests/test_recurring_rides.py`.
+A [Feature 009/T008 local](../specs/009-caronas-recorrentes/tasks.md#revisão-da-janela-de-recorrência) revisa D009-01 para 15 dias úteis com o calendário da BrasilAPI (REQ-011).
+
+- [x] **T035**: Implementar modelos de regras, paradas e ocorrências em `rides/models.py`, gerador de instâncias independentes (`RecurringRideService`) e verificar autonomia de cancelamento em `tests/test_recurring_rides.py`. A entrega original usava 16 dias corridos.
   - *Requisitos*: REQ-011, REQ-003, REQ-017 | *Dependências*: T013 e homologação D009-01/D009-02 | *Como verificar*: `pytest tests/test_recurring_rides.py` valida a janela, a geração concorrente, o rollback e a preservação da série após um cancelamento. [Evidência](../specs/009-caronas-recorrentes/evidence-t035.md).
   - *Fusão*: Agrupa antigas T099, T100, T101 e T102.
 - [x] **T036**: Implementar formulário `RecurringRideForm`, comando CLI `generate_recurring_rides`, template `recurring_offers.html` e testes de integração em `tests/test_recurring_flow.py`.

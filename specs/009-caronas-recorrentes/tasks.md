@@ -38,6 +38,10 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 - [ ] T007 Criar scripts/check-feature009-quality.ps1 e gerar coverage-feature009.json e test-results-feature009.xml após testes novos e regressão pertinente; sincronizar bloco identificado no README.md com métricas reais e validar quickstart.md. **Requisitos**: REQ-011, REQ-014–REQ-019; todos os SC. **Depende**: todas as tarefas locais anteriores. **Conclusão**: cenários, privacidade, migração e regressão aprovados, >=80% linhas/ramificações críticas, relatórios versionáveis e roteiro verificado; não concluir sem evidência ou decisão. **Roadmap**: suporte a T041–T043, sem concluí-las. Sem staging/commit.
 
+## Revisão da janela de recorrência
+
+- [x] T008 Atualizar D009-01 para 15 dias úteis com o calendário da BrasilAPI e compartilhar o cálculo entre formulário, consulta e rotina diária. **Requisitos** REQ-011, REQ-003, REQ-014, REQ-017–REQ-019; FR-003, SC-001/SC-004–SC-006. **Depende de** T003, T005 e T006. **Conclusão** testes de calendário e indisponibilidade aprovados, histórico preservado e relatório consolidado sincronizado. [Evidência de conclusão](evidence-t008.md).
+
 ## Dependencies & Execution Order
 
 Dependências explícitas de cada tarefa são obrigatórias; número não permite ignorar ramo anterior. MVP local: US1 após decisões; entrega completa: US1+US2+T007. Implementação dependente de decisão permanece bloqueada.
@@ -48,6 +52,7 @@ Dependências explícitas de cada tarefa são obrigatórias; número não permit
 | --- | --- | --- |
 | T035 | REQ-011 | T002, T003, T004 |
 | T036 | REQ-011 | T005, T006 |
+| Atualização de calendário | REQ-011, REQ-003, REQ-014, REQ-017–REQ-019 | T008 |
 | Preparação/qualidade | Decisões e evidência | T001, T007 |
 
 ## Parallel Opportunities & Implementation Strategy

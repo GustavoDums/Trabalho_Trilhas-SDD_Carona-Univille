@@ -12,7 +12,7 @@ Propostas do roadmap não equivalem a decisões homologadas. Estes artefatos per
 
 ## Clarifications — decisões homologadas em 2026-11-23
 
-- **D009-01**: Horizonte de 16 dias corridos, contando a data local de referência até essa data + 15, inclusive, em `America/Sao_Paulo`. Gerar nos dias da semana selecionados, incluindo fins de semana e feriados quando selecionados. Partidas devem ser estritamente futuras em relação ao instante de referência.
+- **D009-01 (revisada na T008)**: Em `America/Sao_Paulo`, a janela começa na data local de referência e termina no 15º dia útil, inclusive. Hoje conta se for útil, e a contagem exclui sábados, domingos e as datas de feriado fornecidas pela BrasilAPI para o Brasil e Santa Catarina (`uf=SC`). O motorista continua escolhendo os dias da semana em que oferece carona, inclusive fins de semana e feriados dentro da janela. As partidas devem ser estritamente futuras. A mudança vale para novas gerações e preserva as ocorrências já publicadas. Se faltar calendário para calcular a janela, a geração informa a indisponibilidade e preserva os dados.
 - **D009-02**: Gerar automaticamente ao criar uma regra e completar o horizonte diariamente. O comando interno agendado revalida o vínculo e a elegibilidade do motorista a cada execução. Edição e desativação só afetam gerações futuras e preservam todas as ofertas existentes.
 
 ## User Scenarios & Testing
@@ -58,5 +58,6 @@ Não inclui bônus 010/011, staging, commits ou integrações externas. A T035 e
 - SC-003: cancelar uma ocorrência mantém as demais inalteradas e reexecutar gerador não repõe a cancelada.
 - SC-004: conta inelegível, terceiro e horário passado não geram; testar bordas de horizonte, mudança de mês e fuso conforme política.
 - SC-005: formulário e comando produzem mesmo conjunto de datas; ofertas geradas aparecem na busca da 003 e podem ser reservadas pelo fluxo da 004.
+- SC-006: o limite inclui o 15º dia útil e considera feriados do calendário da BrasilAPI, inclusive na virada de ano. A geração mantém os dias selecionados e falha sem publicar quando o calendário necessário está indisponível.
 
 Todos os critérios exigem testes fictícios. Qualidade: >=80% de linhas e ramificações críticas, relatório versionável e métricas reais identificadas por feature no README; nenhuma métrica estimada nesta rodada.

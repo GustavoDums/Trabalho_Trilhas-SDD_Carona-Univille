@@ -2,6 +2,8 @@
 
 **Data**: 2026-11-23. **Requisitos**: REQ-011, REQ-003, REQ-017; FR-001, FR-003, FR-005; SC-004 e SC-005. **Dependências**: [T035 e T004 local](evidence-t035.md), busca da Feature 003/T004 e reserva da Feature 004/T005.
 
+Esta evidência registra a entrega original. A janela usada atualmente pelo formulário e pelo comando foi revisada na [Feature 009/T008 local](spec.md#clarifications--decisões-confirmadas).
+
 Na T005, o motorista titular cria a regra em Minhas ofertas → Caronas recorrentes. O POST protegido por CSRF grava a regra, as paradas e as ofertas na mesma transação. A listagem apresenta somente as regras do titular e as datas da janela atual. Os testes verificam que o número de consultas não cresce ao acrescentar regras.
 
 Na T006, o operador executa `generate_recurring_rides --all` diariamente no agendador do ambiente ou usa `--rule ID` para uma regra. O comando e o formulário usam o mesmo gerador. Uma execução diária adiciona as datas que passaram a integrar a janela de 16 dias. Se um lote falhar, suas escritas são revertidas, os lotes independentes podem concluir e a execução retorna erro. A saída contém somente IDs de regra, datas e estados genéricos. [Configuração da rotina diária](quickstart.md#acionamento-diário).

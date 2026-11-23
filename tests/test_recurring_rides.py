@@ -1,6 +1,6 @@
 """Feature 009/T035, REQ-011, REQ-003 e REQ-017."""
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, time, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from importlib import import_module
 from threading import Barrier
 from zoneinfo import ZoneInfo
@@ -17,7 +17,7 @@ from rides.models import RideOffer, RoutePoint
 from rides.services.booking_service import BookingService
 from rides.services.cancellation_service import CancellationService
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db, pytest.mark.usefixtures("recurring_holiday_calendar")]
 LOCAL = ZoneInfo('America/Sao_Paulo')
 
 
@@ -136,13 +136,14 @@ def test_horizon_uses_local_calendar_and_includes_both_edges(cancellation_scene)
     at = datetime(2030, 1, 31, 2, 30, tzinfo=timezone.utc)
     rule = create_rule(cancellation_scene, weekdays=list(range(7)), local_time=time(23, 45))
     first_date = at.astimezone(LOCAL).date()
-    expected = tuple(first_date + timedelta(days=offset) for offset in range(16))
+    last_date = date(2030, 2, 20)  # 05/02 é feriado no calendário de teste.
+    expected = tuple(first_date + timedelta(days=offset) for offset in range((last_date - first_date).days + 1))
     first = generate(rule, at)
     repeated = generate(rule, at)
     assert first.created_dates == expected and not first.existing_dates
     assert repeated.existing_dates == expected and not repeated.created_dates
     assert {item.offer.departure_at.astimezone(LOCAL).time() for item in rule.occurrences.all()} == {time(23, 45)}
-    assert rule.occurrences.count() == 16
+    assert rule.occurrences.count() == 22
 
 
 @pytest.mark.parametrize('at_minute', [0, 1])
@@ -152,7 +153,7 @@ def test_selected_weekdays_include_weekends_and_skip_today_at_or_after_departure
     selected = [local_day.weekday(), 5, 6]
     rule = create_rule(cancellation_scene, weekdays=selected, local_time=time(9))
     expected = tuple(
-        local_day + timedelta(days=offset) for offset in range(1, 16)
+        local_day + timedelta(days=offset) for offset in range(1, 21)
         if (local_day + timedelta(days=offset)).weekday() in selected
     )
     assert generate(rule, at).created_dates == expected

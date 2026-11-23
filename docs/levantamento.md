@@ -232,7 +232,9 @@ Na T004 local da Feature 008, o usuário autorizou expor a conclusão ao motoris
 
 ### Homologação de recorrência — Feature 009 (2026-11-23)
 
-D009-01 e D009-02 confirmadas. O horizonte usa 16 dias corridos da data local em America/Sao_Paulo até a data local + 15, inclusive. O motorista seleciona dias da semana, incluindo fins de semana e feriados quando selecionados, e as partidas são estritamente futuras. A geração ocorre na criação e na rotina diária, com revalidação do titular. Edição e desativação preservam as ocorrências existentes. A T035 entrega modelos, serviço e independência do cancelamento. A T036 conecta o gerador às entradas automáticas. [Política homologada](../specs/009-caronas-recorrentes/spec.md).
+D009-02 mantém a geração automática na criação da regra e na rotina diária, com revalidação do titular. A T035 entrega modelos, serviço e independência do cancelamento. A T036 conecta o gerador às entradas automáticas.
+
+A revisão de D009-01 na Feature 009/T008 define 15 dias úteis a partir da data local em America/Sao_Paulo. Hoje conta se for útil. Sábados, domingos e os feriados nacionais e de Santa Catarina fornecidos pela BrasilAPI ficam fora da contagem. Dentro da janela, o motorista continua escolhendo os dias da semana e as partidas devem ser estritamente futuras. Ocorrências existentes são preservadas. [Política vigente](../specs/009-caronas-recorrentes/spec.md).
 
 ### Recorte de notificações — Feature 010 (2026-11-23)
 

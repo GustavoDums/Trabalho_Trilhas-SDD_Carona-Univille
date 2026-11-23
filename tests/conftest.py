@@ -60,6 +60,17 @@ def active_client(active_user):
 
 
 @pytest.fixture
+def recurring_holiday_calendar(monkeypatch):
+    """Calendário sintético estável para os testes de recorrência no PostgreSQL."""
+    from datetime import date
+
+    def dates(year):
+        return frozenset({date(year, 1, 1), date(year, 2, 5), date(year, 12, 25)})
+
+    monkeypatch.setattr("rides.services.holiday_calendar.holiday_dates", dates)
+
+
+@pytest.fixture
 def cancellation_scene(academic_user_factory):
     """Dados próprios para testes transacionais, sem depender de seeds após flush."""
     from datetime import datetime, timezone as dt_timezone

@@ -12,8 +12,7 @@ from reviews.services.conduct_service import require_unsuspended
 
 from ..models import RecurringRideOccurrence, RecurringRideRule, RecurringRideStop
 from . import publish_offer
-
-HORIZON_DAYS = 16
+from .holiday_calendar import recurrence_end_date
 
 
 class GenerationResult(NamedTuple):
@@ -55,7 +54,7 @@ class RecurringRideService:
         require_unsuspended(owner.pk, at=instant)
         local_zone = ZoneInfo(rule.timezone)
         first_date = instant.astimezone(local_zone).date()
-        last_date = first_date + timedelta(days=HORIZON_DAYS - 1)
+        last_date = recurrence_end_date(first_date)
         existing_occurrence_dates = set(
             rule.occurrences.filter(local_date__range=(first_date, last_date)).values_list("local_date", flat=True),
         )
@@ -67,7 +66,7 @@ class RecurringRideService:
         }
 
         created_dates, existing_dates = [], []
-        for offset in range(HORIZON_DAYS):
+        for offset in range((last_date - first_date).days + 1):
             local_date = first_date + timedelta(days=offset)
             if local_date.weekday() not in rule.weekdays:
                 continue

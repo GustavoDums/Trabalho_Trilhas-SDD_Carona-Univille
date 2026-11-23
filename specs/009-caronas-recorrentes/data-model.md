@@ -14,6 +14,8 @@ PostgreSQL e timestamps aware. Relações históricas não desaparecem por exclu
 
 ## Fronteiras
 
+A T008 calcula a data limite em tempo de execução a partir da data local e do calendário público anual. As datas fornecidas pela BrasilAPI ficam no cache Django por até 24 horas. As tabelas e os dados das ocorrências já publicadas preservam sua estrutura e seus vínculos.
+
 [plan.md](plan.md) delimita componentes e [tasks.md](tasks.md) distribui a implementação.
 
 ## Índice de campos canônicos

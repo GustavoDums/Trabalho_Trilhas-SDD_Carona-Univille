@@ -2,6 +2,8 @@
 
 **Data**: 2026-11-23. **Requisitos**: REQ-011, REQ-003 e REQ-017. **Dependências**: [decisões D009-01/D009-02](spec.md), publicação da Feature 002, pacote de serviços da Feature 003/T001 e cancelamento da Feature 005/T006.
 
+Esta evidência registra a entrega original. A política vigente foi revisada na [Feature 009/T008 local](spec.md#clarifications--decisões-confirmadas).
+
 | Tarefa | Evidência |
 | --- | --- |
 | T002 | Regra, paradas ordenadas e vínculo único entre regra, data local e oferta. A migração criou três tabelas e protege os vínculos históricos. |

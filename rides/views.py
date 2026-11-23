@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
@@ -17,7 +15,8 @@ from .services.booking_service import BookingService
 from .services.booking_queries import BookingQueryService
 from .services.cancellation_service import CancellationRefused, CancellationService
 from .services.matching_service import MatchingService, SearchQuery
-from .services.recurring_ride_service import HORIZON_DAYS, RecurringRideService
+from .services.holiday_calendar import HORIZON_BUSINESS_DAYS, HolidayCalendarUnavailable, recurrence_end_date
+from .services.recurring_ride_service import RecurringRideService
 from .services.waitlist_service import WaitlistService
 
 
@@ -91,19 +90,25 @@ class RecurringOffersView(ActiveDriverRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         with timezone.override(RECURRING_TIMEZONE):
             today = timezone.localdate()
-        window = RecurringRideOccurrence.objects.filter(
-            local_date__range=(today, today + timedelta(days=HORIZON_DAYS - 1)),
-        ).select_related("offer").only("rule_id", "local_date", "offer__status").order_by("local_date")
+        window = RecurringRideOccurrence.objects.filter(local_date__gte=today)
+        if not context.get("calendar_unavailable"):
+            try:
+                window = window.filter(local_date__lte=recurrence_end_date(today))
+            except HolidayCalendarUnavailable:
+                context["calendar_unavailable"] = True
+        window = window.select_related("offer").only("rule_id", "local_date", "offer__status").order_by("local_date")
         context["rules"] = RecurringRideRule.objects.filter(driver=self.request.user).select_related(
             "origin", "destination",
         ).prefetch_related(Prefetch("occurrences", queryset=window, to_attr="upcoming")).order_by("-pk")
         context.setdefault("form", RecurringRideForm())
         context.setdefault("waypoint_formset", WaypointFormSet(prefix="waypoints"))
+        context["horizon_business_days"] = HORIZON_BUSINESS_DAYS
         return context
 
     def post(self, request, *args, **kwargs):
         form = RecurringRideForm(request.POST)
         stops = WaypointFormSet(request.POST, prefix="waypoints")
+        calendar_unavailable = False
         valid_rule, valid_stops = form.is_valid(), stops.is_valid()
         if valid_rule and valid_stops:
             points = [stop.cleaned_data["point"] for stop in stops]
@@ -115,6 +120,9 @@ class RecurringOffersView(ActiveDriverRequiredMixin, TemplateView):
                     result = RecurringRideService.create_rule(
                         driver=request.user, data=form.cleaned_data, points=points,
                     )
+                except HolidayCalendarUnavailable as error:
+                    form.add_error(None, error)
+                    calendar_unavailable = True
                 except (ValidationError, IntegrityError):
                     form.add_error(None, "Não foi possível gerar as caronas. Confira os dados da regra.")
                 else:
@@ -122,7 +130,10 @@ class RecurringOffersView(ActiveDriverRequiredMixin, TemplateView):
                     return redirect("rides:recurring_offers")
         form.data = form.data.copy()
         form.data["vehicle_plate"] = ""
-        return self.render_to_response(self.get_context_data(form=form, waypoint_formset=stops), status=400)
+        return self.render_to_response(
+            self.get_context_data(form=form, waypoint_formset=stops, calendar_unavailable=calendar_unavailable),
+            status=503 if calendar_unavailable else 400,
+        )
 
 
 class ActivePassengerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
