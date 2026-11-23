@@ -2,16 +2,16 @@
 
 **Feature**: 008-penalidades-conduta; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: todas abertas, nenhuma execução nesta preparação.
+**Status**: T001 homologada e T002 concluída. [Evidência da T032](evidence-t032.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
 
-- [ ] T001 Resolver D008-01/D008-02 em spec.md, data-model.md e contracts/web-routes.md, incluindo fonte de prova, contestação, janela, sanção e suspensão; conclusão: nenhuma divergência 7/14 dias remanescente como regra executável. **Requisitos**: REQ-010, REQ-003, REQ-017; decisões. **Depende**: —. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: preparação.
+- [x] T001 Resolver D008-01/D008-02 em spec.md, data-model.md e contracts/web-routes.md, incluindo fonte de prova, contestação, janela, sanção e suspensão; conclusão: nenhuma divergência 7/14 dias remanescente como regra executável. **Requisitos**: REQ-010, REQ-003, REQ-017; decisões. **Depende**: —. **Conclusão**: D008-01 e D008-02 homologadas em 2026-11-23 e registradas na [spec](spec.md), no [modelo](data-model.md) e no [contrato](contracts/web-routes.md). **Roadmap**: preparação.
 
 ## Phase 2: Foundational
 
-Features 005 (evento auditável), 006 (avaliação) e 007 (reputação) concluídas; middleware da 001 preservado.
+Usa as capacidades existentes de cancelamento (005), avaliações (006) e reputação (007).
 Modelagem canônica em data-model.md: tarefas de modelo implementam integralmente entidades/restrições citadas após fechar campos condicionais. Não recriar ambiente por conveniência.
 
 ## Phase 3: User Story 1 (P1)
@@ -19,7 +19,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 **Objetivo**: Cancelamento tardio ou falta comprovada produz registro auditável e efeito segundo política aprovada.
 **Teste independente**: SC-001: evento repetido e concorrente gera um registro e um efeito; rollback não altera reputação nem suspensão.
 
-- [ ] T002 [US1] Testar e implementar PenaltyRecord e entidade de conduta aprovada de data-model.md em reviews/models.py e reviews/migrations/; tests/test_penalties.py cobre origem única, deltas aprovados e histórico preservado. **Requisitos**: REQ-010, REQ-003, REQ-017; FR-001/FR-002/FR-003; SC-001/SC-002. **Depende**: T001; Feature 007/T003. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T032. Fonte canônica de campos em [data-model.md](data-model.md): `PenaltyRecord.subject`, `PenaltyRecord.actor`, `PenaltyRecord.offer`, `PenaltyRecord.booking`, `PenaltyRecord.source_key`, `PenaltyRecord.kind`, `PenaltyRecord.occurred_at`, `PenaltyRecord.delta`, `ConductProfile.suspended_until`. Campos condicionais só após T001.
+- [x] T002 [US1] Testar e implementar PenaltyRecord e ConductProfile conforme [data-model.md](data-model.md) em reviews/models.py e reviews/migrations/. tests/test_penalties.py cobre origem única, deltas, nota automática, projeção da suspensão e histórico preservado. **Requisitos**: REQ-010, REQ-003, REQ-017; FR-001/FR-002/FR-003; SC-001/SC-002. **Depende**: T001; Feature 007/T002 (incorpora a antiga T003, roadmap T030). **Conclusão**: modelos, restrições, cálculos, migração e regressão aprovados na [evidência da T032](evidence-t032.md). **Roadmap**: T032.
 
 - [ ] T003 [US1] Implementar PenaltyService em reviews/services/penalty_service.py consumindo CancellationRecord da 005; tests/test_penalties.py cobre deduplicação, concorrência, rollback e recomputação determinística com ReputationService. **Requisitos**: REQ-010, REQ-003, REQ-017; FR-001/FR-002; SC-001/SC-002. **Depende**: T002; Feature 005/T002; Feature 007/T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T033.
 

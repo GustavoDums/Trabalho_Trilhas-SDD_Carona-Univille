@@ -2,7 +2,7 @@
 
 **Feature**: 008-penalidades-conduta | **Date**: 2026-11-22 | **Spec**: [spec.md](spec.md)
 **Branch**: nenhuma criada/alterada; ponteiro da Feature 003 preservado.
-**Status**: plano condicionado à aprovação das decisões de produto.
+**Status**: D008-01 e D008-02 homologadas em 2026-11-23.
 
 ## Summary
 
@@ -18,7 +18,7 @@ Python 3.12+, Django 5.1.x, PostgreSQL 15+, pytest/pytest-django/pytest-cov, tem
 - II: integridade transacional, locks e testes dos critérios.
 - III: >=80% linhas e ramificações críticas, relatórios e números medidos no README.
 - IV/V: spec → plan → tasks → código; rastreabilidade local/roadmap e prompts.
-- VI: stack preservada; D008-01, D008-02 pendentes. Gate de implementação **não passou**.
+- VI: stack preservada; D008-01 e D008-02 registradas na spec.
 - Pós-design: documentação segura preparada; nenhuma exceção constitucional homologada. Alteração da constitution exige consenso em rodada própria.
 
 ## Project Structure & Design
@@ -27,7 +27,7 @@ Python 3.12+, Django 5.1.x, PostgreSQL 15+, pytest/pytest-django/pytest-cov, tem
 
 PenaltyService em reviews/services/penalty_service.py consome CancellationRecord idempotentemente e fluxo autorizado de no-show. Bloquear oferta antes de usuário, ordem compartilhada pelos serviços; transação grava ocorrência e reconstrói projeções. Signal de reputação não cria segunda punição. Middleware acadêmico mantém responsabilidade de vínculo e delega restrição disciplinar separada; serviços também verificam suspensão para impedir bypass. Integrar extrato em accounts sem divulgar histórico a terceiros. Sem processo externo, sensor de presença ou notificação bônus.
 
-Caminhos novos são planejados. Não criar pacote rides/services concorrente com rides/services.py: aguardar Feature 003/T001 e preservar import público publish_offer.
+A T002 cobre o modelo, as restrições, a dedução decimal e a projeção de suspensão. A composição com ReputationService e a gravação automática dos efeitos pertencem à T003, e a denúncia à T004.
 
 ## Data & Interfaces
 
@@ -35,7 +35,7 @@ Caminhos novos são planejados. Não criar pacote rides/services concorrente com
 
 ## Implementation Order
 
-Features 005 (evento auditável), 006 (avaliação) e 007 (reputação) concluídas; middleware da 001 preservado.
+A modelagem depende do cálculo de reputação da Feature 007/T002 (roadmap T030). Os fluxos usam os eventos e interfaces existentes das Features 005, 006 e 007.
 
 T001 fecha decisões → testes/modelo → serviço → interface → integração → qualidade, seguindo dependências explícitas em [tasks.md](tasks.md). Bônus 010/011 não são pré-requisitos. T041–T045 são marcos gerais, não concluídos por esta feature.
 

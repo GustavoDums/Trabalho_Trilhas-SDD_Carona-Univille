@@ -1,10 +1,13 @@
 # Data Model: Penalidades por cancelamento tardio e no-show
 
-**Status**: desenho proposto, não migração aplicada. Decisões da [spec](spec.md) bloqueiam campos dependentes.
+**Status**: desenho da T002 conforme decisões homologadas na [spec](spec.md).
 
 ## Entidades e restrições canônicas
 
-PenaltyRecord: subject FK PROTECT, actor FK PROTECT ou origem de sistema explicitamente homologada, offer FK PROTECT, booking FK PROTECT nullable, source_key única, kind CANCELAMENTO_TARDIO/NO_SHOW, occurred_at aware, delta Decimal conforme política aprovada. Suspensão: suspended_until aware nullable em entidade de conduta separada (proposta ConductProfile OneToOne user); definir campos definitivos após D008-02. Fonte de cancelamento liga CancellationRecord para deduplicação. Nunca armazenar alegação como fato comprovado sem política.
+- `PenaltyRecord.subject`, `actor`, `offer`, `booking` e `cancellation` preservam referências com PROTECT. `source_key` é uma chave opaca única da origem.
+- Cancelamento tardio usa origem de sistema (actor ausente), evento CancellationRecord tardio único, mesmo titular, oferta, reserva e instante do evento. A reserva pode estar ausente para cancelamento de oferta. Delta decimal de −0,20.
+- No-show usa contraparte como actor, reserva e instante de registro da declaração (`reported_at`). Um usuário pode ter apenas um no-show por oferta. Delta decimal de −0,50 e nota automática 1 derivada do tipo. A integração da nota com a janela de reputação pertence à T003.
+- `ConductProfile.user` é OneToOne com PROTECT. `suspended_until` é opcional, com fuso. A projeção considera 3 no-shows distintos na janela inclusiva de 30 dias. A suspensão expira no instante do fim dos 14 dias. A gravação da projeção pertence ao serviço.
 
 ## Persistência
 
@@ -12,11 +15,11 @@ PostgreSQL e timestamps aware. Relações históricas não desaparecem por exclu
 
 ## Fronteiras
 
-Entidades/campos futuros, salvo os explicitamente existentes. [plan.md](plan.md) delimita componentes e [tasks.md](tasks.md) distribui implementação. Fechar decisões e atualizar contrato antes de criar campos condicionais, preservando IDs.
+O [plano](plan.md) delimita os componentes e as [tarefas](tasks.md) distribuem a implementação.
 
 ## Índice de campos canônicos
 
-Os campos abaixo são os nomes exatos referidos pelas tarefas; tipos e restrições estão em Entidades e restrições canônicas. Campos condicionais mantêm bloqueio de produto.
+Os campos abaixo são os nomes exatos referidos pelas tarefas; tipos e restrições estão em Entidades e restrições canônicas.
 
 - `PenaltyRecord.subject`
 - `PenaltyRecord.actor`
@@ -26,4 +29,7 @@ Os campos abaixo são os nomes exatos referidos pelas tarefas; tipos e restriç�
 - `PenaltyRecord.kind`
 - `PenaltyRecord.occurred_at`
 - `PenaltyRecord.delta`
+- `PenaltyRecord.cancellation`
+- `PenaltyRecord.reported_at`
+- `ConductProfile.user`
 - `ConductProfile.suspended_until`

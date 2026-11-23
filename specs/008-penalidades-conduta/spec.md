@@ -1,7 +1,7 @@
 # Feature Specification: Penalidades por cancelamento tardio e no-show
 
 **Feature**: 008-penalidades-conduta | **Created**: 2026-11-22
-**Status**: rascunho preparado; decisões abaixo bloqueiam tarefas afetadas. Nenhuma implementação realizada.
+**Status**: D008-01 e D008-02 homologadas em 2026-11-23.
 **Input**: REQ-010 e solicitação de preparação documental.
 
 ## Contexto e rastreabilidade
@@ -10,10 +10,10 @@ Fontes: [constitution](../../.specify/memory/constitution.md), [levantamento](..
 Requisito principal REQ-010; transversais REQ-002, REQ-003, REQ-014–REQ-019. Correspondências oficiais em [tasks.md](tasks.md).
 Propostas do roadmap não equivalem a decisões homologadas. Estes artefatos permitem revisar o escopo, sem decidir produto por suposição.
 
-## Clarifications — decisões pendentes
+## Clarifications — decisões homologadas em 2026-11-23
 
-- **D008-01 — PENDENTE**: Resolver suspensão de 7 dias (roadmap) versus 14 dias (levantamento), limiar proposto de 3 faltas em 30 dias, tolerância proposta de 10min e denúncia até 2h; definir referência para paradas sem ETA.
-- **D008-02 — PENDENTE**: Homologar deduções -0.20/-0.50, nota automática 1 e sua combinação sem dupla punição acidental; definir autor autorizado, evidência, contestação, limites da nota e ações bloqueadas durante suspensão.
+- **D008-01**: Três no-shows distintos em 30 dias geram 14 dias de suspensão. Tolerância de 10 minutos a partir do horário previsto de embarque e denúncia até 2 horas após a conclusão registrada da carona. Em parada sem horário previsto, a denúncia fica indisponível até existir referência de embarque.
+- **D008-02**: Deduzir 0,20 por cancelamento tardio. No-show contribui com uma nota 1,0 na média e deduz 0,50 uma vez após o cálculo, com nota final entre 0,00 e 5,00. Somente a contraparte confirmada pode denunciar, com declaração vinculada à reserva e horário registrado. Contestação tem revisão administrativa. A suspensão bloqueia novas ofertas e reservas e mantém acesso à conta, ao extrato e ao cancelamento de compromissos existentes.
 
 ## User Scenarios & Testing
 
@@ -47,15 +47,15 @@ Conta mantém identidade/vínculo e consulta extrato, com ações disciplinarmen
 
 ## Dependencies & Scope
 
-Features 005 (evento auditável), 006 (avaliação) e 007 (reputação) concluídas; middleware da 001 preservado.
+A feature usa o evento auditável da 005, as avaliações da 006 e a reputação da 007. O estado disciplinar é separado do estado acadêmico da 001.
 
-Não inclui bônus 010/011, staging, commits ou integrações externas. Critérios dependentes de decisão são condicionais até homologação. REQ-020 e T041–T045 orientam entrega geral, sem conclusão nesta preparação.
+Não inclui bônus 010/011, staging, commits ou integrações externas. REQ-020 e T041–T045 orientam a entrega geral.
 
 ## Success Criteria
 
 - SC-001: evento repetido e concorrente gera um registro e um efeito; rollback não altera reputação nem suspensão.
-- SC-002: após homologação, dedução de cancelamento 4.80→4.60 se -0.20 aprovado; no-show testa separadamente dedução e eventual nota automática, sem efeitos extras.
-- SC-003: testar tolerância/denúncia nos limites e 1s fora, três ocorrências distintas na janela proposta e expiração conforme duração finalmente aprovada.
+- SC-002: cancelamento tardio deduz 0,20 (4,80 → 4,60). No-show acrescenta uma nota 1,0 à média e deduz 0,50 uma vez.
+- SC-003: testar tolerância e denúncia nos limites e um segundo fora, três ocorrências distintas em 30 dias e expiração da suspensão após 14 dias.
 - SC-004: suspenso continua autenticável e lê próprio extrato, mas ações bloqueadas falham em view e serviço; expiração libera automaticamente sem mudar vínculo; terceiros não veem extrato.
 
 Todos os critérios exigem testes fictícios. Qualidade: >=80% de linhas e ramificações críticas, relatório versionável e métricas reais identificadas por feature no README; nenhuma métrica estimada nesta rodada.

@@ -1,9 +1,9 @@
 # Contratos: Penalidades por cancelamento tardio e no-show
 
-**Status**: proposto; decisões na [spec](../spec.md).
+**Status**: política homologada na [spec](../spec.md). A implementação HTTP pertence às tarefas posteriores.
 
-GET /conta/conduta/ retorna extrato próprio, sem parâmetro user_id; POST de no-show somente no endpoint autenticado da contraparte a definir em D008-02, CSRF e autorização de participação, nunca GET mutante. Respostas explicam suspensão/expiração ao titular, sem mostrar histórico no perfil público. Matriz de ações liberadas/bloqueadas integra contrato após decisão.
+GET /conta/conduta/ retorna o extrato próprio. POST de no-show exige sessão, CSRF, contraparte confirmada e declaração vinculada à reserva com horário registrado. O prazo é de até 2 horas após a conclusão registrada, depois dos 10 minutos de tolerância a partir do horário previsto de embarque. A denúncia fica indisponível enquanto a parada não tiver horário previsto. Contestação segue revisão administrativa. Durante a suspensão, ficam disponíveis a conta, o extrato e o cancelamento de compromissos existentes. Novas ofertas e reservas ficam bloqueadas.
 
 ## Regras comuns
 
-Identidade vem da sessão, não de campo oculto. Ação mutante exige POST/CSRF, salvo CLI administrativo documentado. Views delegam aos serviços, que também autorizam. Negativas não divulgam dados de terceiros. Escapar texto; sem e-mail/placa em atributos ou JSON públicos. Conflitos de domínio não retornam sucesso fictício nem stacktrace. Nomes propostos serão fixados na tarefa de decisão. Sem notificações externas nesta feature.
+Identidade vem da sessão, não de campo oculto. Ação mutante exige POST/CSRF, salvo CLI administrativo documentado. Views delegam aos serviços, que também autorizam. Negativas não divulgam dados de terceiros. Escapar texto; sem e-mail/placa em atributos ou JSON públicos. Conflitos de domínio não retornam sucesso fictício nem stacktrace. Sem notificações externas nesta feature.

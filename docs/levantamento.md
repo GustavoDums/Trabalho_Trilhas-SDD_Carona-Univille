@@ -219,3 +219,7 @@ Usuário aprovou D006-01/D006-02 e autorizou T001 documental seguida da T002 uni
 ### Homologação de reputação — Feature 007 (2026-11-23)
 
 D007-01/D007-02 aprovadas pelo usuário: média simples das últimas 20 avaliações recebidas, pesos iguais inclusive na mesma viagem, sem corte de 30 dias; ordenação created_at/id decrescentes até referência inclusiva. Novato 5.00 sem nota virtual; Decimal com ROUND_HALF_UP em duas casas no final. Profile admite 0.00..5.00 para futura integração de penalidades, não aplicada nesta rodada. Exemplos: [5,5,4,5,4]=4.60 e [5,5,5,1]=4.00, este último exatamente três notas 5 anteriores. T001 documental e T002 unificada (antigas T002/T003, roadmap T030) autorizadas; signals e apresentação ficam T031. Essas regras substituem propostas anteriores conflitantes de pesos/30 dias/20 caronas. Constitution não emendada nesta rodada.
+
+### Homologação de penalidades — Feature 008 (2026-11-23)
+
+D008-01 e D008-02 confirmadas pelo usuário. Três no-shows distintos em 30 dias geram suspensão de 14 dias. Cancelamento tardio deduz 0,20. No-show contribui com uma nota 1,0 na média e deduz 0,50 após o cálculo. O prazo de denúncia, a elegibilidade, a contestação e as ações permitidas durante a suspensão constam na [spec da Feature 008](../specs/008-penalidades-conduta/spec.md). O recorte autorizado é a modelagem e os testes da T032, correspondente à T002 local.
