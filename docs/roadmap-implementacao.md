@@ -266,8 +266,8 @@ flowchart TD
 - [x] **T044**: **[SLIDES DO PITCH SEM CÓDIGO]**: Elaborar a apresentação de slides para o pitch final (máximo de 10 minutos) focando no problema de mobilidade da Univille, valor acadêmico e regras de negócio, sem código-fonte nos slides.
   - *Requisitos*: REQ-020 | *Dependências*: Nenhuma | *Como verificar*: Revisão dos slides comprovando ausência de código-fonte. [PowerPoint](pitch-carona-univille.pptx) · [Evidência](evidencia-t044.md).
   - *Fusão*: Antiga T124 preservada para entrega de slides.
-- [ ] **T045**: **[ROTEIRO E ENSAIO DA LIVE DEMO]**: Estruturar e ensaiar o roteiro da demonstração ao vivo da PoC web em até 10 minutos (cadastro, validação, oferta com paradas, busca, disputa de vaga no PostgreSQL e cancelamento).
-  - *Requisitos*: REQ-020 | *Dependências*: T043, T044 | *Como verificar*: Ensaio cronometrado com execução completa em menos de 10 minutos.
+- [x] **T045**: **[ROTEIRO E ENSAIO DA LIVE DEMO]**: Estruturar e ensaiar o roteiro da demonstração ao vivo da PoC web em até 10 minutos (cadastro, validação, oferta com paradas, busca, disputa de vaga no PostgreSQL e cancelamento).
+  - *Requisitos*: REQ-020 | *Dependências*: T043, T044 | *Como verificar*: Ensaio cronometrado com execução completa em menos de 10 minutos. [Roteiro e evidência](roteiro-live-demo.md).
   - *Fusão*: Antiga T125 preservada para apresentação ao vivo.
 
 ---

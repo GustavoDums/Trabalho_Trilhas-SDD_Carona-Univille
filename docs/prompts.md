@@ -2663,3 +2663,33 @@ commit para minha revisão e encerre a rodada.
 ~~~
 
 A rodada produziu o [PowerPoint editável](pitch-carona-univille.pptx). A [evidência da T044](evidencia-t044.md) registra a revisão do conteúdo, o formato e o tempo previsto.
+
+## T045 — Roteiro e ensaio da demonstração — 2026-11-23
+
+~~~text
+Execute somente a tarefa T045 do Carona Univille.\
+\
+Área da tarefa — Entrega geral, Entrega e governança.\
+\
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e\
+tasks da feature antes de editar. Confirme o requisito, as dependências e os\
+critérios de conclusão da tarefa selecionada.\
+\
+Use a entrada T045 da seção de entrega de docs/roadmap-implementacao.md e\
+consulte os artefatos que ela referencia. Execute o trabalho de\
+documentação, auditoria ou verificação definido para esse item.\
+\
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.\
+Se houver divergência entre os artefatos ou uma decisão pendente que afete\
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já\
+existentes no repositório.\
+\
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações\
+pertinentes. Registre sua conclusão no checklist somente se os critérios\
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,\
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem\
+de commit com a referência feature / task / requisito. Deixe o staging e o\
+commit para minha revisão e encerre a rodada.
+~~~
+
+O [roteiro e o resultado cronometrado](roteiro-live-demo.md) registram a execução da demonstração com contas fictícias em PostgreSQL.
