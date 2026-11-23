@@ -1,5 +1,12 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- mvp-quality:start -->
+MVP / Feature 005 / T007 local / roadmap T027 — **668 testes aprovados**, 0 ignorados; REQ-001–REQ-007. Medição: 2026-11-23.
+Cobertura consolidada de `accounts/`, `rides/` e `carona_univille/`: **97.975352112676063%** combinada; linhas 905/920 (**98.3695652173913%**); ramificações 208/216 (**96.296296296296276%**). Meta: >=80% combinada, linhas e ramificações, também por módulo crítico de negócio.
+Relatórios: [coverage-mvp.json](coverage-mvp.json), [test-results-mvp.xml](test-results-mvp.xml), [auditoria](specs/005-cancelamento-liberacao-vaga/evidence-t027.md).
+Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-mvp-quality.ps1`. Métricas consolidadas; não são testes exclusivos da Feature 005. T041–T045 e tarefas de qualidade próprias de outras features não são concluídas automaticamente.
+<!-- mvp-quality:end -->
+
 <!-- feature-003-quality:start -->
 Feature 003 / T005 â€” **142 testes de busca/matching aprovados**, 526 de regressÃ£o; total 668 aprovados, 0 ignorados. MediÃ§Ã£o: 2026-11-23.
 Cobertura do pacote tÃ©cnico atual `rides/` com regressÃ£o: **99.36143039591316%** combinada; linhas 618/619 (99.838449111470112%); ramificaÃ§Ãµes 160/164 (97.5609756097561%). Meta: 80% em cada medida. Estes percentuais incluem as features posteriores de rides.

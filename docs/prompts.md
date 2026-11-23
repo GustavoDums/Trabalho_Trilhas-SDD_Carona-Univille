@@ -1651,3 +1651,17 @@ sim
 ~~~
 
 Referência anexada: docs/prompts.md. Confirmação aceita como validação humana da busca <=1 minuto e da legibilidade, sem inventar duração exata. T005 local/Feature 003 concluída; atualizados tasks/spec/plan/quickstart/evidence e README. Alterações da rodada técnica preservadas. Nenhum código adicional, teste repetido, staging ou commit. T027 não executada nesta confirmação.
+
+## 2026-11-23 — Retomada T027 / Feature 005 T007
+
+Prompt integral:
+
+~~~text
+bora para a próxima
+~~~
+
+Referência anexada: docs/prompts.md. Contexto anterior explícito: Feature 003/T005 encerrada, próxima tarefa T027 do roadmap/Feature 005 T007 (auditoria MVP). Somente essa tarefa executada, sem iniciar T028 ou tarefas gerais T041–T045.
+
+Dependências conferidas: tarefas locais T001–T006 e funcionalidades das Features 001–004; qualidade 002/003 comprovada conforme aceites humanos registrados. Pré-requisitos Spec Kit sem persistir ponteiro; nenhum hook/checklist adicional. Venv Python 3.12.10 e PostgreSQL existentes, git limpo no início. Criado check-mvp-quality.ps1 para toda tests/, cobertura consolidada accounts/rides/carona_univille e arquivos críticos separados, meta 80% em linhas/branches/combinada, JSON/JUnit próprios e bloco MVP do README. Auditoria sem mudança de comportamento ou falha artificial de TDD. Matriz REQ-001–REQ-007 e limites em evidence-t027.md. Sem staging/commit.
+
+Resultado T027/T007: 668 aprovados, zero ignorados, 87.04s; consolidado 905/920 linhas (98.3695652173913%), 208/216 branches (96.29629629629629%), combinada 97.97535211267606%. Arquivos críticos >=80%, última vaga duas transações independentes: 1 confirmada/saldo zero. Migrações locais aplicadas, sem mudanças. Novo script usa UTF-8 BOM para compatibilidade com PowerShell 5.1; bloco MVP corrigido após detectar acentos incorretos na primeira geração. Task/roadmap concluídos somente após gates, sem encerrar T041–T045 ou qualidade própria da Feature 004. Sem staging/commit.

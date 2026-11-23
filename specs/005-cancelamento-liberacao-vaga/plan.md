@@ -2,7 +2,7 @@
 
 **Feature**: 005-cancelamento-liberacao-vaga | **Date**: 2026-11-22 | **Spec**: [spec.md](spec.md)
 **Branch**: nenhuma criada/alterada; ponteiro da Feature 003 preservado.
-**Status**: D005-01/D005-02 confirmadas; T001–T006 concluídas; interfaces de reserva/oferta verificadas. T007 pendente. [Evidência T006](evidence-t006.md). [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
+**Status**: D005-01/D005-02 confirmadas; T001–T006 concluídas; interfaces de reserva/oferta verificadas. T007 concluída; [auditoria MVP](evidence-t027.md). [Evidência T006](evidence-t006.md). [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
 
 ## Summary
 

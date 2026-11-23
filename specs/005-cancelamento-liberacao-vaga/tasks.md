@@ -2,7 +2,7 @@
 
 **Feature**: 005-cancelamento-liberacao-vaga; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001–T006 concluídas; T007 aberta. [Evidência T006](evidence-t006.md). [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
+**Status**: T001–T007 concluídas. [Auditoria MVP](evidence-t027.md). [Evidência T006](evidence-t006.md). [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -36,7 +36,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
-- [ ] T007 Auditar MVP REQ-001–REQ-007 com toda a suíte tests/, após implementar/validar roadmap T001–T026; criar scripts/check-mvp-quality.ps1, coverage-mvp.json e test-results-mvp.xml; sincronizar bloco identificado no README.md com métricas reais e validar quickstart.md. **Requisitos**: REQ-007, REQ-014–REQ-019; todos os SC. **Depende**: todas as tarefas locais anteriores; Features 001–004 funcionais e qualidade pendente da 002/003 comprovada. **Conclusão**: cenários, privacidade, migração e regressão aprovados, >=80% linhas/ramificações críticas, relatórios versionáveis e roteiro verificado; não concluir sem evidência ou decisão. **Roadmap**: T027. Sem staging/commit.
+- [x] T007 Auditar MVP REQ-001–REQ-007 com toda a suíte tests/, após implementar/validar roadmap T001–T026; criar scripts/check-mvp-quality.ps1, coverage-mvp.json e test-results-mvp.xml; sincronizar bloco identificado no README.md com métricas reais e validar quickstart.md. **Requisitos**: REQ-007, REQ-014–REQ-019; todos os SC. **Depende**: todas as tarefas locais anteriores; Features 001–004 funcionais e qualidade pendente da 002/003 comprovada. **Conclusão**: cenários, privacidade, migração e regressão aprovados, >=80% linhas/ramificações críticas, relatórios versionáveis e roteiro verificado; não concluir sem evidência ou decisão. **Roadmap**: T027. Sem staging/commit.
 
 ## Dependencies & Execution Order
 

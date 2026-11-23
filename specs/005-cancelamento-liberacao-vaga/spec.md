@@ -1,7 +1,7 @@
 # Feature Specification: Cancelamento e liberação de vaga
 
 **Feature**: 005-cancelamento-liberacao-vaga | **Created**: 2026-11-22
-**Status**: decisões homologadas e T001–T006 concluídas; T007 aberta. [Evidência T006](evidence-t006.md). [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
+**Status**: decisões homologadas e T001–T007 concluídas. [Auditoria MVP](evidence-t027.md). [Evidência T006](evidence-t006.md). [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
 **Input**: REQ-007 e solicitação de preparação documental.
 
 ## Contexto e rastreabilidade
@@ -49,7 +49,7 @@ Motorista encerra oferta própria e cancela suas reservas vinculadas atomicament
 
 Feature 004 funcional (T001–T006 implementadas; T007 de qualidade final ainda pendente); Feature 003 para disponibilidade na busca; auditoria MVP depende de todas as implementações T001–T026 do roadmap, não apenas destes documentos.
 
-Não inclui bônus 010/011, staging, commits ou integrações externas. D005-01/D005-02 homologadas; T003 prova liberação de vaga e T004 implementa cancelamento de oferta. T005/T006 implementam interfaces de cancelamento de reserva/oferta; T007 permanece futura. REQ-020 e T041–T045 orientam entrega geral, sem conclusão nesta preparação.
+Não inclui bônus 010/011, staging, commits ou integrações externas. D005-01/D005-02 homologadas; T003 prova liberação de vaga e T004 implementa cancelamento de oferta. T005/T006 implementam interfaces de cancelamento de reserva/oferta; T007 conclui a auditoria MVP ([evidência](evidence-t027.md)). REQ-020 e T041–T045 orientam entrega geral, sem conclusão nesta preparação.
 
 ## Success Criteria
 
