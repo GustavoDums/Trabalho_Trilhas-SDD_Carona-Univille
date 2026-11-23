@@ -80,6 +80,8 @@ Esses IDs não têm correspondência local criada nesta rodada. Features 004–0
 
 **Atualização em 2026-11-23**. O usuário autorizou fazer o necessário para implementar a T037. A Feature 010 passou a ter [artefatos do Spec Kit](../specs/010-notificacoes-operacionais/spec.md) com avisos no próprio sistema. A autorização se refere à T037.
 
+**Recorte T038**. A solicitação de execução da T038 inclui a interface de consulta e leitura do bônus da Feature 010 no escopo. A T038 depende do registro de avisos entregue na T037. [Plano da Feature 010](../specs/010-notificacoes-operacionais/plan.md).
+
 ## Divergências e limites de implementação
 
 - Roadmap diz fechar decisões antes de tasks.md. A instrução atual autoriza documentar as partes seguras e dúvidas: gerados checklists preliminares com T001 bloqueante, sem tratar decisões como homologadas.

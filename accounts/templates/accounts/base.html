@@ -8,7 +8,9 @@
         :root { font-family: system-ui, sans-serif; color: #172f28; background: #f4f7f5; }
         body { margin: 0; line-height: 1.5; }
         header, main, footer { max-width: 48rem; margin: auto; padding: 1.5rem; }
-        header { border-bottom: 1px solid #c7d8cf; }
+        header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid #c7d8cf; }
+        .notification-bell { display: inline-flex; align-items: center; gap: .4rem; padding: .5rem; border: 1px solid #c7d8cf; border-radius: .3rem; text-decoration: none; }
+        .notification-count { min-width: 1.5em; padding: 0 .25em; border-radius: 1em; background: #135e42; color: #fff; text-align: center; }
         main { min-height: 55vh; }
         a { color: #135e42; }
         label { display: block; margin-top: 1rem; }
@@ -24,7 +26,16 @@
 </head>
 <body>
     <a class="skip-link" href="#content">Ir para o conteúdo</a>
-    <header><strong>Carona Univille</strong></header>
+    <header>
+        <strong>Carona Univille</strong>
+        {% if notification_unread_count is not None %}
+        <nav aria-label="Notificações">
+            <a href="{% url 'notifications:list' %}" class="notification-bell" aria-label="Notificações, {{ notification_unread_count }} não lidas">
+                <span aria-hidden="true">🔔</span><span class="notification-count">{{ notification_unread_count }}</span>
+            </a>
+        </nav>
+        {% endif %}
+    </header>
     <main id="content">
         {% if messages %}
         <ul class="messages" aria-live="polite">

@@ -232,8 +232,8 @@ flowchart TD
 - [x] **T037**: Implementar modelo `Notification` em `notifications/models.py`, serviço `NotificationService` integrado aos gatilhos de reserva e cancelamento e testes em `tests/test_notifications.py`.
   - *Requisitos*: REQ-012, REQ-003, REQ-017 | *Dependências*: T002, T021, T025 | *Como verificar*: Os três eventos geram avisos privados para os destinatários previstos, com unicidade e rollback. [Evidência](../specs/010-notificacoes-operacionais/evidence-t037.md).
   - *Fusão*: Agrupa antigas T107, T108 e T109.
-- [ ] **T038**: Implementar componente de sino na barra de navegação com contador de não lidas, template `notifications/list.html` e testes integrados em `tests/test_notifications.py`.
-  - *Requisitos*: REQ-012, REQ-017 | *Dependências*: T037 | *Como verificar*: Usuário visualiza notificações e marca como lidas na interface.
+- [x] **T038**: Implementar componente de sino na barra de navegação com contador de não lidas, template `notifications/list.html` e testes integrados em `tests/test_notifications.py`.
+  - *Requisitos*: REQ-012, REQ-017 | *Dependências*: T037 | *Como verificar*: Usuário visualiza notificações e marca como lidas na interface. [Evidência](../specs/010-notificacoes-operacionais/evidence-t038.md).
   - *Fusão*: Agrupa antigas T110, T111 e T112.
 
 ---

@@ -1,4 +1,4 @@
-"""Feature 010/T001 (roadmap T037), REQ-012, REQ-003 e REQ-017."""
+"""Feature 010/T001–T002 (roadmap T037–T038), REQ-002/003/012/017."""
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 from importlib import import_module
@@ -10,6 +10,7 @@ from django.apps import apps
 from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError, connection, connections, transaction
 from django.db.models.deletion import ProtectedError
+from django.test import Client
 
 from reviews.models import PenaltyRecord
 from rides.models import CancellationRecord, RideBooking, RideOffer, RoutePoint
@@ -57,6 +58,101 @@ def book(scene, passenger, *, offer=None):
 def cancel_booking(scene, booking, *, delay_hours=5):
     return CancellationService.cancel_booking(user=booking.passenger, booking_id=booking.pk,
                                               clock=lambda: scene.departure-timedelta(hours=delay_hours))
+
+
+def test_notice_list_and_bell_only_show_the_session_users_notices(scene, client):
+    passenger, other, _ = scene.passengers
+    booking = book(scene, passenger)
+    cancel_booking(scene, booking)
+    book(scene, other)
+    owned = notice_model().objects.filter(recipient=passenger)
+    owned.update(created_at=scene.departure - timedelta(days=1))
+    client.force_login(passenger)
+
+    profile = client.get('/accounts/profile/')
+    assert profile.status_code == 200
+    assert 'href="/notificacoes/"' in profile.content.decode()
+    assert '2 não lidas' in profile.content.decode()
+
+    response = client.get('/notificacoes/', {'recipient_id': scene.driver.pk})
+
+    assert response.status_code == 200
+    assert 'no-store' in response.headers['Cache-Control']
+    assert list(response.context['notifications']) == list(owned.order_by('-pk'))
+    assert response.context['notification_unread_count'] == 2
+    body = response.content.decode()
+    assert body.index('Reserva cancelada') < body.index('Reserva confirmada')
+    assert f'Carona #{scene.offer.pk}' in body
+    assert 'Não lida' in body
+    assert 'datetime=' in body
+    for private_value in (scene.offer.vehicle_plate, scene.driver.email, other.email):
+        assert private_value not in body
+    assert owned.filter(read_at__isnull=True).count() == 2
+
+
+def test_mark_read_requires_post_and_csrf_and_preserves_first_read(scene):
+    passenger = scene.passengers[0]
+    book(scene, passenger)
+    notice = notice_model().objects.get(recipient=passenger)
+    path = f'/notificacoes/{notice.pk}/ler/'
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(passenger)
+    assert client.get('/notificacoes/').status_code == 200
+    token = client.cookies['csrftoken'].value
+
+    assert client.get(path).status_code == 405
+    assert client.post(path).status_code == 403
+    notice.refresh_from_db()
+    assert notice.read_at is None
+
+    response = client.post(path, {'csrfmiddlewaretoken': token}, follow=True)
+
+    assert response.redirect_chain == [('/notificacoes/', 302)]
+    assert response.context['notification_unread_count'] == 0
+    assert 'Lida' in response.content.decode()
+    assert 'Marcar como lida' not in response.content.decode()
+    notice.refresh_from_db()
+    first_read = notice.read_at
+    assert first_read is not None
+    assert client.post(path, {'csrfmiddlewaretoken': token}).status_code == 302
+    notice.refresh_from_db()
+    assert notice.read_at == first_read
+    assert notice_model().objects.get(recipient=scene.driver).read_at is None
+
+
+def test_foreign_and_nonexistent_notices_cannot_be_marked_read(scene, client):
+    passenger, other, _ = scene.passengers
+    book(scene, passenger)
+    notice = notice_model().objects.get(recipient=passenger)
+    client.force_login(other)
+
+    response = client.get('/notificacoes/')
+    assert response.status_code == 200
+    assert response.context['notification_unread_count'] == 0
+    assert 'Você ainda não recebeu notificações.' in response.content.decode()
+    for pk in (notice.pk, notice.pk + 1000):
+        assert client.post(f'/notificacoes/{pk}/ler/', {'recipient_id': passenger.pk}).status_code == 404
+    notice.refresh_from_db()
+    assert notice.read_at is None
+
+
+def test_bell_and_notification_routes_require_an_active_academic_session(scene, client):
+    passenger = scene.passengers[0]
+    book(scene, passenger)
+    notice = notice_model().objects.get(recipient=passenger)
+    path = f'/notificacoes/{notice.pk}/ler/'
+    assert client.get('/notificacoes/')['Location'].startswith('/accounts/login/')
+    assert client.post(path)['Location'].startswith('/accounts/login/')
+    assert 'href="/notificacoes/"' not in client.get('/accounts/login/').content.decode()
+
+    passenger.academic_status = 'PENDENTE'
+    passenger.save(update_fields=['academic_status'])
+    client.force_login(passenger)
+    assert client.get('/notificacoes/')['Location'] == '/accounts/activation/'
+    assert client.post(path)['Location'] == '/accounts/activation/'
+    assert 'href="/notificacoes/"' not in client.get('/accounts/activation/').content.decode()
+    notice.refresh_from_db()
+    assert notice.read_at is None
 
 
 def test_confirmation_has_two_private_unread_notices_and_replay_keeps_existing_rows(scene):

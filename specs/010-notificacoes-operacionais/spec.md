@@ -2,8 +2,9 @@
 
 **Feature**: 010-notificacoes-operacionais  
 **Data**: 2026-11-23  
-**Status**: bônus incluído por autorização do usuário para executar T037.  
 **Requisitos de origem**: [REQ-012 e REQ-017](../../docs/levantamento.md), com REQ-002 e REQ-003 transversais. [Roadmap](../../docs/roadmap-implementacao.md).
+
+**Status**: bônus incluído no recorte de T037 e T038 por solicitação do usuário.
 
 ## User Scenarios & Testing
 
@@ -50,4 +51,4 @@ O titular com vínculo ativo consulta os avisos, vê quantos estão pendentes e 
 
 ## Assumptions
 
-A autorização para fazer o necessário para T037 inclui este bônus no recorte desta rodada. Foi escolhido o canal interno, compatível com o sino planejado na T038. A T037 entrega o registro dos avisos das transições acima. A interface é a T038. Lembretes de partida fazem parte do REQ-012 e precisam de política própria de horário e acionamento.
+O canal é interno. A T037 entrega o registro dos avisos das transições acima. A solicitação da T038 inclui no escopo a consulta, o contador e a leitura. Lembretes de partida fazem parte do REQ-012 e precisam de política própria de horário e acionamento.

@@ -1,0 +1,29 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Notificações | Carona Univille{% endblock %}
+
+{% block content %}
+<h1>Notificações</h1>
+{% if notifications %}
+<ul>
+    {% for notification in notifications %}
+    <li>
+        <p>
+            <strong>{{ notification.get_kind_display }}</strong>
+            · Carona #{{ notification.offer_reference }}
+            · <time datetime="{{ notification.created_at|date:'c' }}">{{ notification.created_at|date:"d/m/Y H:i" }}</time>
+            · {% if notification.read_at %}Lida{% else %}Não lida{% endif %}
+        </p>
+        {% if not notification.read_at %}
+        <form method="post" action="{% url 'notifications:mark_read' notification.pk %}">
+            {% csrf_token %}
+            <button type="submit">Marcar como lida</button>
+        </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Você ainda não recebeu notificações.</p>
+{% endif %}
+{% endblock %}

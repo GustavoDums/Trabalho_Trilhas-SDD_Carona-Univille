@@ -1,5 +1,11 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-010-t038-quality:start -->
+Feature 010 / T002 local / roadmap T038 — **975 testes aprovados**, 0 ignorados, com 4 novos e 971 de regressão.
+Cobertura de accounts/rides/reviews/notifications/carona_univille — **99.13544668587896% em linhas** (1720/1735) e **96.48241206030151% em ramificações** (384/398). O pacote notifications atingiu 100% em ambas as medidas.
+Medição em 2026-11-23 no PostgreSQL 16.15. [Cobertura JSON](coverage-feature010-t038.json) · [JUnit](test-results-feature010-t038.xml) · [Evidência e reprodução](specs/010-notificacoes-operacionais/evidence-t038.md).
+<!-- feature-010-t038-quality:end -->
+
 <!-- feature-010-t037-quality:start -->
 Feature 010 / T001 local / roadmap T037 — **971 testes aprovados**, 0 ignorados, com 12 novos e 959 de regressão.
 Cobertura de accounts/rides/reviews/notifications/carona_univille — **99.11452184179457% em linhas** (1679/1694) e **96.44670050761421% em ramificações** (380/394). O pacote notifications atingiu 100% em ambas as medidas.

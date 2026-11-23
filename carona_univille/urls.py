@@ -26,5 +26,6 @@ urlpatterns = [
     path('caronas/', caronas, name='caronas'),
     path('accounts/', include('accounts.urls')),
     path('conta/', include((conduct_urlpatterns, 'conduct'))),
+    path('notificacoes/', include('notifications.urls')),
     path('admin/', admin.site.urls),
 ]
