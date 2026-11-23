@@ -2,7 +2,7 @@
 
 **Feature**: 009-caronas-recorrentes | **Date**: 2026-11-22 | **Spec**: [spec.md](spec.md)
 **Branch**: nenhuma criada/alterada; ponteiro da Feature 003 preservado.
-**Status**: plano condicionado à aprovação das decisões de produto.
+**Status**: D009-01 e D009-02 homologadas em 2026-11-23.
 
 ## Summary
 
@@ -18,20 +18,20 @@ Python 3.12+, Django 5.1.x, PostgreSQL 15+, pytest/pytest-django/pytest-cov, tem
 - II: integridade transacional, locks e testes dos critérios.
 - III: >=80% linhas e ramificações críticas, relatórios e números medidos no README.
 - IV/V: spec → plan → tasks → código; rastreabilidade local/roadmap e prompts.
-- VI: stack preservada; D009-01, D009-02 pendentes. Gate de implementação **não passou**.
+- VI: stack preservada, com D009-01 e D009-02 homologadas na spec.
 - Pós-design: documentação segura preparada; nenhuma exceção constitucional homologada. Alteração da constitution exige consenso em rodada própria.
 
 ## Project Structure & Design
 
 [Spec](spec.md), [pesquisa](research.md), [dados](data-model.md), [contratos](contracts/web-routes.md), [validação](quickstart.md) e [tarefas](tasks.md).
 
-RecurringRideService em rides/services/recurring_ride_service.py calcula datas com biblioteca padrão zoneinfo e chama publish_offer para cada ocorrência dentro de transação do lote, bloqueando regra antes das ofertas em ordem de data. Revalidar motorista na execução. UniqueConstraint oferece garantia adicional. Lote falho reverte tudo; comunicar nenhuma criação parcial. Comando rides/management/commands/generate_recurring_rides.py reutiliza serviço, sem agendador novo. Regra e ocorrências não substituem ofertas nem reservas.
+RecurringRideService calcula as datas no fuso homologado e chama o publish_offer existente para cada ocorrência. O lote PostgreSQL bloqueia primeiro a regra e depois o motorista, revalida sua elegibilidade e publica em ordem de data. A restrição única por regra e data complementa o lock. Falha intermediária reverte o lote.
 
-Caminhos novos são planejados. Não criar pacote rides/services concorrente com rides/services.py: aguardar Feature 003/T001 e preservar import público publish_offer.
+A T035 entrega o serviço e comprova independência da ocorrência cancelada. A T036 reutiliza o serviço na criação da regra pela interface e no comando interno da execução diária.
 
 ## Data & Interfaces
 
-[data-model.md](data-model.md) é fonte canônica do desenho proposto; [contratos](contracts/web-routes.md) define interfaces e autorização. Nenhuma migração gerada nesta rodada. Na implementação: revisar dados legados e plano, aplicar migração e verificar no PostgreSQL local sem reset.
+[data-model.md](data-model.md) define o esquema, e os [contratos](contracts/web-routes.md) definem interfaces e autorização. A migração rides.0006 cria as três tabelas de recorrência e foi validada com dados preexistentes em PostgreSQL temporário.
 
 ## Implementation Order
 

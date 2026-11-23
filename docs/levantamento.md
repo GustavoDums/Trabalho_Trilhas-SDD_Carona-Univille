@@ -225,3 +225,7 @@ D007-01/D007-02 aprovadas pelo usuário: média simples das últimas 20 avaliaç
 D008-01 e D008-02 confirmadas pelo usuário. Três no-shows distintos em 30 dias geram suspensão de 14 dias. Cancelamento tardio deduz 0,20. No-show contribui com uma nota 1,0 na média e deduz 0,50 após o cálculo. O prazo de denúncia, a elegibilidade, a contestação e as ações permitidas durante a suspensão constam na [spec da Feature 008](../specs/008-penalidades-conduta/spec.md). O recorte autorizado é a modelagem e os testes da T032, correspondente à T002 local.
 
 Na T004 local da Feature 008, o usuário autorizou expor a conclusão ao motorista titular. Para denunciar a ausência do motorista sem conclusão registrada, o passageiro confirmado dispõe de 2 horas a partir do fim da tolerância de 10 minutos. [Contrato HTTP](../specs/008-penalidades-conduta/contracts/web-routes.md).
+
+### Homologação de recorrência — Feature 009 (2026-11-23)
+
+D009-01 e D009-02 confirmadas. O horizonte usa 16 dias corridos da data local em America/Sao_Paulo até a data local + 15, inclusive. O motorista seleciona dias da semana, incluindo fins de semana e feriados quando selecionados, e as partidas são estritamente futuras. A geração ocorre na criação e na rotina diária, com revalidação do titular. Edição e desativação preservam as ocorrências existentes. A T035 entrega modelos, serviço e independência do cancelamento. A T036 conecta o gerador às entradas automáticas. [Política homologada](../specs/009-caronas-recorrentes/spec.md).

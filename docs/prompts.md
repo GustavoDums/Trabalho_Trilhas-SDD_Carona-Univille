@@ -2012,3 +2012,50 @@ Então faça a T034
 ~~~
 
 A execução seguiu a ordem T005 → T006. [Implementação e verificações da T034](../specs/008-penalidades-conduta/evidence-t034.md).
+
+## T035 do roadmap / T002, T003 e T004 da Feature 009 — 2026-11-23
+
+~~~text
+Execute somente a tarefa T035 do Carona Univille.\
+\
+Área da tarefa — Features 006 a 009, Escopo completo.\
+\
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e\
+tasks da feature antes de editar. Confirme o requisito, as dependências e os\
+critérios de conclusão da tarefa selecionada.\
+\
+Localize T035 em docs/roadmap-implementacao.md para identificar a feature e\
+o objetivo exato. Faça a correspondência por objetivo e requisito com o\
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se\
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para\
+implementação, se o item ainda estiver apenas no roadmap, informe quais\
+artefatos da feature faltam e aguarde. Se o próprio item for de\
+planejamento, gere apenas os artefatos previstos para ele.\
+\
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.\
+Se houver divergência entre os artefatos ou uma decisão pendente que afete\
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já\
+existentes no repositório.\
+\
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações\
+pertinentes. Registre sua conclusão no checklist somente se os critérios\
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,\
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem\
+de commit com a referência feature / task / requisito. Deixe o staging e o\
+commit para minha revisão e encerre a rodada.\
+~~~
+
+A T035 corresponde a T002, T003 e T004 locais, condicionadas à homologação da T001.
+
+~~~text
+D009-01 No lugar de usar 14 dias uteis use 16 dias corridos
+D009-02 use a geração automatica&#x20;
+~~~
+
+A rodada propôs detalhar o fuso, as bordas do calendário, a execução diária, a preservação de instâncias e a ordem T002 → T003 → T004.
+
+~~~text
+Confirmo
+~~~
+
+A [spec da Feature 009](../specs/009-caronas-recorrentes/spec.md) registra as decisões homologadas para a T035. [Implementação e verificações da T035](../specs/009-caronas-recorrentes/evidence-t035.md).

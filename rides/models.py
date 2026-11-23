@@ -2,13 +2,17 @@
 
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+from zoneinfo import ZoneInfo
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import ArrayField
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
+
+RECURRING_TIMEZONE = "America/Sao_Paulo"
 
 
 def require_integer(value, field):
@@ -252,3 +256,107 @@ class CancellationRecord(ValidatedModel):
             offer_id = RideBooking.objects.filter(pk=self.booking_id).values_list("offer_id", flat=True).first()
             if offer_id is not None and offer_id != self.offer_id:
                 raise ValidationError({"offer": "A reserva deve pertencer à oferta auditada."})
+
+
+class RecurringRideRule(ValidatedModel):
+    driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                               related_name="recurring_ride_rules")
+    origin = models.ForeignKey(RoutePoint, on_delete=models.PROTECT, related_name="origin_recurring_rules")
+    destination = models.ForeignKey(RoutePoint, on_delete=models.PROTECT, related_name="destination_recurring_rules")
+    weekdays = ArrayField(models.PositiveSmallIntegerField(), size=7)
+    local_time = models.TimeField()
+    timezone = models.CharField(max_length=64, choices=[(RECURRING_TIMEZONE, RECURRING_TIMEZONE)],
+                                default=RECURRING_TIMEZONE)
+    seats = models.PositiveBigIntegerField(validators=[MinValueValidator(1)])
+    vehicle_model = models.CharField(max_length=100)
+    vehicle_color = models.CharField(max_length=50)
+    vehicle_plate = models.CharField(max_length=20)
+    active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(condition=~models.Q(origin=models.F("destination")),
+                                   name="recurring_rule_endpoints_distinct"),
+            models.CheckConstraint(condition=models.Q(seats__gte=1), name="recurring_rule_seats_positive"),
+            models.CheckConstraint(condition=models.Q(weekdays__len__range=(1, 7),
+                                                       weekdays__contained_by=[0, 1, 2, 3, 4, 5, 6]),
+                                   name="recurring_rule_weekdays_valid"),
+            models.CheckConstraint(condition=models.Q(timezone=RECURRING_TIMEZONE),
+                                   name="recurring_rule_timezone_valid"),
+        ]
+
+    def clean_fields(self, exclude=None):
+        excluded = exclude or ()
+        if "weekdays" not in excluded:
+            days = self.weekdays
+            if (not isinstance(days, (list, tuple)) or not days
+                    or any(type(day) is not int or not 0 <= day <= 6 for day in days)
+                    or len(set(days)) != len(days)):
+                raise ValidationError({"weekdays": "Escolha dias distintos entre segunda e domingo."})
+            self.weekdays = sorted(days)
+        if "local_time" not in excluded and getattr(self.local_time, "tzinfo", None) is not None:
+            raise ValidationError({"local_time": "Informe apenas o horário local, sem fuso horário."})
+        if "seats" not in excluded:
+            require_integer(self.seats, "seats")
+        for field in ("vehicle_model", "vehicle_color", "vehicle_plate"):
+            value = getattr(self, field)
+            if isinstance(value, str):
+                setattr(self, field, value.strip().upper() if field == "vehicle_plate" else value.strip())
+        super().clean_fields(exclude=exclude)
+
+    def clean(self):
+        super().clean()
+        if self._state.adding and self.driver_id and not get_user_model().objects.filter(
+            pk=self.driver_id, role="MOTORISTA", academic_status="ATIVA", is_active=True,
+        ).exists():
+            raise ValidationError({"driver": "Somente motorista com vínculo ativo pode cadastrar recorrência."})
+
+
+class RecurringRideStop(ValidatedModel):
+    rule = models.ForeignKey(RecurringRideRule, on_delete=models.CASCADE, related_name="stops")
+    point = models.ForeignKey(RoutePoint, on_delete=models.PROTECT, related_name="recurring_stops")
+    position = models.PositiveSmallIntegerField(validators=[MinValueValidator(1)])
+
+    class Meta:
+        ordering = ["position"]
+        constraints = [
+            models.UniqueConstraint(fields=["rule", "position"], name="recurring_stop_position_unique"),
+            models.UniqueConstraint(fields=["rule", "point"], name="recurring_stop_point_unique"),
+            models.CheckConstraint(condition=models.Q(position__gte=1), name="recurring_stop_position_positive"),
+        ]
+
+    def clean_fields(self, exclude=None):
+        if "position" not in (exclude or ()):
+            require_integer(self.position, "position")
+        super().clean_fields(exclude=exclude)
+
+    def clean(self):
+        super().clean()
+        endpoints = RecurringRideRule.objects.filter(pk=self.rule_id).values_list(
+            "origin_id", "destination_id",
+        ).first()
+        if endpoints and self.point_id in endpoints:
+            raise ValidationError({"point": "A parada deve ser distinta da origem e do destino."})
+
+
+class RecurringRideOccurrence(ValidatedModel):
+    rule = models.ForeignKey(RecurringRideRule, on_delete=models.PROTECT, related_name="occurrences")
+    local_date = models.DateField()
+    offer = models.OneToOneField(RideOffer, on_delete=models.PROTECT, related_name="recurring_occurrence")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["rule", "local_date"], name="recurring_occurrence_rule_date_unique"),
+        ]
+
+    def clean(self):
+        super().clean()
+        driver_id = RecurringRideRule.objects.filter(pk=self.rule_id).values_list("driver_id", flat=True).first()
+        offer = RideOffer.objects.filter(pk=self.offer_id).values_list("driver_id", "departure_at").first()
+        if offer is not None:
+            offer_driver_id, departure_at = offer
+            if driver_id != offer_driver_id:
+                raise ValidationError({"offer": "A oferta deve pertencer ao motorista da regra."})
+            if departure_at.astimezone(ZoneInfo(RECURRING_TIMEZONE)).date() != self.local_date:
+                raise ValidationError({"local_date": "Informe a data local de partida da oferta."})

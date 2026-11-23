@@ -1,7 +1,7 @@
 # Feature Specification: Caronas recorrentes
 
 **Feature**: 009-caronas-recorrentes | **Created**: 2026-11-22
-**Status**: rascunho preparado; decisões abaixo bloqueiam tarefas afetadas. Nenhuma implementação realizada.
+**Status**: D009-01 e D009-02 homologadas em 2026-11-23.
 **Input**: REQ-011 e solicitação de preparação documental.
 
 ## Contexto e rastreabilidade
@@ -10,10 +10,10 @@ Fontes: [constitution](../../.specify/memory/constitution.md), [levantamento](..
 Requisito principal REQ-011; transversais REQ-002, REQ-003, REQ-014–REQ-019. Correspondências oficiais em [tasks.md](tasks.md).
 Propostas do roadmap não equivalem a decisões homologadas. Estes artefatos permitem revisar o escopo, sem decidir produto por suposição.
 
-## Clarifications — decisões pendentes
+## Clarifications — decisões homologadas em 2026-11-23
 
-- **D009-01 — PENDENTE**: Homologar horizonte proposto de 14 dias úteis, dias da semana, feriados, início/fim inclusivos, fuso e referência do horário local; definir se hoje conta e como tratar horário já passado.
-- **D009-02 — PENDENTE**: Definir geração manual/periódica, autorização do comando e edição/desativação da regra. Proposta técnica: comando manual idempotente na PoC, sem scheduler externo; mudanças não alteram instâncias existentes.
+- **D009-01**: Horizonte de 16 dias corridos, contando a data local de referência até essa data + 15, inclusive, em `America/Sao_Paulo`. Gerar nos dias da semana selecionados, incluindo fins de semana e feriados quando selecionados. Partidas devem ser estritamente futuras em relação ao instante de referência.
+- **D009-02**: Gerar automaticamente ao criar uma regra e completar o horizonte diariamente. O comando interno agendado revalida o vínculo e a elegibilidade do motorista a cada execução. Edição e desativação só afetam gerações futuras e preservam todas as ofertas existentes.
 
 ## User Scenarios & Testing
 
@@ -49,7 +49,7 @@ Formulário autorizado e comando compartilham gerador; resultado mostra datas cr
 
 Feature 002 para publicação atômica; Feature 003/T001 para pacote de serviços e busca para integração; Feature 005 para comprovar independência no cancelamento.
 
-Não inclui bônus 010/011, staging, commits ou integrações externas. Critérios dependentes de decisão são condicionais até homologação. REQ-020 e T041–T045 orientam entrega geral, sem conclusão nesta preparação.
+Não inclui bônus 010/011, staging, commits ou integrações externas. A T035 entrega modelos, gerador e independência do cancelamento. Os pontos de entrada que acionam o gerador automaticamente pertencem à T036. REQ-020 e T041–T045 orientam a entrega geral.
 
 ## Success Criteria
 

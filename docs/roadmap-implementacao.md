@@ -213,10 +213,10 @@ flowchart TD
 ---
 
 #### Feature 009: Caronas Recorrentes (`REQ-011`)
-*Status*: **Planejada no Roadmap** | *Bloqueios a fechar antes do tasks.md*: Horizonte temporal máximo de agendamento automático de viagens (proposta: 14 dias úteis).
+*Status*: D009-01 e D009-02 homologadas. [T035 concluída](../specs/009-caronas-recorrentes/evidence-t035.md) com modelos, gerador e cancelamento independente.
 
-- [ ] **T035**: Implementar modelo `RecurringRideRule` em `rides/models.py`, serviço gerador de instâncias independentes para 14 dias úteis (`RecurringRideService`) com autonomia de cancelamento e testes unitários em `tests/test_recurring_rides.py`.
-  - *Requisitos*: REQ-011, REQ-017 | *Dependências*: T013 | *Como verificar*: Teste unitário cancela uma data da série e comprova integridade das demais.
+- [x] **T035**: Implementar modelos de regras, paradas e ocorrências em `rides/models.py`, gerador de instâncias independentes para 16 dias corridos (`RecurringRideService`) e verificar autonomia de cancelamento em `tests/test_recurring_rides.py`.
+  - *Requisitos*: REQ-011, REQ-003, REQ-017 | *Dependências*: T013 e homologação D009-01/D009-02 | *Como verificar*: `pytest tests/test_recurring_rides.py` valida a janela, a geração concorrente, o rollback e a preservação da série após um cancelamento. [Evidência](../specs/009-caronas-recorrentes/evidence-t035.md).
   - *Fusão*: Agrupa antigas T099, T100, T101 e T102.
 - [ ] **T036**: Implementar formulário `RecurringRideForm`, comando CLI `generate_recurring_rides`, template `recurring_offers.html` e testes de integração em `tests/test_recurring_flow.py`.
   - *Requisitos*: REQ-011, REQ-017 | *Dependências*: T035 | *Como verificar*: `pytest tests/test_recurring_flow.py` valida agendamento e busca de caronas da série.
@@ -310,7 +310,7 @@ flowchart TD
 | **T032** | Modelo `PenaltyRecord` e testes com dedução numérica direta na reputação | `T091`, `T092` |
 | **T033** | Serviço de penalidades, cancelamentos tardios e registro de no-show | `T093`, `T094`, `T095` |
 | **T034** | Verificação de suspensão no middleware, tela de conduta e testes integrados | `T096`, `T097`, `T098` |
-| **T035** | Modelo `RecurringRideRule`, serviço para 14 dias úteis e testes unitários | `T099`, `T100`, `T101`, `T102` |
+| **T035** | Modelo `RecurringRideRule`, serviço para 16 dias corridos e testes de independência | `T099`, `T100`, `T101`, `T102` |
 | **T036** | Formulário, comando CLI `generate_recurring_rides`, template e testes integrados | `T103`, `T104`, `T105`, `T106` |
 | **T037** | Modelo `Notification`, serviço integrado a gatilhos e testes unitários | `T107`, `T108`, `T109` |
 | **T038** | Componente de sino na navbar, tela de avisos e testes integrados | `T110`, `T111`, `T112` |
