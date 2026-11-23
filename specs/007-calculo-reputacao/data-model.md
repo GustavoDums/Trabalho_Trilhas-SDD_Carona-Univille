@@ -1,23 +1,21 @@
 # Data Model: Cálculo matemático de reputação
 
-**Status**: desenho proposto, não migração aplicada. Decisões da [spec](spec.md) bloqueiam campos dependentes.
+D007-01/D007-02 homologadas em 2026-11-23, T001/T002 unificada autorizadas.
 
-## Entidades e restrições canônicas
+## Campos canônicos
 
-ReputationProfile: user OneToOne PROTECT, score Decimal (precisão, default e intervalo pendentes D007-02), computed_at aware. Fonte: RideReview da 006 e posteriormente PenaltyRecord da 008. Não persistir contador sem definir unidade de janela. Ordenação determinística por referência temporal aprovada e PK. Profile é projeção reconstruível; não substituir histórico de avaliações.
+- ReputationProfile.user: OneToOne AUTH_USER_MODEL PROTECT, related_name reputation_profile, obrigatório/único. Sem criação automática em cadastro ou avaliação nesta T030; rebuild explícito cria se ausente.
+- ReputationProfile.score: DecimalField(max_digits=3, decimal_places=2), default Decimal('5.00'), validadores e CheckConstraint intervalo inclusivo 0.00..5.00. Rejeitar float/bool, NaN/infinito e precisão além de duas casas na validação, sem truncar silenciosamente. Zero é armazenamento permitido para futura penalidade; média atual não aplica penalidades.
+- ReputationProfile.computed_at: DateTimeField aware opcional null/blank, default None; None indica profile ainda não reconstruído. Rebuild grava exatamente instante de referência capturado uma vez, convertido a UTC.
 
-## Persistência
+Sem contador novo. Profile é cache reconstruível; histórico canônico é RideReview. Migração cria tabela vazia, sem backfill de notas ou alteração de usuários/avaliações existentes.
 
-PostgreSQL e timestamps aware. Relações históricas não desaparecem por exclusão de usuário/oferta. Constraints locais complementam serviço; regras entre linhas exigem transações e locks. Migrações tratam registros legados sem sobrescrevê-los; validar plano e aplicação no PostgreSQL local e banco isolado de testes, sem reset destrutivo.
+## Fórmula e seleção
 
-## Fronteiras
+calculate_score(ratings) recebe conjunto já selecionado com até 20 notas inteiras 1..5; rejeita bool/float/texto/fração e mais de 20 itens. Vazio retorna Decimal('5.00'). Média exata em Decimal com contexto local de precisão 28 e quantize('0.01', ROUND_HALF_UP) somente ao final. A base inicial não entra na média.
 
-Entidades/campos futuros, salvo os explicitamente existentes. [plan.md](plan.md) delimita componentes e [tasks.md](tasks.md) distribui implementação. Fechar decisões e atualizar contrato antes de criar campos condicionais, preservando IDs.
+ReputationService.rebuild(*, user_id, at=None) é operação interna atômica. Se at ausente captura timezone.now uma vez após lock do usuário; exige datetime aware e normaliza UTC. Bloquear AcademicUser, inclusive quando profile ausente; depois profile. Ler RideReview recebidas (reviewed_user_id), created_at <= referência, order_by('-created_at','-id')[:20]. Cada avaliação conta, inclusive múltiplos passageiros da mesma oferta, sem peso por viagem ou expiração de 30 dias. Não reclassificar retrospectivamente avaliações imutáveis por mudanças atuais de vínculo/cancelamento. Calcular novamente das fontes persistidas, nunca somar delta.
 
-## Índice de campos canônicos
+Atualizar/criar profile e computed_at na mesma transação; reexecução com fontes/referência iguais preserva score e mesmo profile. Serviço pode reconstruir instante histórico explícito, restrito a chamador interno; não há entrada HTTP de user_id/score/at. Fontes não são alteradas. Lock do usuário serializa dois rebuilds e protege cache ausente; constraint OneToOne complementa a API. SQL/bulk não são API de domínio.
 
-Os campos abaixo são os nomes exatos referidos pelas tarefas; tipos e restrições estão em Entidades e restrições canônicas. Campos condicionais mantêm bloqueio de produto.
-
-- `ReputationProfile.user`
-- `ReputationProfile.score`
-- `ReputationProfile.computed_at`
+Signals, interação com transação da criação de RideReview, atualização automática e projeção de busca/perfil pertencem à T031; nenhum signal nesta rodada. Feature 008 integrará penalidades depois, sem inventar deltas na T030.

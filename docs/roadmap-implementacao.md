@@ -179,13 +179,13 @@ flowchart TD
 ---
 
 #### Feature 007: Cálculo Matemático de Reputação (`REQ-009`)
-*Status*: **Planejada no Roadmap** | *Bloqueios a fechar antes do tasks.md*: Janela deslizante de caronas consideradas na média (proposta: últimas 20 caronas).
+*Status*: D007-01/D007-02 homologadas; T030/T002 unificada concluída, [evidência](../specs/007-calculo-reputacao/evidence-t030.md). Média simples das últimas 20 avaliações recebidas, sem corte por dias; T031/signals/exibição pendentes.
 
-- [ ] **T030**: **[TESTE ESPECÍFICO DE CÁLCULO NUMÉRICO DE REPUTAÇÃO]**: Implementar modelo `ReputationProfile` em `reviews/models.py` e testes unitários em `tests/test_reputation_calc.py` cobrindo cenários numéricos determinísticos:
+- [x] **T030**: **[TESTE ESPECÍFICO DE CÁLCULO NUMÉRICO DE REPUTAÇÃO]**: Implementar modelo `ReputationProfile` em `reviews/models.py` e testes unitários em `tests/test_reputation_calc.py` cobrindo cenários numéricos determinísticos:
   - (1) *Novato*: pontuação base inicial `5.00★`.
   - (2) *Média Simples*: notas `5, 5, 4, 5, 4` $\rightarrow$ média $= (5+5+4+5+4)/5 = 4.60★$.
   - (3) *Impacto Crítico*: usuário com média 5.0 recebe nota 1.0 $\rightarrow$ nova média $= (5+5+5+1)/4 = 4.00★$.
-  - (4) *Janela Deslizante*: na 21ª avaliação, a nota mais antiga é descartada da média ponderada.
+  - (4) *Janela Deslizante*: na 21ª avaliação recebida, a nota mais antiga por created_at/id é descartada da média simples das últimas 20, com pesos iguais.
   - *Requisitos*: REQ-009, REQ-017 | *Dependências*: T028 | *Como verificar*: `pytest tests/test_reputation_calc.py` valida as equações matemáticas com precisão decimal.
   - *Fusão*: Agrupa antigas T083 e T084.
 - [ ] **T031**: Implementar serviço `ReputationService`, conectar signals `post_save` em `RideReview` para recálculo automático, exibir estrelas no perfil/busca (LGPD) e testes integrados em `tests/test_reputation_integration.py`.

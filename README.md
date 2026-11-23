@@ -1,5 +1,14 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-007-t030-quality:start -->
+Feature 007 / T001 documental + T002 unificada / roadmap T030 — **820 testes aprovados**, 0 ignorados: 55 novos e 765 anteriores. TDD inicial: 53 falhas pelo recurso ausente, depois verde; caso adicional de contexto Decimal externo falhou e foi corrigido antes da regressão final.
+Cobertura consolidada de accounts/rides/reviews/carona_univille: **98.34824501032347%** combinada; linhas 1158/1173 (**98.72122762148338%**); ramificações 271/280 (**96.78571428571429%**). Serviço de reputação: **100% de linhas e ramificações**. Meta: 80%.
+Relatórios: [JSON](coverage-feature007-t030.json), [JUnit](test-results-feature007-t030.xml), [evidência](specs/007-calculo-reputacao/evidence-t030.md). Medição: 2026-11-23.
+Reproduzir: `venv/Scripts/python.exe -m pytest tests -q --tb=short --cov=accounts --cov=rides --cov=reviews --cov=carona_univille --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature007-t030.json --junitxml=test-results-feature007-t030.xml`.
+Migração reviews 0002 aplicada/verificada com dados anteriores preservados. Média simples das últimas 20 avaliações, Decimal/HALF_UP e rebuild explícito serializado; signals/exibição pública e penalidades permanecem tarefas futuras.
+<!-- feature-007-t030-quality:end -->
+
+
 <!-- feature-006-t029-quality:start -->
 Feature 006 / T004 unificada (antigas T004/T005) / roadmap T029 — **765 testes aprovados**, 0 ignorados: 42 novos e 723 anteriores. TDD inicial: 41 falhas esperadas pela interface ausente, depois verde e verificação adicional de revalidação durante POST.
 Cobertura consolidada de accounts/rides/reviews/carona_univille: **98.31130690161527%** combinada; linhas 1087/1102 (**98.6388384754991%**); ramificações 252/260 (**96.92307692307692%**). Pacote reviews: **100% de linhas e ramificações**. Meta: 80%.

@@ -1773,3 +1773,55 @@ TDD: 41 testes novos falharam por reviews.forms/namespace de rotas ausentes ante
 Teste HTTP com login real/CSRF, GET sem escrita, autoria/alvo adulterados, prazos/estado/duplicata, escape e dois POSTs concorrentes em transações PostgreSQL independentes. Nenhuma migração necessária; Django check/diagnósticos/makemigrations/migrate --plan sem problemas. Resultados completos e arquivos em specs/006-avaliacao-mutua/evidence-t029.md. Sem staging/commit.
 
 Resultado final T029/T004: 765 aprovados (42 novos/723 anteriores), 87.99s; reviews 100% linhas/branches, consolidado 98.6388384754991% linhas/96.92307692307692% branches. Duplicata HTTP: PIDs 38824/27972, TxIDs 59379/59380, respostas 400/302 e uma avaliação. T004/T029 concluídas; T005 incorporada, T006 aberta. Nenhuma nova migração, staging ou commit.
+
+## 2026-11-23 — Feature 007/T001 e T002 unificada / roadmap T030
+
+Prompt integral original:
+
+~~~text
+Execute somente a tarefa T030 do Carona Univille.
+
+Área da tarefa — Features 006 a 009, Escopo completo.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T030 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md. Diagnóstico sem alteração/teste: T030 correspondia a T002/T003 da Feature 007, com T001 e D007-01/D007-02 pendentes; conflitavam média simples/ponderada e 30 dias/20 caronas/20 avaliações. Recomendadas últimas 20 avaliações recebidas com pesos iguais, sem corte por dias, ordem por data/ID, base 5.00 sem nota virtual, Decimal/duas casas/ROUND_HALF_UP e intervalo armazenável 0..5 (penalidades futuras); unificar T002/T003 e executar T001 antes. Dependência antiga Feature 006/T003 remapeada para T002 incorporadora.
+
+Resposta integral de aprovação:
+
+~~~text
+autorizo, e pode executar elas também
+~~~
+
+Referência anexada: docs/prompts.md. Autorizadas T001 documental e T002 unificada, apenas T030, sem signals/apresentação da T031. Tasks/plan/spec/research/dados/contrato homologados antes da produção; dependência futura Feature 006/T005 remapeada para T004 incorporadora. Pré-requisitos Spec Kit, venv e PostgreSQL existentes, sem hooks/checklist adicional, ponteiro preservado; git inicialmente limpo.
+
+TDD: 53 testes falharam por ReputationProfile/serviço ausentes antes da implementação. Modelo e calculate_score/ReputationService.rebuild implementados, depois 53 aprovados; verificação adicional do timestamp aware resultou em 54 aprovados. Serviço de cálculo teve 100% linhas/branches na execução focada. Fontes de teste criadas com participação/conclusão/avaliação pelo domínio existente, sem dados reais.
+
+Plano/SQL de reviews 0002 revisados e migração aplicada no PostgreSQL local sem reset. Snapshot em memória de colunas anteriores de accounts/validações/pontos/ofertas/paradas/reservas/cancelamentos/avaliações permaneceu idêntico; tabela de projeções vazia, sem backfill de pontuação. Introspecção confirmou OneToOne/FK/check. Rollback/cache ausente/rebuild idempotente/concorrrência em transações PostgreSQL independentes cobertos. Nenhum dado pessoal/credencial impresso ou versionado. Resultados completos e arquivos em specs/007-calculo-reputacao/evidence-t030.md. Sem staging/commit.
+
+Verificação adicional de determinismo: regressão inicial 819 aprovados. Novo teste de contexto Decimal externo com trap Inexact confirmou falha de arredondamento; calculate_score passou a usar Context próprio (prec=28, ROUND_HALF_UP), isolando precisão, modo e traps. Focado final 55 aprovados, serviço 100% linhas/branches; regressão final repetida após essa correção. Não houve alteração de fórmula ou regra de produto.
+
+Resultado final T030/T002: 820 aprovados (55 novos/765 anteriores), 89.57s; serviço 100% linhas/branches, consolidado 98.72122762148338% linhas/96.78571428571429% branches. Rebuild concorrente: PIDs 30520/37156, TxIDs 69690/69691, ambos score4.60 e mesmo profile26. T001/T002 e T030 concluídas; T003 incorporada, T004–T006 abertas. Sem signals/exibição, staging ou commit.
