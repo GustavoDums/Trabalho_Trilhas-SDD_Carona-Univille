@@ -144,7 +144,7 @@ flowchart TD
 ---
 
 #### Feature 005: Cancelamento de Reserva e Oferta com Prazo Mínimo (`REQ-007`)
-*Status*: **T024/T002 e T025/T003–T004 locais concluídas; interface pendente**. D005-01/D005-02 confirmadas: 2h/4h, saída da origem, borda inclusiva; tardio antes da partida aceito/auditado sem dedução; partida ou depois recusado. [Evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t024.md).
+*Status*: **T024/T002 e T025/T003–T004 e T026/T005–T006 locais concluídas; auditoria T027 pendente**. D005-01/D005-02 confirmadas: 2h/4h, saída da origem, borda inclusiva; tardio antes da partida aceito/auditado sem dedução; partida ou depois recusado. [Evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t024.md).
 
 - [x] **T024**: **[TESTE ESPECÍFICO DE INSTANTES DE CANCELAMENTO (BORDA)]**: Implementar serviço `CancellationService` em `rides/services/cancellation_service.py` e testes unitários em `tests/test_cancellation_deadlines.py` validando os 3 instantes de cancelamento:
   - (1) *Antes do prazo* ($\Delta t = 120\text{min } 01\text{s}$): tempestivo, livre de penalidade e vaga devolvida.
@@ -155,7 +155,7 @@ flowchart TD
 - [x] **T025**: Liberação atômica por disponibilidade derivada de CONFIRMADA (T003 local concluída, sem alterar capacidade) e cancelamento de oferta pelo motorista (T004 local concluída, prazo 4h) cancelando reservas atreladas. [Evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t025.md).
   - *Requisitos*: REQ-006, REQ-007 | *Dependências*: T024 | *Como verificar*: Cancelamento tempestivo incrementa vagas disponíveis na busca imediatamente.
   - *Fusão*: Agrupa antigas T067 e T068.
-- [ ] **T026**: Parcela T005 local (reserva) concluída, [evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t005.md); T006 local (oferta) pendente. Implementar views `CancelBookingView` e `CancelOfferView` em `rides/views.py`, modais de confirmação nos templates, rotas e testes integrados de cancelamento em `tests/test_cancellation_flow.py`.
+- [x] **T026**: T005 local (reserva) e T006 local (oferta) concluídas, [evidência T005](../specs/005-cancelamento-liberacao-vaga/evidence-t005.md) e [evidência T006](../specs/005-cancelamento-liberacao-vaga/evidence-t006.md). Implementadas views `CancelBookingView` e `CancelOfferView` em `rides/views.py`, modais de confirmação nos templates, rotas e testes integrados de cancelamento em `tests/test_cancellation_flow.py`.
   - *Requisitos*: REQ-007, REQ-017 | *Dependências*: T025 | *Como verificar*: `pytest tests/test_cancellation_flow.py` valida o ciclo de cancelamento.
   - *Fusão*: Agrupa antigas T069, T070, T071, T072 e T073.
 - [ ] **T027**: **[AUDITORIA DO MVP]**: Executar toda a suíte de testes do MVP (`tests/`), gerar relatório de cobertura consolidado e validar cumprimento integral de `REQ-001` a `REQ-007` com cobertura $\ge 80\%$.

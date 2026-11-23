@@ -1513,3 +1513,19 @@ Decisão: somente T005 autorizada; T006 permanece pendente. Skills speckit-imple
 TDD inicial: 17 falhas esperadas (rota/CSRF/confirmacão ausentes), 3 casos de controle de acesso existentes aprovados. Após implementar CancelBookingView, rota e confirmação: 86 testes de cancelamento aprovados. Testes usam sessão, CSRF real, relógio controlado, identidade da sessão, alvo da URL, privacidade e idempotência; nenhuma implementação de oferta ou penalidade nesta rodada.
 
 Resultados finais e arquivos em [evidence-t005.md](../specs/005-cancelamento-liberacao-vaga/evidence-t005.md). Sem staging/commit.
+
+## 2026-11-23 — Feature 005 / T006 local / fechamento da T026
+
+Prompt integral do usuário:
+
+~~~text
+ok, pode iniciar a T006, assim podemos finalizar a T026
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Decisão: executar somente T006 local, correspondente à interface de cancelamento de oferta e última parcela da T026 do roadmap. T004/T005 concluídas; T007/auditoria MVP não incluída. Requisitos REQ-007, REQ-003 e REQ-017, FR-001/FR-003/FR-004, SC-003/SC-004. Repositório limpo no início; venv e PostgreSQL existentes, ponteiro de feature preservado. Workflow speckit-implement e python-fact-grounded-coding já lidos; nenhum hook/checklist adicional.
+
+TDD: 20 novos casos antes da implementação, 17 falhas pela rota/confirmação/CSRF ausentes e 3 aprovações por controles existentes. Após implementação, 3 testes detectaram erro de renderização da ListView nas recusas (object_list não inicializada); correção seguida de 106 testes de cancelamento aprovados. CancelOfferView delega ao serviço existente, usa sessão e alvo da URL, exige POST/CSRF e redireciona à lista própria. Confirmação acessível, estado cancelado e histórico visíveis; sem nova regra de domínio, serviço, modelo ou migração.
+
+Resultados finais e arquivos em [evidence-t006.md](../specs/005-cancelamento-liberacao-vaga/evidence-t006.md). Sem staging/commit.

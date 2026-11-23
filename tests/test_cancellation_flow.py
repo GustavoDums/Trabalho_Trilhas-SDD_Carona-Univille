@@ -511,3 +511,154 @@ def test_booking_cancel_http_unknown_id_is_generic_and_ignores_forged_owner(canc
     assert response.status_code == 400
     assert 'Não foi possível cancelar a reserva.' in response.content.decode()
     assert not records().objects.exists()
+
+
+# Feature 005/T006 local — interface de oferta, fechamento da T026.
+def offer_cancellation_url(scene):
+    return f'/caronas/{scene.offer.pk}/cancelar/'
+
+
+@pytest.mark.django_db
+def test_offer_cancel_http_confirmation_route_and_closed_history(cancellation_scene):
+    from django.urls import reverse
+    scene = cancellation_scene
+    url = offer_cancellation_url(scene)
+    assert reverse('rides:cancel_offer', kwargs={'offer_id': scene.offer.pk}) == url
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(scene.driver)
+    html = client.get('/caronas/minhas-ofertas/').content.decode()
+    assert f'action="{url}"' in html and 'Confirmar cancelamento' in html
+    assert '<details' in html and 'csrfmiddlewaretoken' in html and '4 horas' in html
+    cancel_offer(scene)
+    response = client.get('/caronas/minhas-ofertas/')
+    assert f'action="{url}"' not in response.content.decode()
+    assert 'CANCELADA' in response.content.decode()
+    assert response.context['offers'][0].pk == scene.offer.pk
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('remaining', [timedelta(hours=4, seconds=1), timedelta(hours=4),
+                                       timedelta(hours=4)-timedelta(seconds=1)])
+def test_offer_cancel_http_csrf_policy_cascade_history_and_privacy(cancellation_scene, monkeypatch, remaining):
+    scene = cancellation_scene
+    RideOffer.objects.filter(pk=scene.offer.pk).update(seats=2)
+    previous = cancel(scene)
+    previous_rows = list(RideBooking.objects.filter(pk=previous.pk).values())
+    previous_events = list(records().objects.values())
+    for passenger in (scene.passenger, scene.other):
+        BookingService.create_booking(
+            passenger=passenger, offer_id=scene.offer.pk,
+            boarding_point_id=scene.points[0].pk, alighting_point_id=scene.points[-1].pk)
+    monkeypatch.setattr('rides.services.cancellation_service.timezone.now', lambda: scene.departure-remaining)
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(scene.driver)
+    client.get('/caronas/minhas-ofertas/')
+    token = client.cookies['csrftoken'].value
+    response = client.post(offer_cancellation_url(scene), {
+        'csrfmiddlewaretoken': token, 'user_id': scene.passenger.pk,
+        'offer_id': 999999, 'next': 'https://example.invalid/',
+    }, follow=True)
+    assert response.redirect_chain == [('/caronas/minhas-ofertas/', 302)]
+    assert response.status_code == 200 and 'CANCELADA' in response.content.decode()
+    assert not RideBooking.objects.filter(offer=scene.offer, status='CONFIRMADA').exists()
+    assert list(RideBooking.objects.filter(pk=previous.pk).values()) == previous_rows
+    assert list(records().objects.filter(booking=previous).values()) == previous_events
+    event = records().objects.get(offer=scene.offer, booking=None)
+    assert event.actor_id == scene.driver.pk
+    assert event.classification == ('TEMPESTIVO' if remaining >= timedelta(hours=4) else 'TARDIO')
+    scene.offer.refresh_from_db()
+    assert scene.offer.seats == 2
+    query = SearchQuery(boarding_id=scene.points[0].pk, alighting_id=scene.points[-1].pk,
+                        desired_at=scene.departure)
+    assert MatchingService.search(passenger=scene.other, query=query) == ()
+    for actor in (scene.passenger, scene.other, scene.driver):
+        client.force_login(actor)
+        response = client.get('/caronas/minhas-reservas/')
+        assert scene.offer.vehicle_plate not in response.content.decode()
+        assert all(item.vehicle_plate is None for item in response.context['bookings'])
+    snapshot = (list(RideOffer.objects.values()), list(RideBooking.objects.values()),
+                list(records().objects.values()))
+    # Renovar token após force_login; testar repetição posterior à partida.
+    client.get('/caronas/minhas-ofertas/')
+    monkeypatch.setattr('rides.services.cancellation_service.timezone.now', lambda: scene.departure+timedelta(days=1))
+    response = client.post(offer_cancellation_url(scene), {
+        'csrfmiddlewaretoken': client.cookies['csrftoken'].value}, follow=True)
+    assert response.status_code == 200
+    assert snapshot == (list(RideOffer.objects.values()), list(RideBooking.objects.values()),
+                        list(records().objects.values()))
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('method', ['get', 'head', 'put', 'patch', 'delete', 'options'])
+def test_offer_cancel_http_methods_are_post_only(cancellation_scene, method):
+    scene = cancellation_scene
+    client = Client()
+    client.force_login(scene.driver)
+    response = getattr(client, method)(offer_cancellation_url(scene))
+    assert response.status_code == 405 and response.headers['Allow'] == 'POST'
+    scene.offer.refresh_from_db()
+    assert scene.offer.status == 'ABERTA' and not records().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('token', [None, 'invalid'])
+def test_offer_cancel_http_csrf_required(cancellation_scene, token):
+    scene = cancellation_scene
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(scene.driver)
+    response = client.post(offer_cancellation_url(scene), {} if token is None else {'csrfmiddlewaretoken': token})
+    assert response.status_code == 403
+    scene.offer.refresh_from_db()
+    assert scene.offer.status == 'ABERTA' and not records().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('actor_kind', ['anonymous', 'pending', 'disabled', 'passenger', 'third_driver'])
+def test_offer_cancel_http_rejects_other_actors(cancellation_scene, academic_user_factory, actor_kind):
+    scene = cancellation_scene
+    actor = scene.driver
+    if actor_kind == 'passenger':
+        actor = scene.passenger
+    elif actor_kind == 'third_driver':
+        actor = academic_user_factory(role='MOTORISTA', password=None)
+        get_user_model().objects.filter(pk=actor.pk).update(academic_status='ATIVA')
+    elif actor_kind == 'pending':
+        get_user_model().objects.filter(pk=actor.pk).update(academic_status='PENDENTE')
+    elif actor_kind == 'disabled':
+        get_user_model().objects.filter(pk=actor.pk).update(is_active=False)
+    client = Client()
+    if actor_kind != 'anonymous':
+        client.force_login(actor)
+    before = (list(RideOffer.objects.values()), list(RideBooking.objects.values()))
+    response = client.post(offer_cancellation_url(scene))
+    assert response.status_code == (403 if actor_kind in ('passenger', 'third_driver') else 302)
+    assert scene.offer.vehicle_plate not in response.content.decode()
+    assert before == (list(RideOffer.objects.values()), list(RideBooking.objects.values()))
+    assert not records().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('offset', [timedelta(), timedelta(seconds=1)])
+def test_offer_cancel_http_refusal_preserves_offer_and_bookings(cancellation_scene, monkeypatch, offset):
+    scene = cancellation_scene
+    monkeypatch.setattr('rides.services.cancellation_service.timezone.now', lambda: scene.departure+offset)
+    client = Client()
+    client.force_login(scene.driver)
+    before = (list(RideOffer.objects.values()), list(RideBooking.objects.values()))
+    response = client.post(offer_cancellation_url(scene))
+    assert response.status_code == 400
+    assert 'horário de saída' in response.content.decode() and 'role="alert"' in response.content.decode()
+    assert before == (list(RideOffer.objects.values()), list(RideBooking.objects.values()))
+    assert not records().objects.exists()
+
+
+@pytest.mark.django_db
+def test_offer_cancel_http_missing_target_has_generic_error_and_own_list(cancellation_scene):
+    scene = cancellation_scene
+    client = Client()
+    client.force_login(scene.driver)
+    response = client.post('/caronas/999999/cancelar/')
+    assert response.status_code == 400
+    assert 'Não foi possível cancelar a oferta.' in response.content.decode()
+    assert [item.pk for item in response.context['offers']] == [scene.offer.pk]
+    assert not records().objects.exists()

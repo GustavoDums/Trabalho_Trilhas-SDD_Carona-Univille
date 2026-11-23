@@ -3,12 +3,25 @@
 {% block title %}Minhas ofertas | Carona Univille{% endblock %}
 {% block content %}
 <h1>Minhas ofertas de carona</h1>
+{% if cancellation_error %}<p role="alert">{{ cancellation_error }}</p>{% endif %}
 <p><a href="{% url 'rides:offer-create' %}">Oferecer carona</a></p>
 <p>Horários no fuso America/Sao_Paulo. As vagas informadas são para passageiros.</p>
 {% timezone "America/Sao_Paulo" %}
 {% for offer in offers %}
 <article data-offer-id="{{ offer.pk }}">
     <h2>{{ offer.vehicle_model }} — {{ offer.vehicle_color }}</h2>
+    <p>Estado: {{ offer.status }}</p>
+    {% if offer.status == "ABERTA" %}
+    <details>
+        <summary>Cancelar oferta {{ offer.pk }}</summary>
+        <p>Deseja cancelar esta oferta e todas as reservas confirmadas vinculadas? O histórico será preservado e novas reservas serão impedidas.</p>
+        <p>Antecedência de pelo menos 4 horas da saída da origem: tempestivo. Antes da partida com menos de 4 horas: tardio, com registro. Na partida ou depois, o cancelamento é recusado.</p>
+        <form method="post" action="{% url 'rides:cancel_offer' offer_id=offer.pk %}">
+            {% csrf_token %}
+            <button type="submit">Confirmar cancelamento</button>
+        </form>
+    </details>
+    {% endif %}
     <h3>Itinerário</h3>
     <ol>
         <li>{{ offer.origin.name }} (origem)</li>

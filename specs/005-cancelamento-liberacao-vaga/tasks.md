@@ -2,7 +2,7 @@
 
 **Feature**: 005-cancelamento-liberacao-vaga; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001–T005 concluídas; T006–T007 abertas. [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
+**Status**: T001–T006 concluídas; T007 aberta. [Evidência T006](evidence-t006.md). [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -32,7 +32,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 - [x] T004 [US2] Implementar cancelamento atômico de oferta usando RideOffer.status/cancelled_at preparados na T002 conforme data-model.md; atuar em rides/services/cancellation_service.py e ajustar modelos/migrações somente se necessário; atualizar matching e reservas; testar rollback e disputa simultânea em tests/test_cancellation_flow.py. **Requisitos**: REQ-007, REQ-003, REQ-017; FR-003; SC-003/SC-004. **Depende**: T003. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T025.
 
-- [ ] T006 [US2] Implementar CancelOfferView, rota e confirmação em rides/views.py, rides/urls.py e rides/templates/rides/my_offers.html; testes integrados de oferta e reservas em tests/test_cancellation_flow.py comprovam política aprovada e histórico preservado. **Requisitos**: REQ-007, REQ-003, REQ-017; FR-001/FR-003/FR-004; SC-003/SC-004. **Depende**: T004/T005. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T026.
+- [x] T006 [US2] Implementar CancelOfferView, rota e confirmação em rides/views.py, rides/urls.py e rides/templates/rides/my_offers.html; testes integrados de oferta e reservas em tests/test_cancellation_flow.py comprovam política aprovada e histórico preservado. **Requisitos**: REQ-007, REQ-003, REQ-017; FR-001/FR-003/FR-004; SC-003/SC-004. **Depende**: T004/T005. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T026.
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 

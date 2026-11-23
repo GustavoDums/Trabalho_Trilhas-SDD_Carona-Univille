@@ -176,3 +176,24 @@ class CancelBookingView(ActivePassengerRequiredMixin, TemplateView):
             cancellation_error=error,
             bookings=BookingQueryService.list_for(user=request.user),
         ), status=400)
+
+
+class CancelOfferView(MyOffersView):
+    """Feature 005/T006 local — cancela oferta própria via serviço atômico."""
+
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            CancellationService.cancel_offer(user=request.user, offer_id=kwargs["offer_id"])
+        except CancellationRefused:
+            error = "Não é possível cancelar a partir do horário de saída da origem."
+        except ValidationError:
+            error = "Não foi possível cancelar a oferta."
+        else:
+            messages.success(request, "A oferta e suas reservas estão canceladas.")
+            return redirect("/caronas/minhas-ofertas/")
+        self.object_list = self.get_queryset()
+        return self.render_to_response(self.get_context_data(
+            cancellation_error=error,
+        ), status=400)

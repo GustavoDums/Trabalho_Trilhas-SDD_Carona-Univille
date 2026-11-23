@@ -1,6 +1,6 @@
 # Contratos: Cancelamento e liberação de vaga
 
-**Status**: decisões homologadas; rotas futuras, serviço T002/T003 implementado/verificado ([evidência](../evidence-t024.md)). [Spec](../spec.md).
+**Status**: decisões homologadas; rotas de reserva/oferta implementadas nas T005/T006, serviço T002–T004 implementado/verificado ([evidência](../evidence-t024.md)). [Spec](../spec.md).
 
 POST /caronas/reservas/<booking_id>/cancelar/ e POST /caronas/<offer_id>/cancelar/, CSRF, somente titular ativo conforme política. Confirmação por formulário/modal acessível; GET não cancela. Repetição informa estado já cancelado sem nova liberação. Tardio anterior à partida é aceito/auditado, partida ou posterior é recusado; oferta cancelada não aparece como reservável.
 
@@ -31,4 +31,12 @@ POST /caronas/reservas/<booking_id>/cancelar/, nome rides:cancel_booking, Cancel
 
 Minhas reservas exibe confirmação em details/summary acessível apenas para passageiro com reserva CONFIRMADA. Formulário com CSRF e botão explícito, sem JavaScript obrigatório. Texto informa referência na origem, 2h inclusivas, tardio aceito antes da partida e recusa na partida/depois. GET da lista não altera o estado; GET da ação retorna 405.
 
-View delega a CancellationService.cancel_booking; sucesso/repetição redireciona somente a /caronas/minhas-reservas/ e informa que a reserva está cancelada. Recusa temporal retorna 400 com alerta de prazo; outro ValidationError retorna 400 genérico. Reexibe somente projeções próprias de BookingQueryService, que retiram placa e nome completo da contraparte após CANCELADA. PermissionDenied não é convertido em sucesso. Rotas/GUI de oferta permanecem T006.
+View delega a CancellationService.cancel_booking; sucesso/repetição redireciona somente a /caronas/minhas-reservas/ e informa que a reserva está cancelada. Recusa temporal retorna 400 com alerta de prazo; outro ValidationError retorna 400 genérico. Reexibe somente projeções próprias de BookingQueryService, que retiram placa e nome completo da contraparte após CANCELADA. PermissionDenied não é convertido em sucesso. Rotas/GUI de oferta implementadas na T006, conforme contrato abaixo.
+
+## Interface de oferta — T006 local / fechamento da T026
+
+POST /caronas/<offer_id>/cancelar/, nome rides:cancel_offer, CancelOfferView. Exige motorista titular ativo, POST e CSRF. Ator vem da sessão e alvo da URL, ignorando user_id/offer_id/next do corpo. Demais métodos retornam 405 para motorista elegível; terceiros/passageiros recebem 403, sessão anônima/inativa segue login e vínculo pendente segue ativação.
+
+Minhas ofertas mantém todas as ofertas próprias, incluindo CANCELADA, mostra estado e confirmação acessível details/summary apenas para ABERTA. Texto informa cancelamento das reservas confirmadas, preservação do histórico e prazo inclusivo de 4h pela saída da origem. Antes da partida, tardio é aceito/auditado; na partida ou depois, recusado.
+
+View delega a CancellationService.cancel_offer. Sucesso e repetição redirecionam somente a /caronas/minhas-ofertas/, com mensagem de estado cancelado. CancellationRefused retorna 400 com alerta de prazo; demais ValidationError retornam 400 genérico e lista somente de ofertas próprias. PermissionDenied permanece 403. Serviço cancela lote, preserva histórico e impede novas reservas; projeções de reservas retiram placa/nome completo após cancelamento. Nenhuma notificação/penalidade implementada. T005/T006 encerram T026; T007 é auditoria futura.

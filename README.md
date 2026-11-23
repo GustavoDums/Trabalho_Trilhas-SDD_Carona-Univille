@@ -1,5 +1,14 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-005-t006-quality:start -->
+Feature 005 / T006 local / fechamento da T026 — **661 testes aprovados**, 0 ignorados: 20 novos e 641 de regressão anterior. TDD inicial: 17 falhas esperadas, 3 casos de controle de acesso existentes aprovados; depois verde.
+Cobertura de `rides/`: **99.36143039591316%** combinada; linhas 618/619 (**99.83844911147011%**); ramificações 160/164 (**97.5609756097561%**). Views: 100% de linhas e ramificações. Meta: 80%.
+Relatórios: [JSON](coverage-feature005-t006.json), [JUnit](test-results-feature005-t006.xml), [evidência](specs/005-cancelamento-liberacao-vaga/evidence-t006.md). Medição: 2026-11-23.
+Reproduzir: `venv/Scripts/python.exe -m pytest tests -q --tb=short --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature005-t006.json --junitxml=test-results-feature005-t006.xml`.
+Interface de cancelamento de oferta verificada por testes Django: POST/CSRF, confirmação acessível, prazo, lote e histórico. T005/T006 completam T026. Sem migração; auditoria MVP/T007 permanece pendente.
+<!-- feature-005-t006-quality:end -->
+
+
 <!-- feature-005-t005-quality:start -->
 Feature 005 / T005 local / parcela da T026 — **641 testes aprovados**, 0 ignorados: 20 novos e 621 de regressão anterior. TDD inicial: 17 falhas esperadas, 3 casos já atendidos pelo controle de acesso; depois verde.
 Cobertura de `rides/`: **99.35064935064935%** combinada; linhas 605/606 (**99.83498349834983%**); ramificações 160/164 (**97.5609756097561%**). Views: 100% de linhas e ramificações. Meta: 80%.
