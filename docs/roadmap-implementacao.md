@@ -263,8 +263,8 @@ flowchart TD
 - [x] **T043**: **[MEDIÇÃO CONSOLIDADA NA ENTREGA FINAL — SUÍTE GERAL E COBERTURA >= 80%]**: Executar a suíte de testes completa de todo o sistema consolidado (todas as 11 features), reutilizando o script `scripts/check-quality-metrics.ps1`, versionar o relatório final `coverage.json` comprovando cobertura global $\ge 80\%$ e atualizar definitivamente a contagem total de testes e o percentual de cobertura no topo do `README.md`.
   - *Requisitos*: REQ-017, REQ-018, REQ-019, Princípio III | *Dependências*: T001 a T040 | *Como verificar*: `scripts/check-quality-metrics.ps1 -Consolidado` gera o JSON e o JUnit consolidados e sincroniza o topo do README. [Evidência e relatórios](evidencia-t043.md).
   - *Fusão*: Agrupa antigas T121, T122 e T123.
-- [ ] **T044**: **[SLIDES DO PITCH SEM CÓDIGO]**: Elaborar a apresentação de slides para o pitch final (máximo de 10 minutos) focando no problema de mobilidade da Univille, valor acadêmico e regras de negócio, sem código-fonte nos slides.
-  - *Requisitos*: REQ-020 | *Dependências*: Nenhuma | *Como verificar*: Revisão dos slides comprovando ausência de código-fonte.
+- [x] **T044**: **[SLIDES DO PITCH SEM CÓDIGO]**: Elaborar a apresentação de slides para o pitch final (máximo de 10 minutos) focando no problema de mobilidade da Univille, valor acadêmico e regras de negócio, sem código-fonte nos slides.
+  - *Requisitos*: REQ-020 | *Dependências*: Nenhuma | *Como verificar*: Revisão dos slides comprovando ausência de código-fonte. [PowerPoint](pitch-carona-univille.pptx) · [Evidência](evidencia-t044.md).
   - *Fusão*: Antiga T124 preservada para entrega de slides.
 - [ ] **T045**: **[ROTEIRO E ENSAIO DA LIVE DEMO]**: Estruturar e ensaiar o roteiro da demonstração ao vivo da PoC web em até 10 minutos (cadastro, validação, oferta com paradas, busca, disputa de vaga no PostgreSQL e cancelamento).
   - *Requisitos*: REQ-020 | *Dependências*: T043, T044 | *Como verificar*: Ensaio cronometrado com execução completa em menos de 10 minutos.
