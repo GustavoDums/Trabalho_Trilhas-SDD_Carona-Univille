@@ -117,3 +117,77 @@ class Waypoint(ValidatedModel):
             endpoints = RideOffer.objects.filter(pk=self.offer_id).values_list("origin_id", "destination_id").first()
             if endpoints and self.point_id in endpoints:
                 raise ValidationError({"point": "A parada deve ser distinta da origem e do destino."})
+
+
+class RideBooking(ValidatedModel):
+    """Feature 004/T002 local — estrutura; operação transacional pertence à T003."""
+
+    class Status(models.TextChoices):
+        CONFIRMADA = "CONFIRMADA", "Confirmada"
+        CANCELADA = "CANCELADA", "Cancelada"
+
+    offer = models.ForeignKey(RideOffer, on_delete=models.PROTECT, related_name="bookings")
+    passenger = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="ride_bookings",
+    )
+    boarding_point = models.ForeignKey(
+        RoutePoint, on_delete=models.PROTECT, related_name="boarding_bookings",
+    )
+    alighting_point = models.ForeignKey(
+        RoutePoint, on_delete=models.PROTECT, related_name="alighting_bookings",
+    )
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.CONFIRMADA)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["offer", "passenger"], condition=models.Q(status="CONFIRMADA"),
+                name="booking_active_passenger_unique",
+            ),
+            models.CheckConstraint(
+                condition=models.Q(status__in=["CONFIRMADA", "CANCELADA"]),
+                name="booking_status_valid",
+            ),
+            models.CheckConstraint(
+                condition=~models.Q(boarding_point=models.F("alighting_point")),
+                name="booking_points_distinct",
+            ),
+        ]
+
+    def clean(self):
+        super().clean()
+        errors = {}
+        offer = RideOffer.objects.filter(pk=self.offer_id).values(
+            "driver_id", "origin_id", "destination_id",
+        ).first() if self.offer_id else None
+        if offer and self.passenger_id == offer["driver_id"]:
+            errors["passenger"] = "Não é permitido reservar vaga na própria carona."
+        elif self._state.adding and self.passenger_id:
+            eligible = get_user_model().objects.filter(
+                pk=self.passenger_id, role="PASSAGEIRO", academic_status="ATIVA", is_active=True,
+            ).exists()
+            if not eligible:
+                errors["passenger"] = "Somente passageiros com vínculo ativo podem reservar."
+
+        if offer and self.boarding_point_id and self.alighting_point_id:
+            itinerary = [
+                offer["origin_id"],
+                *Waypoint.objects.filter(offer_id=self.offer_id).order_by("position").values_list(
+                    "point_id", flat=True,
+                ),
+                offer["destination_id"],
+            ]
+            if len(set(itinerary)) != len(itinerary):
+                errors["boarding_point"] = "O itinerário da oferta contém pontos repetidos."
+            else:
+                if self.boarding_point_id not in itinerary:
+                    errors["boarding_point"] = "O embarque deve pertencer ao itinerário da oferta."
+                if self.alighting_point_id not in itinerary:
+                    errors["alighting_point"] = "O desembarque deve pertencer ao itinerário da oferta."
+                if (self.boarding_point_id in itinerary and self.alighting_point_id in itinerary
+                        and itinerary.index(self.boarding_point_id) >= itinerary.index(self.alighting_point_id)):
+                    errors["alighting_point"] = "O desembarque deve estar depois do embarque."
+        if errors:
+            raise ValidationError(errors)

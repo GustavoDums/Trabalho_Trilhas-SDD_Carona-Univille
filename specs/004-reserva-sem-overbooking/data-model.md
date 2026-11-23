@@ -1,26 +1,35 @@
 # Data Model: Reserva de vagas sem overbooking
 
-**Status**: desenho proposto, não migração aplicada. Decisões da [spec](spec.md) bloqueiam campos dependentes.
+**Status**: decisões D004-01/D004-02 confirmadas pelo usuário em 2026-11-22. Modelo/migração T002 local/roadmap T020 implementados e verificados, conforme [evidência](evidence-t020.md). [Spec](spec.md).
 
-## Entidades e restrições canônicas
+## RideBooking — fonte canônica
 
-RideBooking: id; offer FK PROTECT; passenger FK PROTECT; status CONFIRMADA/CANCELADA condicionado a D004-01; created_at e updated_at aware. UniqueConstraint condicional (offer, passenger) quando CONFIRMADA. Autorreserva exige validação cruzada no serviço. RideOffer.seats continua capacidade; available_seats é projeção calculada, nunca contador persistido. Embarque/desembarque dependem de D004-02.
+| Campo canônico | Tipo e restrição |
+| --- | --- |
+| RideBooking.id | BigAutoField, chave primária |
+| RideBooking.offer | FK obrigatória RideOffer, PROTECT, related_name bookings |
+| RideBooking.passenger | FK obrigatória AcademicUser, PROTECT, related_name ride_bookings; não pode ser o motorista da oferta; na criação deve ser PASSAGEIRO/ATIVA/is_active |
+| RideBooking.boarding_point | FK obrigatória RoutePoint, PROTECT, related_name boarding_bookings; ponto existente no itinerário da oferta |
+| RideBooking.alighting_point | FK obrigatória RoutePoint, PROTECT, related_name alighting_bookings; existente no mesmo itinerário, distinto e posterior ao embarque |
+| RideBooking.status | CharField max_length=10, choices CONFIRMADA/CANCELADA, default CONFIRMADA; enum também protegido por CheckConstraint |
+| RideBooking.created_at | DateTimeField auto_now_add; aware |
+| RideBooking.updated_at | DateTimeField auto_now; aware |
 
-## Persistência
+UniqueConstraint parcial em (offer, passenger) quando status=CONFIRMADA: no máximo uma reserva ativa do mesmo passageiro por oferta, independentemente do trecho. Registros CANCELADA preservam histórico e não impedem nova CONFIRMADA. CheckConstraint adicional boarding_point != alighting_point.
 
-PostgreSQL e timestamps aware. Relações históricas não desaparecem por exclusão de usuário/oferta. Constraints locais complementam serviço; regras entre linhas exigem transações e locks. Migrações tratam registros legados sem sobrescrevê-los; validar plano e aplicação no PostgreSQL local e banco isolado de testes, sem reset destrutivo.
+Itinerário = origem + Waypoint por position + destino. Recusar pontos ausentes, invertidos, iguais ou itinerário ambíguo com repetições. Esta verificação entre tabelas e a proibição de autorreserva são validações do modelo; não podem ser representadas por CHECK SQL com join. O serviço T003 repetirá validações no estado corrente e sob lock. save usa full_clean conforme padrão ValidatedModel do projeto; bulk_create/update/SQL podem contornar regras Python e não são API de reserva.
 
-## Fronteiras
+A elegibilidade do passageiro na criação não impede manutenção do histórico quando seu vínculo mudar posteriormente. Revalidação de motorista/partida/capacidade e serialização da operação suportada de reserva pertencem à T003, não a um contador ou lock parcial nesta modelagem.
 
-Entidades/campos futuros, salvo os explicitamente existentes. [plan.md](plan.md) delimita componentes e [tasks.md](tasks.md) distribui implementação. Fechar decisões e atualizar contrato antes de criar campos condicionais, preservando IDs.
+## Capacidade e estados
 
-## Índice de campos canônicos
+RideOffer.seats continua capacidade original, inteiro positivo já existente; não adicionar contador nem incrementar capacidade ao cancelar. Uma reserva CONFIRMADA ocupa uma vaga durante toda a oferta; não reutilizar vaga entre trechos.
+Disponibilidade futura = seats - quantidade de CONFIRMADA. Limite agregado entre linhas depende do BookingService transacional da T003; esta migração não comprova zero overbooking sozinha.
 
-Os campos abaixo são os nomes exatos referidos pelas tarefas; tipos e restrições estão em Entidades e restrições canônicas. Campos condicionais mantêm bloqueio de produto.
+Estados persistidos: CONFIRMADA e CANCELADA. Não há espera por aceite do motorista. Sem fluxo de cancelamento, reconfirmação ou HTTP implementado pela T002; esses estados permitem evolução sem apagar histórico.
 
-- `RideBooking.offer`
-- `RideBooking.passenger`
-- `RideBooking.status`
-- `RideBooking.created_at`
-- `RideBooking.updated_at`
-- `RideOffer.seats`
+## Persistência e privacidade
+
+PostgreSQL, FKs protegidas e timestamps aware. Criar tabela vazia para reservas sem reescrever ofertas/contas/catálogo atuais. Verificar plano/aplicação local e constraints no banco isolado de testes, sem reset destrutivo.
+
+Não adicionar telefone, e-mail, nome completo ou placa ao registro de reserva; relações referem os registros existentes. WhatsApp adiado; e-mail nunca divulgado a terceiros. Contato/placa por contraparte pertence às tarefas de apresentação.

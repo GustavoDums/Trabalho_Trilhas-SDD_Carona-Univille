@@ -202,3 +202,7 @@ Atualiza as pendências da seção 5: após a recomendação apresentada, o usu�
 - Exemplo: pedido 08:00 inclui saídas 07:30 e 08:30; exclui 07:29:59 e 08:30:01, respeitando também a regra de partida futura.
 - Estas decisões substituem as alternativas temporais ainda provisórias registradas anteriormente para a Feature 003. Não mudam o modelo de ofertas nem encerram homologação acadêmica, domínios ou cancelamento.
 - Spec e checklist atualizados; plano/tasks e implementação continuam para etapas posteriores. Nenhuma emenda da constitution foi realizada nesta rodada.
+### Confirmação de reserva e dados da Feature 004 (2026-11-22)
+
+Decisão explícita do usuário: confirmação instantânea, estados CONFIRMADA/CANCELADA; uma reserva ocupa uma vaga durante toda a oferta, sem reutilização por trecho. Persistir os pontos de embarque/desembarque escolhidos do catálogo, em ordem do itinerário. WhatsApp adiado, sem coleta de telefone nesta tarefa; e-mail continua confidencial. As tarefas posteriores poderão liberar nome completo e placa somente à contraparte confirmada.
+D004-01/D004-02 resolvidas; escopo atual: modelo e migração da [T002 local / roadmap T020](../specs/004-reserva-sem-overbooking/tasks.md). Serviço/concorrência e interface permanecem tarefas seguintes.

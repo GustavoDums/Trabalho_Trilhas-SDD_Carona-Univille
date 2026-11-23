@@ -2,12 +2,12 @@
 
 **Feature**: 004-reserva-sem-overbooking; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: todas abertas, nenhuma execução nesta preparação.
+**Status**: T001 documental e T002 de modelo concluídas; T003–T007 abertas. [Evidência](evidence-t020.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
 
-- [ ] T001 Fechar D004-01/D004-02 em spec.md e contracts/web-routes.md com aprovação da dupla; conclusão: estados, contato e pontos de embarque definidos, sem homologar propostas automaticamente. **Requisitos**: REQ-006, REQ-003, REQ-017; decisões. **Depende**: —. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: preparação.
+- [x] T001 Fechar D004-01/D004-02 em spec.md e contracts/web-routes.md com aprovação da dupla; conclusão: estados, contato e pontos de embarque definidos, sem homologar propostas automaticamente. **Requisitos**: REQ-006, REQ-003, REQ-017; decisões. **Depende**: —. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: preparação.
 
 ## Phase 2: Foundational
 
@@ -19,7 +19,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 **Objetivo**: Passageiro ativo solicita uma vaga em oferta futura elegível; o servidor valida e confirma somente se houver disponibilidade.
 **Teste independente**: SC-001: duas conexões PostgreSQL independentes disputam simultaneamente uma última vaga; exatamente uma confirma, outra recebe esgotamento, contagem confirmada=1 e disponibilidade=0 (após D004-01).
 
-- [ ] T002 [US1] Escrever testes do modelo em tests/test_booking_flow.py e adicionar RideBooking em rides/models.py e migração em rides/migrations/, conforme data-model.md (RideBooking e RideOffer.seats); testar autorreserva e unicidade ativa, incluindo restrição no PostgreSQL. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-001/FR-002; SC-002. **Depende**: T001; Features 001/002. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T020. Fonte canônica de campos em [data-model.md](data-model.md): `RideBooking.offer`, `RideBooking.passenger`, `RideBooking.status`, `RideBooking.created_at`, `RideBooking.updated_at`, `RideOffer.seats`. Campos condicionais só após T001.
+- [x] T002 [US1] Escrever testes do modelo em tests/test_booking_flow.py e adicionar RideBooking em rides/models.py e migração em rides/migrations/, conforme data-model.md (RideBooking e RideOffer.seats); testar autorreserva, passageiro elegível na criação, trecho ordenado/distinto e unicidade ativa, incluindo restrições de status/pontos/unicidade no PostgreSQL. Escopo de modelo de FR-006/SC-005; serviço de capacidade/concorrência permanece T003. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-001/FR-002; SC-002. **Depende**: T001; Features 001/002. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T020. Fonte canônica de campos em [data-model.md](data-model.md): `RideBooking.id`, `RideBooking.offer`, `RideBooking.passenger`, `RideBooking.boarding_point`, `RideBooking.alighting_point`, `RideBooking.status`, `RideBooking.created_at`, `RideBooking.updated_at`, `RideOffer.seats`. D004-01/D004-02 homologadas; não adicionar telefone, contador de vagas ou serviço de reserva nesta tarefa.
 
 - [ ] T003 [US1] Implementar BookingService.create_booking em rides/services/booking_service.py após testes em tests/test_concurrency_booking.py com TransactionTestCase ou pytest transaction=True, duas conexões/threads e barreira antes da disputa (nunca após obter lock); conclusão: uma confirmação, uma rejeição, rollback e capacidade preservados no PostgreSQL. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-001/FR-002/FR-005; SC-001/SC-002. **Depende**: T002; Feature 003/T001. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T021.
 

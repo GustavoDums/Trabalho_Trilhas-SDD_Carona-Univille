@@ -1,5 +1,15 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-004-t020-quality:start -->
+Feature 004 / T002 local / roadmap T020 — **444 testes aprovados na suíte de regressão**, 0 ignorados.
+**49 testes novos de modelo de reserva**, 395 de regressão (152 accounts, 115 ofertas, 128 busca).
+Cobertura de `rides/`: **99.32279909706546%** combinada; linhas: 351/351 (100%); ramificações: 89/92 (96.73913043478261%). RideBooking: 100% de linhas/ramificações. Meta: 80%.
+Relatórios: [coverage-feature004-t020.json](coverage-feature004-t020.json), [test-results-feature004-t020.xml](test-results-feature004-t020.xml) e [evidência](specs/004-reserva-sem-overbooking/evidence-t020.md). Medição: 2026-11-22.
+Reproduzir: `venv/Scripts/python.exe -m pytest tests -q --tb=short --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature004-t020.json --junitxml=test-results-feature004-t020.xml`.
+Migração 0003 aplicada/verificada no PostgreSQL local. Entrega somente de modelo: serviço e concorrência da última vaga pertencem à T021 e continuam pendentes.
+<!-- feature-004-t020-quality:end -->
+
+
 <!-- feature-003-t019-quality:start -->
 Feature 003 / T004 local / roadmap T019 — **395 testes aprovados na suíte de regressão**, 0 ignorados.
 **36 novos testes HTTP nesta tarefa**; 128 funcionais acumulados da Feature 003 (65 matching + 63 formulário/HTTP), 152 accounts e 115 ofertas.

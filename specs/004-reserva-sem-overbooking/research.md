@@ -2,7 +2,7 @@
 
 ## Fontes e estado observado
 
-[constitution](../../.specify/memory/constitution.md), [levantamento](../../docs/levantamento.md), [roadmap](../../docs/roadmap-implementacao.md) e [registro de preparação](../../docs/preparacao-features-004-009.md). Aplicação atual contém accounts e rides; reservas, reviews, cancelamento e recorrência ainda não existem. A Feature 003 é documental: rides/services.py ainda depende da conversão em pacote pela T001 daquela feature.
+[constitution](../../.specify/memory/constitution.md), [levantamento](../../docs/levantamento.md), [roadmap](../../docs/roadmap-implementacao.md) e [registro histórico de preparação](../../docs/preparacao-features-004-009.md). Aplicação atual contém accounts e rides e, após T020, o modelo RideBooking. Serviço/HTTP de reserva, reviews, cancelamento e recorrência permanecem futuros. Feature 003/T001–T004 implementadas: pacote de serviços e busca disponíveis; qualidade final daquela feature permanece fora deste recorte.
 
 ## Decisões técnicas propostas
 
@@ -10,9 +10,9 @@
 
 **Decisão**: preservar capacidade original, histórico e projeções reconstruíveis, com idempotência transacional. **Motivo**: evitar perda de auditoria e efeitos duplicados. **Alternativa rejeitada**: contadores sem fonte de verdade e validação apenas na view.
 
-## Questões não resolvidas por pesquisa técnica
+## Decisões de produto confirmadas
 
-- **D004-01 — PENDENTE**: Confirmar reserva instantânea versus aceite do motorista. CONFIRMADA/CANCELADA no roadmap pressupõe fluxo instantâneo; se houver aceite, rever estados, ocupação e critérios antes da implementação.
-- **D004-02 — PENDENTE**: Confirmar coleta, finalidade e visibilidade do WhatsApp: não existe telefone na conta. E-mail nunca será divulgado. Definir também seleção/persistência de embarque e desembarque; não introduzir reutilização de vaga por trecho.
+- **D004-01 — CONFIRMADA em 2026-11-22**: reserva instantânea, sem aceite do motorista; estados CONFIRMADA/CANCELADA. Uma confirmação ocupa uma vaga durante toda a oferta, sem reutilização por trecho.
+- **D004-02 — CONFIRMADA em 2026-11-22**: persistir boarding_point/alighting_point do catálogo no registro de reserva, respeitando ordem do itinerário e pontos distintos. WhatsApp adiado; não coletar telefone nesta tarefa. E-mail nunca divulgado. Nas tarefas de apresentação, nome completo/placa somente à contraparte confirmada; eventual adoção futura de WhatsApp exige definição própria.
 
-A instrução atual permite documentar partes seguras; o gate de implementação permanece pendente. Não alterar constitution/levantamento para simular consenso.
+Confirmação explícita do usuário registrada em docs/prompts.md; gate de decisões da T001 atendido. Execução autorizada somente para T020/T002, sem antecipar serviço ou interface.

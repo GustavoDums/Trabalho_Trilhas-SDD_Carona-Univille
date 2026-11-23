@@ -1121,3 +1121,59 @@ Referência anexada: docs/prompts.md.
 Skills aplicadas: speckit-implement (somente T004) e python-fact-grounded-coding. Checklist documental 16/16 aprovado, sem hooks. Ambiente venv existente; PostgreSQL real nos testes. Testes HTTP escritos/rodados antes da view/rota: 32 falhas esperadas e 31 aprovações (incluindo os 27 testes anteriores). Após implementação e correção de comparação QueryDict no próprio teste: 63 aprovados. A comparação foi ajustada para .dict(), preservando a verificação integral dos filtros.
 
 Artefatos, regressão e medição desta rodada: specs/003-busca-rota-horario/evidence-t019.md. Sem paginação, nova migração, staging ou commit; tarefa de qualidade/demo final T005 permanece fora desta rodada. Alteração prévia em docs/prompts.md preservada.
+
+
+
+---
+
+## 2026-11-22 — Feature 004 / T002 local / roadmap T020
+
+Prompt integral:
+
+~~~text
+Execute somente a tarefa T020 do Carona Univille.
+
+Área da tarefa — Feature 004, Reserva sem overbooking.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T020 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Correspondência única: T020 → T002 local, modelo RideBooking/migração. Identificado bloqueio T001 de decisões D004-01/D004-02. Recomendação apresentada: confirmação instantânea; estados CONFIRMADA/CANCELADA; uma vaga por toda a oferta; persistir pontos escolhidos do catálogo; adiar WhatsApp, sem telefone nesta tarefa. Após confirmação, registrar preparação documental e implementar somente T020/T002 com TDD.
+
+Confirmação integral do usuário:
+
+~~~text
+confirmo
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Skills: speckit-implement restrita a T001 documental e T002 de modelo, python-fact-grounded-coding. Sem checklist adicional/hooks na Feature 004; contexto resolvido com SPECIFY_FEATURE_DIRECTORY e SPECIFY_FEATURE_NO_PERSIST, preservando ponteiro ativo. Venv Python 3.12.10/Django 5.1.15 e PostgreSQL existentes.
+
+TDD: 49 falhas por modelo RideBooking ausente (LookupError), antes de editar produção; 49 aprovados após modelo/migração. Migração 0003_ridebooking planejada, SQL revisado e aplicada no PostgreSQL local; snapshots de contas/ofertas/pontos/paradas idênticos antes/depois, nova tabela vazia, 4 FKs e 3 restrições verificadas. Relatórios e resultados finais em specs/004-reserva-sem-overbooking/evidence-t020.md.
+
+Sem serviço de reserva/concorrência, interface, rotas, telefone, staging ou commit. Alteração prévia em docs/prompts.md preservada.

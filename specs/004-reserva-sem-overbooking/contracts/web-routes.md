@@ -1,8 +1,8 @@
 # Contratos: Reserva de vagas sem overbooking
 
-**Status**: proposto; decisões na [spec](../spec.md).
+**Status**: decisões D004-01/D004-02 homologadas em 2026-11-22; endpoints futuros, não implementados por T020/T002. [Spec](../spec.md).
 
-POST /caronas/<offer_id>/reservar/ (rides:book), CSRF, passageiro ativo; GET /caronas/minhas-reservas/ (rides:my_bookings), somente próprias. Sucesso usa redirect-after-POST; falha de capacidade retorna mensagem de esgotamento sem dados privados. GET na ação retorna 405; IDs de terceiros não concedem acesso. Contato somente no DTO autorizado, após D004-02.
+POST /caronas/<offer_id>/reservar/ (rides:book), CSRF, passageiro ativo; GET /caronas/minhas-reservas/ (rides:my_bookings), somente próprias. Sucesso usa redirect-after-POST; falha de capacidade retorna mensagem de esgotamento sem dados privados. GET na ação retorna 405; IDs de terceiros não concedem acesso. Reserva instantânea CONFIRMADA, sem aceite; requisição futura informa boarding_point/alighting_point do catálogo e serviço valida ordem da rota. Sem reutilização por trecho. Na consulta privada, somente nome completo e placa da contraparte confirmada, nunca e-mail. WhatsApp adiado, sem campo de telefone.
 
 ## Regras comuns
 

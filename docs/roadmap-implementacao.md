@@ -125,16 +125,16 @@ flowchart TD
 ---
 
 #### Feature 004: Reserva de Vagas com Concorrência e Zero Overbooking (`REQ-006`)
-*Status*: **Planejada no Roadmap** | *Bloqueios a fechar antes do tasks.md*: Confirmação de reserva instantânea automática (proposta adotada) vs aceite prévio do motorista.
+*Status*: **T020/T002 local concluída; T021–T023 pendentes**. D004-01/D004-02 confirmadas pelo usuário em 2026-11-22: reserva instantânea, uma vaga durante toda a oferta, pontos escolhidos persistidos em ordem; WhatsApp adiado. [Evidência de modelo/migração](../specs/004-reserva-sem-overbooking/evidence-t020.md). Sem comprovação de concorrência até T021.
 
-- [ ] **T020**: Implementar modelo `RideBooking` em `rides/models.py` com status `CONFIRMADA`/`CANCELADA`, validação impedindo auto-reserva e migrações no PostgreSQL.
+- [x] **T020**: Implementar modelo `RideBooking` em `rides/models.py` com status `CONFIRMADA`/`CANCELADA`, validação impedindo auto-reserva e migrações no PostgreSQL.
   - *Requisitos*: REQ-006 | *Dependências*: T002, T013 | *Como verificar*: Teste unitário barra motorista tentando reservar vaga na própria carona.
   - *Fusão*: Agrupa antigas T055 e T056.
 - [ ] **T021**: **[TESTE ESPECÍFICO DE CONCORRÊNCIA NO POSTGRESQL]**: Implementar `BookingService.create_booking()` em `rides/services/booking_service.py` com `transaction.atomic()` e `select_for_update()`, e teste de concorrência em `tests/test_concurrency_booking.py` simulando dois passageiros disputando simultaneamente a última vaga.
   - *Asserção*: Exatamente 1 reserva confirmada, 1 rejeitada com vaga esgotada, total de vagas restantes $= 0$ (Zero Overbooking comprovado).
   - *Requisitos*: REQ-006, REQ-017, Princípio II | *Dependências*: T020 | *Como verificar*: `pytest tests/test_concurrency_booking.py` passa sem race conditions no PostgreSQL.
   - *Fusão*: Agrupa antigas T057, T058 e T059.
-- [ ] **T022**: Implementar view `BookRideView` em `rides/views.py`, template `rides/templates/rides/my_bookings.html` e liberação de dados de contato (WhatsApp) e placa do carro exclusivamente entre motorista e passageiro confirmados (LGPD).
+- [ ] **T022**: Implementar view `BookRideView` em `rides/views.py`, template `rides/templates/rides/my_bookings.html` e liberação de nome completo e placa do carro exclusivamente entre motorista e passageiro confirmados (LGPD); WhatsApp adiado por decisão D004-02, sem e-mail divulgado.
   - *Requisitos*: REQ-003, REQ-006 | *Dependências*: T021 | *Como verificar*: Visualização de contato liberada apenas após reserva confirmada.
   - *Fusão*: Agrupa antigas T060, T061 e T062.
 - [ ] **T023**: Mapear rotas de reserva em `rides/urls.py` e escrever testes de integração em `tests/test_booking_flow.py` cobrindo o fluxo completo de reserva de carona.
