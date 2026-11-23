@@ -19,51 +19,60 @@ def _already_booked():
     return ValidationError("Você já possui reserva confirmada nesta carona.", code="already_booked")
 
 
+def lock_booking_context(*, passenger, offer_id, boarding_point_id, alighting_point_id):
+    """Revalida a tentativa sob os locks da oferta e das contas, dentro de uma transação."""
+    if not getattr(passenger, "is_authenticated", False) or getattr(passenger, "pk", None) is None:
+        raise PermissionDenied("Somente passageiros com vínculo ativo podem reservar.")
+    errors = {}
+    for name, value in (
+        ("offer_id", offer_id), ("boarding_point_id", boarding_point_id),
+        ("alighting_point_id", alighting_point_id),
+    ):
+        if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+            errors[name] = "Selecione um registro válido."
+    if errors:
+        raise ValidationError(errors)
+
+    try:
+        offer = RideOffer.objects.select_for_update(no_key=True).get(pk=offer_id)
+    except RideOffer.DoesNotExist:
+        raise ValidationError({"offer_id": "Selecione uma oferta existente."}) from None
+    if passenger.pk == offer.driver_id:
+        raise PermissionDenied("Não é permitido reservar vaga na própria carona.")
+
+    # Os locks de conta preservam a ordem por PK e permitem validar FKs dos avisos.
+    accounts = {
+        user.pk: user for user in get_user_model().objects.select_for_update(no_key=True).filter(
+            pk__in=(passenger.pk, offer.driver_id),
+        ).order_by("pk")
+    }
+    current_passenger = accounts.get(passenger.pk)
+    if current_passenger is None or not (
+        current_passenger.is_active and current_passenger.role == "PASSAGEIRO"
+        and current_passenger.is_activated
+    ):
+        raise PermissionDenied("Somente passageiros com vínculo ativo podem reservar.")
+    driver = accounts[offer.driver_id]
+    now = timezone.now()
+    require_unsuspended(current_passenger.pk, at=now)
+    if not (driver.is_active and driver.role == "MOTORISTA" and driver.is_activated
+            and offer.status == RideOffer.Status.ABERTA and offer.departure_at > now):
+        raise ValidationError({"offer_id": "Esta oferta não está disponível para reserva."})
+
+    confirmed = RideBooking.objects.filter(offer=offer, status=RideBooking.Status.CONFIRMADA)
+    if confirmed.filter(passenger=current_passenger).exists():
+        raise _already_booked()
+    return offer, current_passenger, confirmed
+
+
 class BookingService:
     @staticmethod
     @transaction.atomic
     def create_booking(*, passenger, offer_id, boarding_point_id, alighting_point_id):
-        if not getattr(passenger, "is_authenticated", False) or getattr(passenger, "pk", None) is None:
-            raise PermissionDenied("Somente passageiros com vínculo ativo podem reservar.")
-        errors = {}
-        for name, value in (
-            ("offer_id", offer_id), ("boarding_point_id", boarding_point_id),
-            ("alighting_point_id", alighting_point_id),
-        ):
-            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
-                errors[name] = "Selecione um registro válido."
-        if errors:
-            raise ValidationError(errors)
-
-        try:
-            offer = RideOffer.objects.select_for_update().get(pk=offer_id)
-        except RideOffer.DoesNotExist:
-            raise ValidationError({"offer_id": "Selecione uma oferta existente."}) from None
-        if passenger.pk == offer.driver_id:
-            raise PermissionDenied("Não é permitido reservar vaga na própria carona.")
-
-        # Serializa mudanças na conta sem impedir a validação das FKs dos avisos concorrentes.
-        accounts = {
-            user.pk: user for user in get_user_model().objects.select_for_update(no_key=True).filter(
-                pk__in=(passenger.pk, offer.driver_id),
-            ).order_by("pk")
-        }
-        current_passenger = accounts.get(passenger.pk)
-        if current_passenger is None or not (
-            current_passenger.is_active and current_passenger.role == "PASSAGEIRO"
-            and current_passenger.is_activated
-        ):
-            raise PermissionDenied("Somente passageiros com vínculo ativo podem reservar.")
-        driver = accounts[offer.driver_id]
-        now = timezone.now()
-        require_unsuspended(current_passenger.pk, at=now)
-        if not (driver.is_active and driver.role == "MOTORISTA" and driver.is_activated
-                and offer.status == RideOffer.Status.ABERTA and offer.departure_at > now):
-            raise ValidationError({"offer_id": "Esta oferta não está disponível para reserva."})
-
-        confirmed = RideBooking.objects.filter(offer=offer, status=RideBooking.Status.CONFIRMADA)
-        if confirmed.filter(passenger=current_passenger).exists():
-            raise _already_booked()
+        offer, current_passenger, confirmed = lock_booking_context(
+            passenger=passenger, offer_id=offer_id,
+            boarding_point_id=boarding_point_id, alighting_point_id=alighting_point_id,
+        )
         if confirmed.count() >= offer.seats:
             raise NoSeatsAvailable()
 

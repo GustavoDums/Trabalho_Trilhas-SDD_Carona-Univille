@@ -18,6 +18,7 @@ from .services.booking_queries import BookingQueryService
 from .services.cancellation_service import CancellationRefused, CancellationService
 from .services.matching_service import MatchingService, SearchQuery
 from .services.recurring_ride_service import HORIZON_DAYS, RecurringRideService
+from .services.waitlist_service import WaitlistService
 
 
 class ActiveDriverRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -206,6 +207,27 @@ class BookRideView(ActivePassengerRequiredMixin, TemplateView):
         return self.render_to_response(self.get_context_data(
             form=form, bookings=BookingQueryService.list_for(user=request.user),
         ))
+
+
+class JoinWaitlistView(ActivePassengerRequiredMixin, TemplateView):
+    template_name = "rides/waitlist_error.html"
+    http_method_names = ["post"]
+
+    def post(self, request, offer_id):
+        form = RideBookingForm(request.POST)
+        if form.is_valid():
+            try:
+                WaitlistService.join(
+                    passenger=request.user, offer_id=offer_id,
+                    boarding_point_id=form.cleaned_data["boarding_point_id"].pk,
+                    alighting_point_id=form.cleaned_data["alighting_point_id"].pk,
+                )
+            except ValidationError as error:
+                form.add_error(None, " ".join(error.messages))
+            else:
+                messages.success(request, "Você está na fila de espera desta carona.")
+                return redirect("rides:my_bookings")
+        return self.render_to_response({"form": form}, status=400)
 
 
 class CancelBookingView(ActivePassengerRequiredMixin, TemplateView):

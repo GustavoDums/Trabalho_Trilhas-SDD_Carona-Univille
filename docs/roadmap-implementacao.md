@@ -239,10 +239,10 @@ flowchart TD
 ---
 
 #### Feature 011: Fila de Espera Automática com Repasse FIFO (`REQ-013`)
-*Status*: **Planejada no Roadmap** | *Bloqueios a fechar antes do tasks.md*: Tempo limite para confirmação da vaga repassada (proposta: repasse automático imediato).
+*Status*: **Bônus incluído no recorte da T039** | *Decisão*: repasse automático imediato ao primeiro passageiro elegível. [Plano da Feature 011](../specs/011-fila-espera-fifo/plan.md).
 
-- [ ] **T039**: **[TESTE ESPECÍFICO DE REPASSE FIFO AUTOMÁTICO]**: Implementar modelo `WaitlistEntry` em `rides/models.py`, view de ingresso na fila e testes em `tests/test_waitlist.py` validando repasse estritamente FIFO para o 1º da fila quando uma vaga é liberada.
-  - *Requisitos*: REQ-013, REQ-017 | *Dependências*: T020 | *Como verificar*: `pytest tests/test_waitlist.py -k "test_fifo"` comprova repasse sem intervenção manual.
+- [x] **T039**: **[TESTE ESPECÍFICO DE REPASSE FIFO AUTOMÁTICO]**: Implementar modelo `WaitlistEntry` em `rides/models.py`, view de ingresso na fila e testes em `tests/test_waitlist.py` validando repasse estritamente FIFO para o 1º da fila quando uma vaga é liberada.
+  - *Requisitos*: REQ-013, REQ-017 | *Dependências*: T020 | *Como verificar*: `pytest tests/test_waitlist.py -k "test_fifo"` comprova repasse sem intervenção manual no serviço. [Evidência](../specs/011-fila-espera-fifo/evidence-t039.md).
   - *Fusão*: Agrupa antigas T113, T114 e T115.
 - [ ] **T040**: Integrar repasse automático no `CancellationService`, exibir posição na fila no painel do passageiro e escrever testes de integração em `tests/test_waitlist_flow.py`.
   - *Requisitos*: REQ-007, REQ-013, REQ-017 | *Dependências*: T024, T039 | *Como verificar*: Cancelamento em carona com lista transfere a vaga e notifica o próximo passageiro.

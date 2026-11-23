@@ -2185,3 +2185,44 @@ commit para minha revisão e encerre a rodada.
 ~~~
 
 A solicitação incluiu o recorte da interface do bônus no [plano da Feature 010](../specs/010-notificacoes-operacionais/plan.md). O requisito, as dependências e os critérios de aceitação estão em [tasks.md](../specs/010-notificacoes-operacionais/tasks.md).
+
+## T039 — Ingresso e repasse FIFO
+
+~~~text
+Execute somente a tarefa T039 do Carona Univille.\
+\
+Área da tarefa — Features 010 e 011, Bônus da trilha.\
+\
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e\
+tasks da feature antes de editar. Confirme o requisito, as dependências e os\
+critérios de conclusão da tarefa selecionada.\
+\
+Localize T039 em docs/roadmap-implementacao.md para identificar a feature e\
+o objetivo exato. Faça a correspondência por objetivo e requisito com o\
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se\
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para\
+implementação, se o item ainda estiver apenas no roadmap, informe quais\
+artefatos da feature faltam e aguarde. Se o próprio item for de\
+planejamento, gere apenas os artefatos previstos para ele.\
+\
+Confirme no planejamento se a dupla incluiu este bônus no escopo antes de\
+começar.\
+\
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.\
+Se houver divergência entre os artefatos ou uma decisão pendente que afete\
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já\
+existentes no repositório.\
+\
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações\
+pertinentes. Registre sua conclusão no checklist somente se os critérios\
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,\
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem\
+de commit com a referência feature / task / requisito. Deixe o staging e o\
+commit para minha revisão e encerre a rodada.
+~~~
+
+~~~text
+Gere o necessário e implemente a T039
+~~~
+
+A autorização levou à [especificação](../specs/011-fila-espera-fifo/spec.md), ao [plano](../specs/011-fila-espera-fifo/plan.md) e à [tarefa local](../specs/011-fila-espera-fifo/tasks.md) da Feature 011. A decisão de projeto sobre repasse imediato e elegibilidade está em [research.md](../specs/011-fila-espera-fifo/research.md).

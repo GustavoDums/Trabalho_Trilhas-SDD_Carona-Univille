@@ -1,4 +1,5 @@
 {% extends "accounts/base.html" %}
+{% load l10n %}
 {% block title %}Buscar carona | Carona Univille{% endblock %}
 {% block content %}
 <h1>Buscar carona</h1>
@@ -15,6 +16,14 @@
     <section aria-label="Resultados da busca">
         {% for result in results %}
             {% include "rides/_search_result.html" with result=result only %}
+            {% if result.available_seats == 0 and form.cleaned_data.boarding_id %}
+            <form method="post" action="{% url 'rides:join_waitlist' result.offer_id %}">
+                {% csrf_token %}
+                <input type="hidden" name="boarding_point_id" value="{{ form.cleaned_data.boarding_id.pk|unlocalize }}">
+                <input type="hidden" name="alighting_point_id" value="{{ form.cleaned_data.alighting_id.pk|unlocalize }}">
+                <button type="submit">Entrar na fila de espera</button>
+            </form>
+            {% endif %}
         {% empty %}
             <p>Nenhuma oferta compatível com os filtros informados.</p>
         {% endfor %}

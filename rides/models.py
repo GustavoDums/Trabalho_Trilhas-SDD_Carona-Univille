@@ -217,6 +217,25 @@ class RideBooking(ValidatedModel):
             raise ValidationError(errors)
 
 
+class WaitlistEntry(models.Model):
+    offer = models.ForeignKey(RideOffer, on_delete=models.PROTECT, related_name="waitlist_entries")
+    passenger = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
+                                  related_name="waitlist_entries")
+    boarding_point = models.ForeignKey(RoutePoint, on_delete=models.PROTECT,
+                                       related_name="waitlist_boardings")
+    alighting_point = models.ForeignKey(RoutePoint, on_delete=models.PROTECT,
+                                        related_name="waitlist_alightings")
+
+    class Meta:
+        ordering = ("pk",)
+        indexes = [models.Index(fields=("offer", "id"), name="waitlist_offer_fifo_idx")]
+        constraints = [
+            models.UniqueConstraint(fields=("offer", "passenger"), name="waitlist_passenger_unique"),
+            models.CheckConstraint(condition=~models.Q(boarding_point=models.F("alighting_point")),
+                                   name="waitlist_points_distinct"),
+        ]
+
+
 class CancellationRecord(ValidatedModel):
     """Feature 005/T002 — um evento por transição efetiva, sem penalidade numérica."""
 
