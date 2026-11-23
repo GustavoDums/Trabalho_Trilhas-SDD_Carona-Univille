@@ -1,6 +1,6 @@
 # Quickstart de validação — Feature 002
 
-Este é um roteiro previsto para após a implementação das tarefas. Os comandos de rides ainda não podem ser tratados como verificados nesta entrega documental.
+T001–T006 implementadas. Parte técnica de T007 verificada em 2026-11-23; inspeção visual e demo humana pendentes. [Evidência](evidence-t007.md).
 
 ## Ambiente
 
@@ -44,3 +44,11 @@ Na etapa de qualidade, executar o futuro `scripts/check-feature002-quality.ps1`:
 ## Evidências esperadas
 
 Testes executados e resultado real; relatórios de qualidade; verificação de migração no PostgreSQL; inspeção visual do formset e mensagens; duração da demo. Falhas de infraestrutura na criação de Waypoint devem reverter também RideOffer. Não usar dados reais nem liberar placa a terceiros. Matching, reserva, cancelamento e frota não fazem parte desta validação.
+
+## Qualidade T007 — execução atual
+
+`powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-feature002-quality.ps1` executa oferta e regressão atual. Os relatórios distinguem 115 testes de oferta dos demais testes; a cobertura técnica considera todo rides, incluindo features posteriores. O script não conclui a tarefa ou a demo humana automaticamente.
+
+### Registro humano pendente — SC-005
+
+Preparar uma conta MOTORISTA/ATIVA sintética já autenticada e os dados antes do cronômetro. Em Oferecer carona: origem Terminal Central, paradas Bairro América → Campus Univille, destino Terminal Norte, saída futura, 3 vagas e veículo fictício (modelo Modelo Demo, cor Azul, placa DEMO123). Iniciar a contagem ao começar a preencher, publicar e conferir em Minhas ofertas a ordem Terminal Central → Bairro América → Campus Univille → Terminal Norte. Parar após a conferência. Critério: até 120 segundos, sem usar duração de suíte. Confirmar também que os campos, mensagens e botões aparecem legíveis, adicionar/remover paradas funciona e não há sobreposição visual. Informar duração real, navegador, resultado e qualquer erro. Sem esse registro, T007 permanece aberta.

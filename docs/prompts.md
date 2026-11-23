@@ -1529,3 +1529,51 @@ Decisão: executar somente T006 local, correspondente à interface de cancelamen
 TDD: 20 novos casos antes da implementação, 17 falhas pela rota/confirmação/CSRF ausentes e 3 aprovações por controles existentes. Após implementação, 3 testes detectaram erro de renderização da ListView nas recusas (object_list não inicializada); correção seguida de 106 testes de cancelamento aprovados. CancelOfferView delega ao serviço existente, usa sessão e alvo da URL, exige POST/CSRF e redireciona à lista própria. Confirmação acessível, estado cancelado e histórico visíveis; sem nova regra de domínio, serviço, modelo ou migração.
 
 Resultados finais e arquivos em [evidence-t006.md](../specs/005-cancelamento-liberacao-vaga/evidence-t006.md). Sem staging/commit.
+
+## 2026-11-23 — Pré-auditoria T027 e Feature 002/T007
+
+Prompt integral anterior que originou o diagnóstico:
+
+~~~text
+Execute somente a tarefa T027 do Carona Univille.
+
+Área da tarefa — Feature 005, Cancelamento e liberação de vaga.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T027 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Diagnóstico sem edição/testes: T027 corresponde à T007 local/Feature 005, exigindo comprovação da qualidade pendente das Features 002/003. Recomendado executar Feature 002/T007, depois Feature 003/T005, depois retornar à Feature 005/T007, uma rodada por tarefa. Perguntado explicitamente se confirma a sequência começando somente pela Feature 002/T007. Resposta integral atual:
+
+~~~text
+sim
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Escopo desta rodada: somente Feature 002/T007. Script de qualidade, relatórios JSON/JUnit, bloco próprio README, quickstart e evidência parcial. 115 testes de oferta inicialmente aprovados; cobertura isolada de todo rides ficou aproximadamente 55% porque o pacote cresceu com features posteriores. Script inclui suíte de oferta e regressão atual, distinguindo contagens e medindo pacote inteiro, sem omitir código. Resultado 661 aprovados (115 oferta/546 regressão), linhas 99.83844911147011%, ramificações 97.5609756097561%. Sem mudança de comportamento de aplicação ou falha artificial de TDD.
+
+Interação do formset observada em preview temporário com JavaScript real: adicionar duas paradas e remover primeira preservou seleção restante/contador. Screenshot não forneceu imagem inspecionável; host alternativo indisponível. Inspeção visual e demo humana até 2 minutos não comprovadas. T007 permanece aberta; roteiro preparado para usuário registrar duração real e resultado. Não executar Feature 003 ou T027 nesta rodada. Detalhes em [evidence-t007.md](../specs/002-oferta-caronas-paradas/evidence-t007.md). Nenhum staging/commit.

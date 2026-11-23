@@ -123,3 +123,7 @@ Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de ex
 - Suíte Feature 002: 114 aprovados. Comando: `venv/Scripts/python.exe -m pytest tests/test_rides_offer.py --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature002.json --junitxml=test-results-feature002.xml`. Cobertura combinada 98,86792452830188%; linhas 213/213 (100%) e ramificações 49/52 (94,23076923076923%). Relatórios e bloco próprio do README sincronizados.
 - Regressão dos seis módulos existentes de accounts: 152 aprovados no PostgreSQL; total das duas execuções 266 casos. Testes anteriores preservados. `manage.py check` sem problemas; editor sem diagnósticos no teste alterado; `git diff --check` sem erros.
 - Validação integrada pelo cliente HTTP Django e PostgreSQL de testes, sem alegar automação completa em navegador ou medição de tempo humano. Qualidade, script e demonstração final da T007 local não executados. T006 local e T016 do roadmap concluídas. Alterações preexistentes preservadas; nenhum staging ou commit.
+
+## Evidência parcial — T007 (2026-11-23)
+
+[Registro](evidence-t007.md): script de qualidade executado, 115 testes de oferta + 546 de regressão aprovados; relatórios e bloco próprio do README atualizados. Pacote técnico rides medido com regressão, >=80% em linhas e ramificações. Interação do formset verificada no preview; inspeção visual e demo humana <=2 minutos continuam pendentes. T007 permanece aberta; não encerrar com base em tempo de pytest. Nenhuma task de Feature 003/005 executada.

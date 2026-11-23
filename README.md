@@ -116,9 +116,8 @@ Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-q
 <!-- feature-001-quality:end -->
 
 <!-- feature-002-quality:start -->
-Feature 002 / roadmap T016 / T006 local — **114 testes aprovados**.
-Aceitação integrada de modelos, publicação e consulta própria; qualidade e demonstração final T007 local pendentes. Cobertura de `rides/`: **98.86792452830188%** combinada;
-linhas: 213/213 (100%); ramificações: 49/52 (94.23076923076923%). Meta: 80%.
-Relatórios: [coverage-feature002.json](coverage-feature002.json) e [test-results-feature002.xml](test-results-feature002.xml).
-Medição: 2026-11-22. Reproduzir: `venv/Scripts/python.exe -m pytest tests/test_rides_offer.py --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature002.json --junitxml=test-results-feature002.xml`.
+Feature 002 / T007 â€” **115 testes de oferta aprovados**, 546 de regressÃ£o; total 661 aprovados, 0 ignorados. MediÃ§Ã£o: 2026-11-23.
+Cobertura do pacote tÃ©cnico atual `rides/` com regressÃ£o: **99.36143039591316%** combinada; linhas 618/619 (99.838449111470112%); ramificaÃ§Ãµes 160/164 (97.5609756097561%). Meta: 80% em cada medida. Estes percentuais incluem as features posteriores de rides.
+RelatÃ³rios: [coverage-feature002.json](coverage-feature002.json), [test-results-feature002.xml](test-results-feature002.xml). Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-feature002-quality.ps1`.
+DemonstraÃ§Ã£o humana SC-005 e inspeÃ§Ã£o visual sÃ£o evidÃªncias separadas; este script nÃ£o as aprova nem conclui T007 automaticamente. [EvidÃªncia](specs/002-oferta-caronas-paradas/evidence-t007.md).
 <!-- feature-002-quality:end -->
