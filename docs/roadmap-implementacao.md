@@ -90,9 +90,9 @@ flowchart TD
 ---
 
 #### Feature 002: Oferta de Caronas e Gestão de Itinerário com Paradas (`REQ-004`)
-*Status*: **Planejada no Roadmap** | *Bloqueios a fechar antes do tasks.md*: Formato do itinerário (bairros/marcos conhecidos de Joinville vs coordenadas) e momento de cadastro do veículo.
+*Status*: **Fundação T013 implementada e verificada; publicação e consulta ainda pendentes**. [Plano](../specs/002-oferta-caronas-paradas/plan.md) e [tarefas locais](../specs/002-oferta-caronas-paradas/tasks.md). T013 do roadmap corresponde à Feature 002/T002, com T001 como preparação. [Spec da Feature 002](../specs/002-oferta-caronas-paradas/spec.md). Em 2026-11-22 foram adotados pontos discretos ordenados e modelo/cor/placa antes da primeira publicação. A janela de matching permanece na Feature 003. T013 do roadmap concluída como Feature 002/T002 local, após preparação T001. T014–T016 permanecem abertas; evidências em tasks.md da feature.
 
-- [ ] **T013**: Implementar modelos `RideOffer` e `Waypoint` em `rides/models.py` com restrição de papel `MOTORISTA` ativo, migrações e testes unitários de ordenação sequencial de paradas em `tests/test_rides_offer.py`.
+- [x] **T013**: Implementar modelos `RideOffer` e `Waypoint` em `rides/models.py` com restrição de papel `MOTORISTA` ativo, migrações e testes unitários de ordenação sequencial de paradas em `tests/test_rides_offer.py`.
   - *Requisitos*: REQ-004 | *Dependências*: T002 | *Como verificar*: Testes unitários validam persistência da sequência de waypoints.
   - *Fusão*: Agrupa antigas T035, T036 e T037.
 - [ ] **T014**: Implementar formulário `RideOfferForm` e view `RideCreateView` em `rides/views.py` com template `offer_create.html`, persistência transacional (`transaction.atomic()`) e testes de criação de oferta.

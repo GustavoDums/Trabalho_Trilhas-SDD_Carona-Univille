@@ -717,18 +717,90 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+
+## P023 — Diagnóstico da T013 e especificação da Feature 002
+
+Execute somente a tarefa T013 do Carona Univille.
+
+Área da tarefa — Feature 002, Oferta de caronas com paradas.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T013 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+
+
+## P024 — Plano técnico e tarefas da Feature 002
+
+Gere o plano técnico e as tarefas da Feature 002, sem implementar código.
+
 Referência anexada: `docs/prompts.md`.
 
-### Resolução do quickstart
+Skills aplicadas: speckit-plan e speckit-tasks. Contexto: spec existente, decisões
+de pontos discretos e veículo na primeira oferta, constitution e código local.
+Revisão delegada somente leitura, conforme workflow de planejamento; sem edição
+por agente delegado. Artefatos: plan.md, research.md, data-model.md,
+contracts/web-routes.md, quickstart.md e tasks.md da Feature 002. Sete tarefas
+locais abertas; T013 do roadmap corresponde a Feature 002/T002, precedida por
+T001 de preparação. Roadmap e referências da spec sincronizados.
+Sem modelos, serviços, migrações, testes ou scripts de produto implementados.
+Nenhuma suíte executada nesta rodada documental; sem staging ou commit.
+## P025 — Roadmap T013 / Feature 002 T002 local, com preparação T001
 
-O agente recomendou corrigir a referência a perfil público para perfil próprio
-com prévia abreviada e substituir a contagem por coleta por resultados efetivos.
-Resposta do usuário:
+de preferencia, ou podemos deixar específicado o número do roadmap e também do feature, como for melhor. vou mandá-lo novamente
 
-pode fazer o recomendado
+Execute somente a tarefa T013 do Carona Univille.
+
+Área da tarefa — Feature 002, Oferta de caronas com paradas.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T013 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
 
 Referência anexada: `docs/prompts.md`.
 
-Artefatos: script de qualidade, quickstart, relatórios de cobertura e execução,
-README e tasks. Comportamento da aplicação preservado; alterações preexistentes
-preservadas. Sem staging ou commit.
+Correspondência principal única: roadmap T013 = Feature 002/T002 local.
+Preparação mínima T001 executada antes, conforme dependência explícita de tasks.md,
+e informada ao usuário no início. Escopo restrito a app, modelos, migrações e testes.
+Artefatos: rides, settings, tests/test_rides_offer.py, relatórios separados da
+Feature 002, README, tasks e roadmap. Sem formulário, serviço ou interface de oferta.
+Alterações preexistentes preservadas; sem staging ou commit.

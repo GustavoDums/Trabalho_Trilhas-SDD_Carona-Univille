@@ -169,3 +169,14 @@ As seguintes deliberações foram acordadas pela dupla e integradas à [Spec 001
 
 ---
 *Documento gerado como base de sustentação metodológica para o Spec-Driven Development da Trilha 2.*
+
+## 4. Decisões para a Feature 002 (2026-11-22)
+
+Após a recomendação de preparar a especificação antes da implementação, o usuário
+autorizou iniciar a Feature 002 adotando itinerário discreto e dados de veículo
+na primeira oferta. Registro detalhado em [spec.md](../specs/002-oferta-caronas-paradas/spec.md).
+
+- **Itinerário da oferta**: lista ordenada de bairros ou marcos públicos de Joinville, sem coordenadas ou mapas externos. Esta decisão resolve o formato dos pontos para REQ-004; não fecha a janela de horário ou o algoritmo de matching da Feature 003.
+- **Veículo**: modelo, cor e placa exigidos antes da primeira publicação, sem ampliar o cadastro acadêmico inicial. Modelo e cor poderão aparecer em busca futura; placa permanece privada, com liberação à contraparte somente após reserva confirmada.
+- **Recorte autorizado desta rodada**: especificação e checklist de qualidade. Plano, tarefas e implementação ainda não iniciados. Premissas complementares estão separadas das decisões anteriores na especificação.
+- **Pendências mantidas**: homologação docente da validação acadêmica simulada, domínios adicionais, matching e cancelamento seguem sua governança própria.
