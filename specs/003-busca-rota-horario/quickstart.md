@@ -1,6 +1,6 @@
 # Quickstart previsto — Feature 003
 
-Atualização 2026-11-22: matching e formulário/cartões implementados e testados, conforme [evidência](evidence-t018.md). View/rota T004 local e demo/qualidade final T005 ainda pendentes; roteiro HTTP abaixo somente após essas tarefas.
+Atualização 2026-11-22: matching e formulário/cartões implementados e testados, conforme [evidência](evidence-t018.md). View/rota T004 local também implementada/verificada ([evidência HTTP](evidence-t019.md)); somente demo/qualidade final T005 permanece pendente. O roteiro HTTP está disponível; não há evidência de demo humana cronometrada nesta rodada.
 
 ## Pré-requisitos
 
@@ -32,7 +32,7 @@ Executado: `venv/Scripts/python.exe -m pytest tests/test_ride_search.py` — 27 
 
 ## Formulário e HTTP
 
-Após T003/T004 locais:
+T003/T004 locais concluídas: 63 testes de formulário/HTTP aprovados. Para reproduzir:
 
 ```powershell
 .\venv\Scripts\python.exe -m pytest tests/test_ride_search.py

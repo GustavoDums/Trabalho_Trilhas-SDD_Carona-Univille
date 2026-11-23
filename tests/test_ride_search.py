@@ -188,3 +188,286 @@ def test_catalog_labels_are_names_and_escaped(search_data):
     assert "Ponto &lt;b&gt;Sintético&lt;/b&gt;" in html
     assert "RoutePoint object" not in html
 
+
+
+# Feature 003/T004 local — roadmap T019; HTTP real sobre o serviço existente.
+@pytest.fixture
+def http_scene(academic_user_factory, monkeypatch):
+    from datetime import timedelta
+    from types import SimpleNamespace
+    from django.test import Client
+    from rides.models import RideOffer, Waypoint
+
+    now = datetime(2030, 1, 2, 12, tzinfo=dt_timezone.utc)
+    departure = now + timedelta(days=1)
+    monkeypatch.setattr(timezone, "now", lambda: now)
+
+    def user(role, name):
+        account = academic_user_factory(role=role, full_name=name, password=None)
+        account.academic_status = "ATIVA"
+        account.save(update_fields=["academic_status", "updated_at"])
+        return account
+
+    passenger = user("PASSAGEIRO", "Passageiro Sintético")
+    driver = user("MOTORISTA", "Motorista Sintético")
+    other_driver = user("MOTORISTA", "Condutor Fictício")
+    catalog = {point.code: point for point in RoutePoint.objects.all()}
+    points = [catalog[code] for code in
+              ("terminal-norte", "campus-univille", "bairro-america", "terminal-central")]
+
+    def offer(author, at, with_stops=False):
+        value = RideOffer.objects.create(
+            driver=author, origin=points[0], destination=points[-1], departure_at=at,
+            seats=3, vehicle_model="Veículo Sintético", vehicle_color="Azul",
+            vehicle_plate="PRIVADA-123")
+        if with_stops:
+            Waypoint.objects.create(offer=value, point=points[2], position=2)
+            Waypoint.objects.create(offer=value, point=points[1], position=1)
+        return value
+
+    first = offer(driver, departure, with_stops=True)
+    second = offer(other_driver, departure-timedelta(minutes=15))
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(passenger)
+    data = {"boarding_id": str(points[0].pk), "alighting_id": str(points[-1].pk),
+            "desired_at": departure.isoformat()}
+    return SimpleNamespace(client=client, passenger=passenger, driver=driver,
+                           other_driver=other_driver, first=first, second=second,
+                           points=points, data=data, now=now, departure=departure)
+
+
+def http_search(scene, data=None):
+    return scene.client.get("/caronas/buscar/", data=data)
+
+
+def test_http_named_route():
+    from django.urls import reverse
+    assert reverse("rides:search") == "/caronas/buscar/"
+
+
+@pytest.mark.django_db
+def test_http_initial_does_not_query_matching(http_scene, monkeypatch):
+    from unittest.mock import Mock
+    from rides.services.matching_service import MatchingService
+    spy = Mock(return_value=())
+    monkeypatch.setattr(MatchingService, "search", spy)
+    response = http_search(http_scene)
+    assert response.status_code == 200
+    assert not response.context["searched"]
+    assert not response.context["form"].is_bound
+    assert response.context["results"] == ()
+    spy.assert_not_called()
+    assert "Nenhuma oferta compatível" not in response.content.decode()
+
+
+@pytest.mark.parametrize("kind,status", [
+    ("visitor", 302), ("pending", 302), ("driver", 403), ("disabled", 302),
+    ("passenger", 200),
+])
+@pytest.mark.django_db
+def test_http_access_matrix(http_scene, kind, status):
+    from django.contrib.auth import get_user_model
+    from django.test import Client
+    client = Client()
+    if kind == "driver":
+        client.force_login(http_scene.driver)
+    elif kind != "visitor":
+        client.force_login(http_scene.passenger)
+        changes = {"academic_status": "PENDENTE"} if kind == "pending" else {"is_active": False}
+        if kind != "passenger":
+            get_user_model().objects.filter(pk=http_scene.passenger.pk).update(**changes)
+    response = client.get("/caronas/buscar/")
+    assert response.status_code == status
+    if kind in ("visitor", "disabled"):
+        assert response.url == "/accounts/login/?next=/caronas/buscar/"
+    if kind == "pending":
+        assert response.url == "/accounts/activation/"
+
+
+@pytest.mark.parametrize("field,value", [
+    ("boarding_id", ""), ("boarding_id", "999999999"), ("boarding_id", "1.5"),
+    ("alighting_id", ""), ("alighting_id", "999999999"), ("desired_at", "inválido"),
+    ("desired_at", ""),
+])
+@pytest.mark.django_db
+def test_http_invalid_input_does_not_call_matching(http_scene, monkeypatch, field, value):
+    from unittest.mock import Mock
+    from rides.services.matching_service import MatchingService
+    spy = Mock(return_value=())
+    monkeypatch.setattr(MatchingService, "search", spy)
+    data = dict(http_scene.data, **{field: value})
+    response = http_search(http_scene, data)
+    assert response.status_code == 200
+    assert response.context["searched"]
+    assert field in response.context["form"].errors
+    assert response.context["results"] == ()
+    spy.assert_not_called()
+    assert "Nenhuma oferta compatível" not in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_http_equal_points_and_extra_only_are_invalid(http_scene):
+    response = http_search(http_scene, dict(http_scene.data,
+                                           alighting_id=http_scene.data["boarding_id"]))
+    assert response.status_code == 200
+    assert "alighting_id" in response.context["form"].errors
+    response = http_search(http_scene, {"tolerance": "999"})
+    assert response.status_code == 200 and response.context["searched"]
+    assert set(response.context["form"].errors) == {"boarding_id", "alighting_id", "desired_at"}
+
+
+@pytest.mark.django_db
+def test_http_valid_query_converted_and_session_user_forwarded(http_scene, monkeypatch):
+    from unittest.mock import Mock
+    from rides.services.matching_service import MatchingService
+    spy = Mock(return_value=(result(),))
+    monkeypatch.setattr(MatchingService, "search", spy)
+    response = http_search(http_scene, http_scene.data)
+    assert response.status_code == 200
+    spy.assert_called_once()
+    assert spy.call_args.kwargs["passenger"].pk == http_scene.passenger.pk
+    q = spy.call_args.kwargs["query"]
+    assert isinstance(q, SearchQuery)
+    assert q.boarding_id == http_scene.points[0].pk
+    assert q.alighting_id == http_scene.points[-1].pk
+    assert q.desired_at == http_scene.departure
+    assert response.context["results"] == (result(),)
+
+
+@pytest.mark.django_db
+def test_http_results_order_unique_private_and_read_only(http_scene):
+    from django.contrib.auth import get_user_model
+    from rides.models import RideOffer, Waypoint
+
+    def snapshot():
+        return (list(RideOffer.objects.order_by("pk").values()),
+                list(Waypoint.objects.order_by("pk").values()),
+                list(RoutePoint.objects.order_by("pk").values()),
+                list(get_user_model().objects.order_by("pk").values()))
+
+    before = snapshot()
+    response = http_search(http_scene, http_scene.data)
+    assert response.status_code == 200
+    results = response.context["results"]
+    assert isinstance(results, tuple) and all(isinstance(item, SearchResult) for item in results)
+    assert [item.offer_id for item in results] == [http_scene.second.pk, http_scene.first.pk]
+    assert results[1].itinerary == tuple(point.name for point in http_scene.points)
+    assert snapshot() == before
+    html = response.content.decode()
+    for user in (http_scene.driver, http_scene.other_driver):
+        assert user.display_name in html
+        assert user.full_name not in html and user.email not in html
+    assert "PRIVADA-123" not in html
+    assert "application/json" not in html and "reservar" not in html.lower()
+    assert "Não representa previsão de passagem nas paradas." in html
+
+
+@pytest.mark.django_db
+def test_http_intermediate_points_empty_and_filters_preserved(http_scene):
+    data = dict(http_scene.data, boarding_id=str(http_scene.points[1].pk),
+                alighting_id=str(http_scene.points[2].pk))
+    response = http_search(http_scene, data)
+    assert response.status_code == 200
+    assert [item.offer_id for item in response.context["results"]] == [http_scene.first.pk]
+    inverted = dict(data, boarding_id=data["alighting_id"], alighting_id=data["boarding_id"])
+    response = http_search(http_scene, inverted)
+    assert response.status_code == 200 and response.context["results"] == ()
+    assert response.context["form"].data.dict() == inverted
+    assert "Nenhuma oferta compatível com os filtros informados." in response.content.decode()
+
+
+@pytest.mark.parametrize("change", ["pending", "disabled", "wrong_role", "past", "now", "outside"])
+@pytest.mark.django_db
+def test_http_excludes_ineligible_offers_on_next_search(http_scene, change):
+    from datetime import timedelta
+    from django.contrib.auth import get_user_model
+    from rides.models import RideOffer
+
+    assert http_search(http_scene, http_scene.data).status_code == 200
+    if change in ("pending", "disabled", "wrong_role"):
+        values = {"pending": {"academic_status": "PENDENTE"}, "disabled": {"is_active": False},
+                  "wrong_role": {"role": "PASSAGEIRO"}}[change]
+        get_user_model().objects.filter(pk=http_scene.driver.pk).update(**values)
+    else:
+        at = {"past": http_scene.now-timedelta(seconds=1), "now": http_scene.now,
+              "outside": http_scene.departure+timedelta(minutes=30, seconds=1)}[change]
+        RideOffer.objects.filter(pk=http_scene.first.pk).update(departure_at=at)
+    response = http_search(http_scene, http_scene.data)
+    assert response.status_code == 200
+    assert [item.offer_id for item in response.context["results"]] == [http_scene.second.pk]
+
+
+@pytest.mark.django_db
+def test_http_extra_parameters_cannot_relax_window_or_choose_user(http_scene):
+    from datetime import timedelta
+    from rides.models import RideOffer
+    RideOffer.objects.filter(pk=http_scene.first.pk).update(
+        departure_at=http_scene.departure+timedelta(minutes=30, seconds=1))
+    data = dict(http_scene.data, tolerance="999", window="999", user_id=str(http_scene.driver.pk),
+                driver=str(http_scene.driver.pk), page="999")
+    response = http_search(http_scene, data)
+    assert response.status_code == 200
+    assert [item.offer_id for item in response.context["results"]] == [http_scene.second.pk]
+    assert set(response.context["form"].cleaned_data) == {"boarding_id", "alighting_id", "desired_at"}
+
+
+@pytest.mark.parametrize("method", ["post", "put", "patch", "delete"])
+@pytest.mark.django_db
+def test_http_write_methods_405_and_no_matching(http_scene, monkeypatch, method):
+    from unittest.mock import Mock
+    from rides.services.matching_service import MatchingService
+    spy = Mock(return_value=())
+    monkeypatch.setattr(MatchingService, "search", spy)
+    # Default Django test client bypasses CSRF here to isolate the method contract.
+    from django.test import Client
+    client = Client()
+    client.force_login(http_scene.passenger)
+    response = getattr(client, method)("/caronas/buscar/", data=http_scene.data)
+    assert response.status_code == 405
+    spy.assert_not_called()
+
+
+@pytest.mark.parametrize("error", ["field", "general", "permission"])
+@pytest.mark.django_db
+def test_http_service_revalidation_errors_are_safe(http_scene, monkeypatch, error):
+    from django.core.exceptions import PermissionDenied, ValidationError
+    from rides.services.matching_service import MatchingService
+    from unittest.mock import Mock
+
+    failures = {"field": ValidationError({"boarding_id": "Selecione um ponto existente do catálogo."}),
+                "general": ValidationError("Consulta inválida."),
+                "permission": PermissionDenied("Acesso recusado.")}
+    monkeypatch.setattr(MatchingService, "search", Mock(side_effect=failures[error]))
+    response = http_search(http_scene, http_scene.data)
+    assert response.status_code == (403 if error == "permission" else 200)
+    assert "PRIVADA-123" not in response.content.decode()
+    if error != "permission":
+        assert response.context["results"] == ()
+        assert response.context["form"].errors
+
+
+@pytest.mark.parametrize("kind", ["driver", "pending", "disabled"])
+@pytest.mark.django_db
+def test_passenger_mixin_rejects_without_middleware(http_scene, kind):
+    from django.core.exceptions import PermissionDenied
+    from rides import views
+    user = http_scene.driver if kind == "driver" else http_scene.passenger
+    if kind == "pending":
+        user.academic_status = "PENDENTE"
+    if kind == "disabled":
+        user.is_active = False
+    request = RequestFactory().get("/caronas/buscar/")
+    request.user = user
+    with pytest.raises(PermissionDenied):
+        views.RideSearchView.as_view()(request)
+
+
+@pytest.mark.django_db
+def test_existing_routes_preserved(http_scene):
+    from django.urls import reverse
+    assert reverse("rides:offer-create") == "/caronas/oferecer/"
+    assert reverse("rides:my-offers") == "/caronas/minhas-ofertas/"
+    assert reverse("caronas") == "/caronas/"
+    http_scene.client.force_login(http_scene.driver)
+    for url in ("/caronas/oferecer/", "/caronas/minhas-ofertas/", "/caronas/"):
+        assert http_scene.client.get(url).status_code == 200

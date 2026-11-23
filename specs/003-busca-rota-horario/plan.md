@@ -2,7 +2,7 @@
 
 **Feature**: 003-busca-rota-horario | **Date**: 2026-11-22 | **Spec**: [spec.md](spec.md)
 **Branch**: nenhuma branch criada/alterada. Feature selecionada por `.specify/feature.json`.
-**Status**: T001–T003 locais implementadas/verificadas; T004/T005 pendentes. [Evidência parcial](evidence-t018.md).
+**Status**: T001–T004 locais implementadas/verificadas; T005 de qualidade/demo final pendente. [Evidência HTTP](evidence-t019.md).
 
 ## Summary
 

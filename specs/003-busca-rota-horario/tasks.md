@@ -3,7 +3,7 @@
 **Feature**: 003-busca-rota-horario. IDs abaixo são oficiais locais, independentes dos IDs do roadmap e de outras features.
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contratos](contracts/web-routes.md), [quickstart.md](quickstart.md).
 **Prerequisites**: identidade/middleware da Feature 001 e ofertas/catálogo da Feature 002 disponíveis. T007 de qualidade final da Feature 002 continua pendente; não é requisito funcional da busca nem deve ser marcada nesta rodada.
-**Tests**: exigidos pela constitution e REQ-017. Em cada tarefa de implementação: escrever/rodar testes antes, demonstrar falha esperada de comportamento, implementar e repetir. Refatoração preserva comportamento e comprova regressão sem fabricar falha de produto. Dados sintéticos, venv e PostgreSQL existentes. Atualização 2026-11-22: T001–T003 implementadas e verificadas; T004/T005 pendentes. Evidência em [evidence-t018.md](evidence-t018.md).
+**Tests**: exigidos pela constitution e REQ-017. Em cada tarefa de implementação: escrever/rodar testes antes, demonstrar falha esperada de comportamento, implementar e repetir. Refatoração preserva comportamento e comprova regressão sem fabricar falha de produto. Dados sintéticos, venv e PostgreSQL existentes. Atualização 2026-11-22: T001–T004 implementadas e verificadas; T005 pendente. Evidências em [evidence-t018.md](evidence-t018.md) e [evidence-t019.md](evidence-t019.md).
 
 ## Phase 1: Setup
 
@@ -32,7 +32,7 @@ Não há novo app, dependência ou migração. Confirmar ambiente existente ao e
 **Goal**: passageiro ativo pesquisa via HTTP com consulta somente leitura.
 **Independent Test**: GET real de `/caronas/buscar/` com ofertas de dois motoristas, filtros, resultados e todos os estados de acesso.
 
-- [ ] T004 [US3] Escrever testes HTTP em `tests/test_ride_search.py` e implementar ActivePassengerRequiredMixin/RideSearchView em `rides/views.py` e rota `rides:search` em `rides/urls.py`, conforme [contratos](contracts/web-routes.md). Converter formulário validado em SearchQuery e passar request.user ao serviço; fontes canônicas [data-model.md](data-model.md): `SearchQuery.boarding_id`, `SearchQuery.alighting_id`, `SearchQuery.desired_at`, `AcademicUser.id`, `AcademicUser.role`, `AcademicUser.academic_status`, `AcademicUser.is_active`. Só DTOs SearchResult definidos nesse documento compõem resultados do contexto. Testar visitante/pendente/motorista bloqueados, passageiro permitido, inicial distinto do vazio, erros sem chamada indevida ao matching, parâmetros extras sem alterar janela/permissões, ofertas ordenadas/únicas, exclusão de vínculos inativos e passadas, GET sem mudança de domínio e 405 em métodos de escrita. Preservar rotas de publicação, consulta própria e placeholder. REQ-005, REQ-002, REQ-003, REQ-017; FR-001–FR-011; US3; dependência T003; conclusão: busca integrada e restrita, com HTML privado e teste de regressão de rides. **Roadmap T019 → Feature 003/T004 local.**
+- [x] T004 [US3] Escrever testes HTTP em `tests/test_ride_search.py` e implementar ActivePassengerRequiredMixin/RideSearchView em `rides/views.py` e rota `rides:search` em `rides/urls.py`, conforme [contratos](contracts/web-routes.md). Converter formulário validado em SearchQuery e passar request.user ao serviço; fontes canônicas [data-model.md](data-model.md): `SearchQuery.boarding_id`, `SearchQuery.alighting_id`, `SearchQuery.desired_at`, `AcademicUser.id`, `AcademicUser.role`, `AcademicUser.academic_status`, `AcademicUser.is_active`. Só DTOs SearchResult definidos nesse documento compõem resultados do contexto. Testar visitante/pendente/motorista bloqueados, passageiro permitido, inicial distinto do vazio, erros sem chamada indevida ao matching, parâmetros extras sem alterar janela/permissões, ofertas ordenadas/únicas, exclusão de vínculos inativos e passadas, GET sem mudança de domínio e 405 em métodos de escrita. Preservar rotas de publicação, consulta própria e placeholder. REQ-005, REQ-002, REQ-003, REQ-017; FR-001–FR-011; US3; dependência T003; conclusão: busca integrada e restrita, com HTML privado e teste de regressão de rides. **Roadmap T019 → Feature 003/T004 local.**
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
@@ -55,7 +55,7 @@ Não há novo app, dependência ou migração. Confirmar ambiente existente ao e
 | T019 / REQ-005, REQ-017 | View e fluxo integrado | **T004** |
 | Governança da entrega | Aceitação final e métricas | **T005** |
 
-Sempre reportar os dois IDs para evitar confusão com features anteriores. Solicitação da T017 ainda exige confirmar/completar T001 como dependência antes de T002. T001–T003 concluídas nesta entrega parcial; T004/T005 permanecem abertas. Ver [evidence-t018.md](evidence-t018.md).
+Sempre reportar os dois IDs para evitar confusão com features anteriores. T017 corresponde à T002 local e teve a preparação T001 como dependência já atendida. T001–T004 concluídas; T005 permanece aberta. Ver [evidence-t018.md](evidence-t018.md) e [evidence-t019.md](evidence-t019.md).
 
 ## Parallel Opportunities & Examples
 

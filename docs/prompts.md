@@ -1068,3 +1068,56 @@ Skills aplicadas: speckit-implement (restrita às três tarefas autorizadas) e p
 T001: regressão 114; contrato de import 115 antes/depois da refatoração, sem mudança de comportamento. T002: fixture inicialmente corrigida para criar conta PENDENTE; vermelho válido 65 falhas por serviço ausente, depois 65 aprovados. T003: 27 falhas por formulário ausente, depois 27 aprovados. Regressão final 359 aprovados, sem falhas/erros/ignorados; reports coverage-feature003-t018.json e test-results-feature003-t018.xml, detalhes em specs/003-busca-rota-horario/evidence-t018.md.
 
 Sem nova migração, view/rota de busca, nota, reserva, staging ou commit. Checklists locais T001–T003 e roadmap T017/T018 concluídos somente após evidência; T004/T005 locais permanecem pendentes. Alteração prévia em docs/prompts.md preservada.
+
+
+---
+
+## 2026-11-22 — Feature 003 / T004 local / roadmap T019
+
+Prompt integral:
+
+~~~text
+Execute somente a tarefa T019 do Carona Univille.
+
+Área da tarefa — Feature 003, Busca por rota e horário.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T019 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Correspondência por objetivo/requisito: T019 → T004 local; dependência T003 concluída. Divergência identificada na tabela histórica do roadmap (busca paginada), enquanto plano e tarefa local não exigem paginação. Foi recomendado seguir T004 sem paginação e corrigir a referência do roadmap.
+
+Confirmação integral do usuário:
+
+~~~text
+sim
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Skills aplicadas: speckit-implement (somente T004) e python-fact-grounded-coding. Checklist documental 16/16 aprovado, sem hooks. Ambiente venv existente; PostgreSQL real nos testes. Testes HTTP escritos/rodados antes da view/rota: 32 falhas esperadas e 31 aprovações (incluindo os 27 testes anteriores). Após implementação e correção de comparação QueryDict no próprio teste: 63 aprovados. A comparação foi ajustada para .dict(), preservando a verificação integral dos filtros.
+
+Artefatos, regressão e medição desta rodada: specs/003-busca-rota-horario/evidence-t019.md. Sem paginação, nova migração, staging ou commit; tarefa de qualidade/demo final T005 permanece fora desta rodada. Alteração prévia em docs/prompts.md preservada.

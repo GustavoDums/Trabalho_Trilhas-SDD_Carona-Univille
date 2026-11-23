@@ -6,9 +6,10 @@ from django.views.generic import TemplateView
 from django.views.generic import ListView
 from django.db.models import Prefetch
 
-from .forms import RideOfferForm, WaypointFormSet
+from .forms import RideOfferForm, RideSearchForm, WaypointFormSet
 from .models import RideOffer, Waypoint
 from .services import publish_offer
+from .services.matching_service import MatchingService, SearchQuery
 
 
 class ActiveDriverRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -66,3 +67,36 @@ class MyOffersView(ActiveDriverRequiredMixin, ListView):
         ).prefetch_related(
             Prefetch("waypoints", queryset=Waypoint.objects.select_related("point").order_by("position")),
         ).order_by("departure_at", "created_at", "id")
+
+
+class ActivePassengerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    login_url = "/accounts/login/"
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_active and user.role == "PASSAGEIRO" and user.is_activated
+
+
+class RideSearchView(ActivePassengerRequiredMixin, TemplateView):
+    """Feature 003/T004 local — roadmap T019, consulta sem escrita."""
+
+    template_name = "rides/search.html"
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        searched = bool(request.GET)
+        form = RideSearchForm(request.GET if searched else None)
+        results = ()
+        if searched and form.is_valid():
+            try:
+                query = SearchQuery(
+                    boarding_id=form.cleaned_data["boarding_id"].pk,
+                    alighting_id=form.cleaned_data["alighting_id"].pk,
+                    desired_at=form.cleaned_data["desired_at"],
+                )
+                results = MatchingService.search(passenger=request.user, query=query)
+            except ValidationError as error:
+                form.add_error(None, error)
+        return self.render_to_response(self.get_context_data(
+            form=form, searched=searched, results=results,
+        ))

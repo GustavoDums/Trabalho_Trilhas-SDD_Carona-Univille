@@ -1,6 +1,6 @@
 # Contratos — Busca por rota e horário
 
-Contratos previstos, ainda não implementados. Nenhuma nova tabela, escrita de domínio ou API pública JSON.
+Contratos de serviço, formulário e endpoint implementados/verificados nas T001–T004 locais; [evidência HTTP](../evidence-t019.md). Qualidade/demo final T005 pendente. Nenhuma nova tabela, escrita de domínio ou API pública JSON.
 
 ## Serviço interno
 

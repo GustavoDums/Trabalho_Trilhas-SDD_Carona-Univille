@@ -108,7 +108,7 @@ flowchart TD
 ---
 
 #### Feature 003: Busca por Rota e Janela de Horário (`REQ-005`)
-*Status*: **Implementação parcial: T017/T018 concluídas; T019 pendente**. [Plano](../specs/003-busca-rota-horario/plan.md) e [tarefas](../specs/003-busca-rota-horario/tasks.md). T017 → T002 local (preparação T001); T018 → T003; T019 → T004. [Spec da Feature 003](../specs/003-busca-rota-horario/spec.md). Confirmado em 2026-11-22: ±30 minutos fixos, bordas inclusivas, comparando a saída da origem, inclusive para embarque intermediário, com aviso explícito de ausência de previsão por parada. Sem tolerância customizável ou reputação inventada. T001–T003 locais verificadas em [evidence-t018.md](../specs/003-busca-rota-horario/evidence-t018.md); T004/T005 locais abertas. Em 2026-11-22, o usuário autorizou implementar as dependências e manter a T018 sem nota conforme a spec.
+*Status*: **T017–T019 concluídas; qualidade/demo final T005 local pendente**. [Plano](../specs/003-busca-rota-horario/plan.md) e [tarefas](../specs/003-busca-rota-horario/tasks.md). T017 → T002 local (preparação T001); T018 → T003; T019 → T004. [Spec da Feature 003](../specs/003-busca-rota-horario/spec.md). Confirmado em 2026-11-22: ±30 minutos fixos, bordas inclusivas, comparando a saída da origem, inclusive para embarque intermediário, com aviso explícito de ausência de previsão por parada. Sem tolerância customizável ou reputação inventada. T001–T004 locais verificadas em [evidence-t018.md](../specs/003-busca-rota-horario/evidence-t018.md) e [evidence-t019.md](../specs/003-busca-rota-horario/evidence-t019.md); T005 local aberta. Paginação não faz parte da T019, conforme confirmação do usuário em 2026-11-22. Em 2026-11-22, o usuário autorizou implementar as dependências e manter a T018 sem nota conforme a spec.
 
 - [x] **T017**: **[TESTE ESPECÍFICO DE ORDEM DE PARADAS E JANELA DE BUSCA]**: Implementar algoritmo determinístico `MatchingService` em `rides/services/matching_service.py` com testes unitários em `tests/test_matching.py` validando:
   - (1) **Ordem de paradas**: embarque em $P_i$ e desembarque em $P_j$ só é compatível se $i < j$ (ordem crescente).
@@ -118,7 +118,7 @@ flowchart TD
 - [x] **T018**: Implementar formulário de busca `RideSearchForm`, template `rides/templates/rides/search.html` e regras de minimização LGPD (nome abreviado `display_name`, trajeto, saída, vagas e modelo/cor; sem nome completo, nota, placa ou e-mail).
   - *Requisitos*: REQ-003, REQ-005 | *Dependências*: T017 | *Como verificar*: Renderização do cartão de busca não expõe e-mail nem placa do motorista.
   - *Fusão*: Agrupa antigas T048, T050 e T051.
-- [ ] **T019**: Implementar view `RideSearchView` em `rides/views.py` com ordenação cronológica e testes de integração em `tests/test_ride_search.py` para o fluxo de busca de caronas por passageiro ativo.
+- [x] **T019**: Implementar view `RideSearchView` em `rides/views.py` com ordenação cronológica e testes de integração em `tests/test_ride_search.py` para o fluxo de busca de caronas por passageiro ativo.
   - *Requisitos*: REQ-005, REQ-017 | *Dependências*: T018 | *Como verificar*: `pytest tests/test_ride_search.py` valida resultados filtrados por rota e horário.
   - *Fusão*: Agrupa antigas T049, T052, T053 e T054.
 
@@ -294,7 +294,7 @@ flowchart TD
 | **T016** | Testes integrados de aceitação da oferta de carona | `T044` |
 | **T017** | Algoritmo de matching com testes de ordem de paradas e janela de horário | `T045`, `T046`, `T047` |
 | **T018** | Formulário de busca, template e regras de minimização LGPD | `T048`, `T050`, `T051` |
-| **T019** | View de busca paginada, rotas e testes integrados de aceitação da busca | `T049`, `T052`, `T053`, `T054` |
+| **T019** | View de busca sem paginação, rotas e testes integrados de aceitação da busca | `T049`, `T052`, `T053`, `T054` |
 | **T020** | Modelo `RideBooking`, validações contra auto-reserva e migrações | `T055`, `T056` |
 | **T021** | Reserva atômica no PostgreSQL e teste de concorrência simultânea (zero overbooking) | `T057`, `T058`, `T059` |
 | **T022** | View de reserva, template e liberação de contatos/placa (LGPD) | `T060`, `T061`, `T062` |

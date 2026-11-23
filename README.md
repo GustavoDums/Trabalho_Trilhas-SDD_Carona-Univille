@@ -1,5 +1,15 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-003-t019-quality:start -->
+Feature 003 / T004 local / roadmap T019 — **395 testes aprovados na suíte de regressão**, 0 ignorados.
+**36 novos testes HTTP nesta tarefa**; 128 funcionais acumulados da Feature 003 (65 matching + 63 formulário/HTTP), 152 accounts e 115 ofertas.
+Cobertura de `rides/`: **99.21875%** combinada; linhas: 310/310 (100%); ramificações: 71/74 (95.94594594594595%). Matching e views: 100% de linhas/ramificações. Meta: 80%.
+Relatórios: [coverage-feature003-t019.json](coverage-feature003-t019.json), [test-results-feature003-t019.xml](test-results-feature003-t019.xml) e [evidência](specs/003-busca-rota-horario/evidence-t019.md). Medição: 2026-11-22.
+Reproduzir: `venv/Scripts/python.exe -m pytest tests -q --tb=short --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature003-t019.json --junitxml=test-results-feature003-t019.xml`.
+Busca disponível em `/caronas/buscar/` para passageiro ativo, sem paginação. Qualidade/demo final T005 local continua pendente.
+<!-- feature-003-t019-quality:end -->
+
+
 <!-- feature-003-t018-quality:start -->
 Feature 003 / entrega parcial T001–T003 locais / roadmap T017–T018 — **359 testes aprovados na suíte de regressão**, 0 ignorados.
 São **92 testes novos funcionais da Feature 003** (65 matching + 27 formulário/HTML), 152 de accounts e 115 de ofertas (incluindo 1 contrato novo de import).
