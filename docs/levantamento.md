@@ -180,3 +180,25 @@ na primeira oferta. Registro detalhado em [spec.md](../specs/002-oferta-caronas-
 - **Veículo**: modelo, cor e placa exigidos antes da primeira publicação, sem ampliar o cadastro acadêmico inicial. Modelo e cor poderão aparecer em busca futura; placa permanece privada, com liberação à contraparte somente após reserva confirmada.
 - **Recorte autorizado desta rodada**: especificação e checklist de qualidade. Plano, tarefas e implementação ainda não iniciados. Premissas complementares estão separadas das decisões anteriores na especificação.
 - **Pendências mantidas**: homologação docente da validação acadêmica simulada, domínios adicionais, matching e cancelamento seguem sua governança própria.
+
+## 5. Preparação da Feature 003 (2026-11-22)
+
+Solicitada a criação da especificação com base no estado atual do projeto.
+[Rascunho](../specs/003-busca-rota-horario/spec.md) reutiliza catálogo, ofertas e ordem de paradas da Feature 002 e acesso acadêmico da Feature 001.
+
+- Regra de ordem proposta no levantamento: embarque anterior ao desembarque (`i < j`), com pontos do mesmo catálogo e sem busca por coordenadas.
+- A janela de ±30 minutos aparece no roadmap; a escolha fixa/configurável continua pendente. O exemplo anterior de ±15 minutos não é homologação de parametrização pelo usuário.
+- O projeto registra saída da origem, sem horário individual por parada. Deve ser confirmado se a PoC compara a saída (com aviso) ou se exigirá dados de passagem antes de implementar a busca.
+- Recomendação do agente: ±30 minutos fixos, inclusivos, pela saída da origem. **Ainda não aprovada pela dupla** nesta rodada.
+- Reputação não implementada não será fabricada no cartão de busca. Privacidade continua estrita: nome abreviado, sem nome completo, placa ou e-mail para terceiros.
+- Nenhum código, plano ou tasks da Feature 003 implementado/gerado; TODO(REGRAS_MATCHING) e demais pendências da constitution preservados.
+
+### Confirmação das regras temporais da Feature 003 (2026-11-22)
+
+Atualiza as pendências da seção 5: após a recomendação apresentada, o usuário autorizou o uso das opções recomendadas para o projeto.
+
+- Janela fixa de ±30 minutos, com os dois extremos inclusivos; sem campo para tolerância customizável.
+- Comparar a saída da origem, inclusive para embarque intermediário. Informar claramente que não há previsão de horário de passagem na parada.
+- Exemplo: pedido 08:00 inclui saídas 07:30 e 08:30; exclui 07:29:59 e 08:30:01, respeitando também a regra de partida futura.
+- Estas decisões substituem as alternativas temporais ainda provisórias registradas anteriormente para a Feature 003. Não mudam o modelo de ofertas nem encerram homologação acadêmica, domínios ou cancelamento.
+- Spec e checklist atualizados; plano/tasks e implementação continuam para etapas posteriores. Nenhuma emenda da constitution foi realizada nesta rodada.

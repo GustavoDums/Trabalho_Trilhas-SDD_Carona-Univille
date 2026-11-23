@@ -108,7 +108,7 @@ flowchart TD
 ---
 
 #### Feature 003: Busca por Rota e Janela de Horário (`REQ-005`)
-*Status*: **Planejada no Roadmap** | *Bloqueios a fechar antes do tasks.md*: Tolerância padrão da janela de busca ($\pm 30$ min fixa vs customizável).
+*Status*: **Especificação, plano e tarefas locais preparados; implementação não iniciada**. [Plano](../specs/003-busca-rota-horario/plan.md) e [tarefas](../specs/003-busca-rota-horario/tasks.md). T017 → T002 local (preparação T001); T018 → T003; T019 → T004. [Spec da Feature 003](../specs/003-busca-rota-horario/spec.md). Confirmado em 2026-11-22: ±30 minutos fixos, bordas inclusivas, comparando a saída da origem, inclusive para embarque intermediário, com aviso explícito de ausência de previsão por parada. Sem tolerância customizável ou reputação inventada. Plano/tasks documentados; T017–T019 e todas as tarefas locais continuam abertas.
 
 - [ ] **T017**: **[TESTE ESPECÍFICO DE ORDEM DE PARADAS E JANELA DE BUSCA]**: Implementar algoritmo determinístico `MatchingService` em `rides/services/matching_service.py` com testes unitários em `tests/test_matching.py` validando:
   - (1) **Ordem de paradas**: embarque em $P_i$ e desembarque em $P_j$ só é compatível se $i < j$ (ordem crescente).

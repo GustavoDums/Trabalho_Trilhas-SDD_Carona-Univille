@@ -903,3 +903,113 @@ concluída. Artefatos: testes integrados de aceitação, relatórios Feature 002
 README, tasks e roadmap. Não houve alteração do código de produção.
 Testes cobrem sessões e CSRF reais, dois autores e rollback por falha injetada.
 Alterações preexistentes preservadas; sem staging ou commit.
+## P030 — Diagnóstico T017 e especificação da Feature 003
+
+Execute somente a tarefa T017 do Carona Univille.
+
+Área da tarefa — Feature 003, Busca por rota e horário.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T017 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+
+Referência anexada: `docs/prompts.md`.
+
+### Autorização para especificar
+
+com base neste projeto até o momento, crie a feature 3 com as informações presentes no projeto
+
+Referência anexada: `docs/prompts.md`.
+
+Skill aplicada: speckit-specify. Artefatos: specs/003-busca-rota-horario/spec.md,
+checklists/requirements.md, referências no levantamento/roadmap e feature.json.
+Duas decisões continuam pendentes: janela fixa/configurável e referência temporal.
+Recomendação de ±30 minutos fixos pela saída da origem não tratada como homologada.
+Sem matching implementado, sem plano/tasks e sem testes executados nesta rodada.
+Sem staging ou commit.
+## P031 — Confirmar regras temporais da Feature 003
+
+pode fazer com base no que considera recomendado para o projeto
+
+Referência anexada: `docs/prompts.md`.
+
+Contexto da confirmação: janela recomendada de ±30 minutos fixos, bordas
+inclusivas, comparando saída da origem e sem estimar passagem por parada.
+Adotadas ambas as opções; spec, checklist, levantamento e roadmap sincronizados.
+Sem plano/tasks, código ou testes novos. Sem staging ou commit.
+## P032 — Planejamento técnico da Feature 003
+
+gere o plano técnico e as tarefas locais
+
+Referência anexada: `docs/prompts.md`.
+
+Skills aplicadas: speckit-plan e speckit-tasks. Artefatos: plan.md, research.md,
+data-model.md, contracts/web-routes.md, quickstart.md e tasks.md da Feature 003;
+referências da spec/checklist e roadmap sincronizadas. Revisão delegada somente
+leitura conforme a skill de planejamento, sem edição pelo delegado.
+Regras confirmadas preservadas: ±30 minutos inclusivos pela saída da origem.
+Cinco tarefas locais abertas: T017 do roadmap corresponde a T002 local, com
+preparação T001 para pacote de serviços compatível; T018 a T003; T019 a T004.
+Sem migração ou código de produto, testes ou scripts implementados/executados.
+Alterações preexistentes preservadas; sem staging ou commit.
+---
+
+## 2026-11-22 — Preparação documental das Features 004 em diante
+
+Prompt do usuário (integral):
+
+> Prepare as features 004 em diante do Carona Univille para implementação. Nesta rodada, gere ou complete os arquivos de especificação, plano técnico e tarefas locais no repositório. Encerre após validar a documentação, sem implementar código, fazer staging ou criar commits.
+>
+> Antes de escrever, leia a constitution do projeto, docs/levantamento.md, docs/roadmap-implementacao.md e os artefatos existentes em specs/. Use as features 001 a 003 como referência de formato e preserve as alterações existentes.
+>
+> Escopo:
+> - Feature 004 — Reserva sem overbooking, T020–T023 do roadmap.
+> - Feature 005 — Cancelamento e liberação de vaga, T024–T027.
+> - Features 006 a 009 — T028–T036. Resolva a distribuição das tarefas e os nomes das features pelo roadmap.
+> - Features 010 e 011 — T037–T040. Inclua apenas os bônus que a dupla já confirmou no planejamento. Se a decisão estiver pendente, registre isso no resumo.
+> - T041–T045 pertencem à entrega e à governança geral. Use-os como referência quando pertinente.
+>
+> Para cada feature no escopo, siga a estrutura e os nomes usados em specs/ e entregue:
+>
+> 1. spec.md — requisitos, fluxos, regras de negócio, dependências e critérios de aceitação verificáveis.
+> 2. plan.md — abordagem técnica compatível com a arquitetura atual, componentes afetados, mudanças em dados ou interfaces quando aplicável, ordem de implementação e estratégia de verificação.
+> 3. tasks.md — checklist com IDs locais, tarefas pequenas e executáveis, requisitos vinculados, dependências, arquivos ou áreas prováveis e critérios de conclusão.
+>
+> Relacione cada item aplicável do roadmap aos IDs locais do tasks.md por objetivo e requisito. Os números podem ser diferentes. Preserve os IDs locais e o estado das tarefas já existentes. Para as novas tarefas, deixe o checklist em aberto.
+>
+> Se as fontes divergirem ou faltar uma decisão de produto, registre a dúvida e avance nas partes que puder especificar com segurança. Ao final, confira a consistência entre spec.md, plan.md e tasks.md e liste os arquivos criados ou atualizados, o mapeamento dos IDs do roadmap para os IDs locais e as decisões pendentes.
+
+Referência anexada: docs/prompts.md.
+
+Skills aplicadas: speckit-specify, speckit-plan, speckit-tasks e speckit-analyze.
+Artefatos: sete documentos por feature 004–009 e docs/preparacao-features-004-009.md.
+Não houve confirmação nova de regras de produto ou adoção dos bônus 010/011.
+Todas as 40 tarefas locais permanecem abertas, com decisões bloqueantes explícitas.
+Revisão de pesquisa delegada somente leitura, conforme instrução da skill speckit-plan.
+
+Instrução enviada ao agente de pesquisa (integral):
+
+> Somente pesquisa/revisão de documentação, sem editar. Usuário pede preparar specs/plans/tasks Features004–009 e bônus010/011 só se confirmados, registrando pendências sem bloquear trabalho documental. Leia roadmap trechos004–011 e levantamento. Identifique conflitos entre reserva/cancelamento/avaliação/reputação/penalidades/recorrência, bônus realmente confirmados ou apenas propostos e invariantes técnicos seguros transacionais. Responda com recomendações e bloqueios de produto; não homologue propostas.
+
+Nenhum código, migração, staging ou commit nesta rodada. Validação documental,
+sem executar suíte futura nem alterar métricas existentes.
