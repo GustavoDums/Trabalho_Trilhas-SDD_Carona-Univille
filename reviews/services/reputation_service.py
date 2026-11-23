@@ -12,6 +12,7 @@ from django.utils import timezone
 from ..models import PenaltyRecord, ReputationProfile, RideReview
 
 WINDOW_SIZE = 20
+INITIAL_SCORE = Decimal('5.00')
 
 
 def calculate_score(ratings):
@@ -25,7 +26,7 @@ def calculate_score(ratings):
     if any(isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 5 for value in values):
         raise ValidationError('As notas devem ser inteiras entre 1 e 5.', code='invalid_rating')
     if not values:
-        return Decimal('5.00')
+        return INITIAL_SCORE
     with localcontext(Context(prec=28, rounding=ROUND_HALF_UP)):
         return (Decimal(sum(values))/Decimal(len(values))).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 

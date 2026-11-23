@@ -2,6 +2,9 @@
 {% timezone "America/Sao_Paulo" %}
 <article data-offer-id="{{ result.offer_id }}">
     <h2>Motorista: {{ result.driver_display_name }}</h2>
+    {% if result.driver_score is not None %}
+    <p>Reputação: {% include "reviews/_reputation_score.html" with score=result.driver_score only %}</p>
+    {% endif %}
     <h3>Itinerário</h3>
     <ol>{% for point in result.itinerary %}<li>{{ point }}</li>{% endfor %}</ol>
     <p>Saída da origem: <time datetime="{{ result.departure_at|date:'c' }}">{{ result.departure_at|date:"d/m/Y H:i:s" }}</time></p>

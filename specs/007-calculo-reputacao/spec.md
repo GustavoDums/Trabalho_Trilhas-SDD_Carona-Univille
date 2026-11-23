@@ -1,7 +1,7 @@
 # Feature Specification: Cálculo matemático de reputação
 
 **Feature**: 007-calculo-reputacao | **Created**: 2026-11-22
-**Status**: T001 homologada, cálculo/rebuild validados na [T002](evidence-t030.md) e recálculo automático integrado na T004. Exibição no perfil e na busca prevista na T005.
+**Status**: T001 homologada, cálculo/rebuild validados na [T002](evidence-t030.md), recálculo automático integrado na T004 e exibição no perfil e na busca entregue na [T005](evidence-t005.md).
 **Input**: REQ-009 e solicitação de preparação documental.
 
 ## Contexto e rastreabilidade

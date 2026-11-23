@@ -11,7 +11,7 @@
 
 **Purpose**: Inicialização completa do projeto Django, dependências, configuração do pytest e variáveis de ambiente com PostgreSQL.
 
-- [x] T001 Inicializar projeto Django `carona_univille/`, dependências em `requirements.txt`, configuração do pytest em `pytest.ini` e variáveis de ambiente PostgreSQL em `.env.example` e `carona_univille/settings.py`; verificar a configuração do Django com `python manage.py check` e o pytest com `pytest --collect-only` (aceitando código de saída 5 unicamente quando indicar ausência de testes coletados, sem erros de configuração ou coleta) *(Consolidação: T001, T002, T003, T004)*
+- [x] T001 Inicializar projeto Django `carona_univille/`, dependências em `requirements.txt`, configuração do pytest em `pytest.ini` e variáveis de ambiente PostgreSQL em `.env.example` e `carona_univille/settings.py`; verificar a configuração do Django com `python manage.py check` e o pytest com `pytest --collect-only` (aceitando código de saída 5 unicamente quando indicar ausência de testes coletados, sem erros de configuração ou coleta) *(Consolidação: T001, T002, T003, T004)* **Requisitos**: REQ-014, REQ-018.
 
 ---
 
@@ -21,8 +21,8 @@
 
 **⚠️ CRITICAL**: Nenhuma história de usuário pode ser iniciada antes da conclusão desta fase.
 
-- [x] T002 Implementar o modelo `AcademicUser` em `accounts/models.py` herdando de `AbstractUser` com `USERNAME_FIELD = 'email'`, gerando a migração inicial em `accounts/migrations/0001_initial.py` e testes unitários em `tests/test_models.py`, validando as restrições de `data-model.md`: `AcademicUser.email` (UNIQUE), `AcademicUser.role` (MOTORISTA/PASSAGEIRO imutável), `AcademicUser.academic_status` (PENDENTE/ATIVA) e `AcademicUser.full_name` (mínimo 2 palavras) *(Consolidação: T005, T007, T011)*
-- [x] T003 [P] Criar o modelo `AcademicValidationRecord` em `accounts/models.py`, a base mockada em `accounts/fixtures/academic_whitelist.json`, o template base em `accounts/templates/accounts/base.html` e fixtures de banco e cliente em `tests/conftest.py` *(Consolidação: T006, T008, T009, T010)*
+- [x] T002 Implementar o modelo `AcademicUser` em `accounts/models.py` herdando de `AbstractUser` com `USERNAME_FIELD = 'email'`, gerando a migração inicial em `accounts/migrations/0001_initial.py` e testes unitários em `tests/test_models.py`, validando as restrições de `data-model.md`: `AcademicUser.email` (UNIQUE), `AcademicUser.role` (MOTORISTA/PASSAGEIRO imutável), `AcademicUser.academic_status` (PENDENTE/ATIVA) e `AcademicUser.full_name` (mínimo 2 palavras) *(Consolidação: T005, T007, T011)* **Requisitos**: REQ-001, REQ-002, REQ-003.
+- [x] T003 [P] Criar o modelo `AcademicValidationRecord` em `accounts/models.py`, a base mockada em `accounts/fixtures/academic_whitelist.json`, o template base em `accounts/templates/accounts/base.html` e fixtures de banco e cliente em `tests/conftest.py` *(Consolidação: T006, T008, T009, T010)* **Requisitos**: REQ-002, REQ-003.
 
 **Checkpoint**: Fundação de identidade pronta e testada — a implementação das histórias de usuário pode iniciar.
 
@@ -34,9 +34,9 @@
 
 **Independent Test**: Submeter formulário em `/accounts/register/` e comprovar gravação com status `PENDENTE` no PostgreSQL para motorista e passageiro; comprovar erro em e-mail fora de `@univille.br`; comprovar resposta neutra e preservação de dados em tentativa de cadastro duplicado.
 
-- [x] T004 [P] [US1] Implementar o formulário `AcademicRegistrationForm` em `accounts/forms.py` com validações de domínio `@univille.br` e nome completo (mínimo 2 termos), template `accounts/templates/accounts/register.html` e testes de validação em `tests/test_registration.py` *(Decisão confirmada em 2026-11-22: incluir password e password_confirm, validar igualdade e aplicar os validadores de senha do Django) (Consolidação: T014, T016 e parte de T012)*
-- [x] T005 [US1] Implementar a view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` gerando contas com status PENDENTE *(Decisão confirmada em 2026-11-22: redirecionar para /accounts/login/ sem autenticação automática) (Consolidação: T012, T015, T017)*
-- [x] T006 [US1] Implementar proteção contra enumeração na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` validando que e-mail duplicado exibe mensagem neutra, mantém exatamente 1 registro no PostgreSQL e preserva o status e papel originais *(Consolidação: T013 e lógica neutra de T015)*
+- [x] T004 [P] [US1] Implementar o formulário `AcademicRegistrationForm` em `accounts/forms.py` com validações de domínio `@univille.br` e nome completo (mínimo 2 termos), template `accounts/templates/accounts/register.html` e testes de validação em `tests/test_registration.py` *(Decisão confirmada em 2026-11-22: incluir password e password_confirm, validar igualdade e aplicar os validadores de senha do Django) (Consolidação: T014, T016 e parte de T012)* **Requisitos**: REQ-001, REQ-002, REQ-003.
+- [x] T005 [US1] Implementar a view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` gerando contas com status PENDENTE *(Decisão confirmada em 2026-11-22: redirecionar para /accounts/login/ sem autenticação automática) (Consolidação: T012, T015, T017)* **Requisitos**: REQ-001, REQ-002.
+- [x] T006 [US1] Implementar proteção contra enumeração na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` validando que e-mail duplicado exibe mensagem neutra, mantém exatamente 1 registro no PostgreSQL e preserva o status e papel originais *(Consolidação: T013 e lógica neutra de T015)* **Requisitos**: REQ-001, REQ-003.
 
 **Checkpoint**: User Story 1 totalmente funcional, independente e testável via suíte automatizada.
 
@@ -48,8 +48,8 @@
 
 **Independent Test**: Autenticar conta pendente, acionar a validação institucional em `/accounts/activation/` e verificar que contas presentes na whitelist tornam-se `ATIVA`, enquanto contas ausentes permanecem `PENDENTE`.
 
-- [x] T007 [P] [US2] Implementar o serviço desacoplado `AcademicValidationService` em `accounts/services.py` consultando `accounts/fixtures/academic_whitelist.json` com transação atômica e testes unitários em `tests/test_activation.py` (contas elegíveis vs inelegíveis) *(Consolidação: T018, T020)*
-- [x] T008 [US2] Implementar a view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` validando transição para `ATIVA` com auditoria ou recusa mantendo `PENDENTE` *(Decisão confirmada em 2026-11-22: botão único usando o e-mail da sessão, sem campos adicionais) (Consolidação: T019, T021, T022, T023)*
+- [x] T007 [P] [US2] Implementar o serviço desacoplado `AcademicValidationService` em `accounts/services.py` consultando `accounts/fixtures/academic_whitelist.json` com transação atômica e testes unitários em `tests/test_activation.py` (contas elegíveis vs inelegíveis) *(Consolidação: T018, T020)* **Requisitos**: REQ-002.
+- [x] T008 [US2] Implementar a view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` validando transição para `ATIVA` com auditoria ou recusa mantendo `PENDENTE` *(Decisão confirmada em 2026-11-22: botão único usando o e-mail da sessão, sem campos adicionais) (Consolidação: T019, T021, T022, T023)* **Requisitos**: REQ-002.
 
 **Checkpoint**: User Stories 1 e 2 funcionais e integradas de forma independente.
 
@@ -61,9 +61,9 @@
 
 **Independent Test**: Verificar que visitantes são redirecionados para login; que usuários `PENDENTE` são redirecionados compulsoriamente para `/accounts/activation/` ao tentar acessar caronas; que usuários `ATIVA` acessam normalmente seu perfil; e que o e-mail institucional não é exposto a terceiros.
 
-- [x] T009 [US3] Implementar o middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `carona_univille/settings.py` e escrever testes de integração em `tests/test_access_control.py` para bloqueio de visitante e redirecionamento compulsório de contas pendentes *(Consolidação: T024, T026, T027)*
-- [x] T010 [US3] Implementar views `LoginView` e `ProfileView` em `accounts/views.py`, templates `login.html` e `profile.html` e testes de privacidade em `tests/test_privacy_lgpd.py` validando exibição de `user.display_name` ("Lucas A.") e sigilo estrito do e-mail *(Consolidação: T025, T028, T029)*
-- [x] T011 [US3] Criar view placeholder `/caronas/` em `carona_univille/views.py` e testes em `tests/test_access_control.py` comprovando bloqueio a pendentes e liberação para contas ativas *(Consolidação: T030 e asserções complementares de T024)*
+- [x] T009 [US3] Implementar o middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `carona_univille/settings.py` e escrever testes de integração em `tests/test_access_control.py` para bloqueio de visitante e redirecionamento compulsório de contas pendentes *(Consolidação: T024, T026, T027)* **Requisitos**: REQ-002, REQ-003.
+- [x] T010 [US3] Implementar views `LoginView` e `ProfileView` em `accounts/views.py`, templates `login.html` e `profile.html` e testes de privacidade em `tests/test_privacy_lgpd.py` validando exibição de `user.display_name` ("Lucas A.") e sigilo estrito do e-mail *(Consolidação: T025, T028, T029)* **Requisitos**: REQ-002, REQ-003.
+- [x] T011 [US3] Criar view placeholder `/caronas/` em `carona_univille/views.py` e testes em `tests/test_access_control.py` comprovando bloqueio a pendentes e liberação para contas ativas *(Consolidação: T030 e asserções complementares de T024)* **Requisitos**: REQ-002.
 
 **Checkpoint**: Todas as histórias de usuário da Feature 001 implementadas, isoladas e protegidas.
 
@@ -73,7 +73,7 @@
 
 **Purpose**: Verificação de qualidade, conformidade com a Constitution e documentação versionada.
 
-- [x] T012 [P] Preparar infraestrutura de medição de qualidade criando o script `scripts/check-quality-metrics.ps1`, executar a suíte de testes de `accounts/` gerando relatório inicial `coverage.json` comprovando cobertura $\ge 80\%$ da Feature 001, registrar contagem e cobertura iniciais no topo do `README.md` e validar o roteiro do `quickstart.md` *(Consolidação: T031, T032, T033, T034)*
+- [x] T012 [P] Preparar infraestrutura de medição de qualidade criando o script `scripts/check-quality-metrics.ps1`, executar a suíte de testes de `accounts/` gerando relatório inicial `coverage.json` comprovando cobertura $\ge 80\%$ da Feature 001, registrar contagem e cobertura iniciais no topo do `README.md` e validar o roteiro do `quickstart.md` *(Consolidação: T031, T032, T033, T034)* **Requisitos**: REQ-018, REQ-019.
 
 ---
 

@@ -1,11 +1,15 @@
 """Feature 003/T002 local — matching read-only por rota e saída da origem."""
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db.models import Count, Prefetch, Q
+from django.db.models import Count, Prefetch, Q, Value
+from django.db.models.functions import Coalesce
 from django.utils import timezone
+
+from reviews.services.reputation_service import INITIAL_SCORE
 
 from ..models import RideBooking, RideOffer, RoutePoint, Waypoint
 
@@ -42,6 +46,7 @@ class SearchResult:
     available_seats: int
     vehicle_model: str
     vehicle_color: str
+    driver_score: Decimal | None = None
 
 
 class MatchingService:
@@ -90,6 +95,7 @@ class MatchingService:
             confirmed_bookings=Count(
                 "bookings", filter=Q(bookings__status=RideBooking.Status.CONFIRMADA), distinct=True,
             ),
+            driver_score=Coalesce("driver__reputation_profile__score", Value(INITIAL_SCORE)),
         ).select_related("driver", "origin", "destination").prefetch_related(
             Prefetch("waypoints", queryset=Waypoint.objects.select_related("point").order_by("position"))
         ).order_by("departure_at", "created_at", "id")
@@ -101,6 +107,7 @@ class MatchingService:
                 departure_at=offer.departure_at, seats=offer.seats,
                 available_seats=max(0, offer.seats - offer.confirmed_bookings),
                 vehicle_model=offer.vehicle_model, vehicle_color=offer.vehicle_color,
+                driver_score=offer.driver_score,
             )
             for offer in candidates if cls.route_matches(offer, query)
         )

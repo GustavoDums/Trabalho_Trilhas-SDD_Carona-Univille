@@ -29,6 +29,8 @@ ReputationService em reviews/services/reputation_service.py separa cálculo puro
 
 Na T004, o signal post_save de RideReview é registrado em AppConfig.ready e chama o serviço dentro da mesma transação da nova avaliação. Os locks PostgreSQL FOR NO KEY UPDATE permitem a checagem concorrente de chaves estrangeiras. A T005 integra a projeção ao DTO de busca e ao perfil existentes.
 
+O perfil consulta a projeção pelo usuário da sessão. A busca projeta a nota com um JOIN à relação de reputação do motorista e coloca apenas o valor decimal no DTO. Ambos usam a nota inicial homologada quando a projeção está ausente e compartilham o componente textual com estrela decorativa. A leitura dispensa migração e escrita.
+
 ## Data & Interfaces
 
 [data-model.md](data-model.md) é fonte canônica do desenho proposto; [contratos](contracts/web-routes.md) define interfaces e autorização. Migração reviews.0002_reputationprofile gerada, aplicada e verificada no PostgreSQL local; dados anteriores preservados ([evidência](evidence-t030.md)). Na implementação: revisar dados legados e plano, aplicar migração e verificar no PostgreSQL local sem reset.

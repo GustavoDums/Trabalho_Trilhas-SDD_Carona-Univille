@@ -184,7 +184,7 @@ def test_projection_immutable_ordered_and_read_only(scene):
     dto = results[0]
     assert {f.name for f in fields(dto)} == {
         "offer_id", "driver_display_name", "itinerary", "departure_at", "seats",
-        "available_seats", "vehicle_model", "vehicle_color"}
+        "available_seats", "vehicle_model", "vehicle_color", "driver_score"}
     assert dto.driver_display_name == scene.driver.display_name
     assert dto.itinerary == tuple(p.name for p in scene.points)
     assert dto.departure_at == DESIRED and dto.seats == 3 and dto.available_seats == 3

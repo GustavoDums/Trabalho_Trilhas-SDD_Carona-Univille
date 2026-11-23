@@ -599,7 +599,7 @@ def test_availability_keeps_filters_order_and_privacy_without_domain_writes(http
     assert results[1].available_seats == 2
     assert {field.name for field in fields(results[1])} == {
         "offer_id", "driver_display_name", "itinerary", "departure_at", "seats",
-        "available_seats", "vehicle_model", "vehicle_color"}
+        "available_seats", "vehicle_model", "vehicle_color", "driver_score"}
     html = response.content.decode()
     for secret in (http_scene.driver.full_name, http_scene.driver.email, "PRIVADA-123",
                    "Reserva Sintética", "boarding_bookings", "passenger_id", "application/json"):

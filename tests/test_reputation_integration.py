@@ -7,12 +7,14 @@ from threading import Barrier, Event
 import pytest
 from django.db import connection, connections, transaction
 from django.db.models.signals import post_save
+from django.test.utils import CaptureQueriesContext
 
 from reviews.models import ReputationProfile, RideReview
 from reviews.services import review_service
 from reviews.services.review_service import ReviewService
 from rides.models import RideOffer
 from rides.services.booking_service import BookingService
+from rides.services.matching_service import MatchingService, SearchQuery
 
 
 @pytest.fixture
@@ -36,6 +38,57 @@ def submit_review(scene, reviewer, rating):
         user=reviewer, offer_id=scene.offer.pk, reviewed_user_id=scene.driver.pk,
         rating=rating,
     )
+
+
+@pytest.mark.django_db
+def test_reputation_surfaces_show_current_score_and_respect_session_and_privacy(completed_ride, client):
+    scene, instant = completed_ride
+    future = RideOffer.objects.create(
+        driver=scene.driver, origin=scene.points[0], destination=scene.points[-1],
+        departure_at=instant + timedelta(days=1), seats=2, vehicle_model="Fictício",
+        vehicle_color="Azul", vehicle_plate="REPUTA-SEGREDO",
+    )
+    submit_review(scene, scene.passenger, 2)
+    submit_review(scene, scene.other, 5)
+    client.force_login(scene.driver)
+    html = client.get("/accounts/profile/").content.decode()
+    assert "3,50 de 5" in html and "★" in html
+
+    client.force_login(scene.passenger)
+    html = client.get("/accounts/profile/", {"user_id": scene.driver.pk}).content.decode()
+    assert "5,00 de 5" in html and "3,50 de 5" not in html
+    response = client.get("/caronas/buscar/", {
+        "boarding_id": future.origin_id, "alighting_id": future.destination_id,
+        "desired_at": future.departure_at.isoformat(),
+    })
+    assert response.context["results"][0].driver_score == Decimal("3.50")
+    html = response.content.decode()
+    assert "3,50 de 5" in html and '<span aria-hidden="true">★</span>' in html
+    for private in (scene.driver.email, scene.driver.full_name, future.vehicle_plate):
+        assert private not in html
+    assert ReputationProfile.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_reputation_search_projection_is_batched_and_preserves_zero(cancellation_scene):
+    scene = cancellation_scene
+    query = SearchQuery(scene.points[0].pk, scene.points[-1].pk, scene.departure)
+    with CaptureQueriesContext(connection) as initial:
+        first, = MatchingService.search(passenger=scene.passenger, query=query)
+    assert first.driver_score == Decimal("5.00")
+    assert not ReputationProfile.objects.exists()
+    ReputationProfile.objects.create(user=scene.driver, score=Decimal("0.00"))
+    for minutes in (1, 2, 3):
+        RideOffer.objects.create(
+            driver=scene.driver, origin=scene.points[0], destination=scene.points[-1],
+            departure_at=scene.departure + timedelta(minutes=minutes), seats=1,
+            vehicle_model="Fictício", vehicle_color="Azul", vehicle_plate="REPUTA-SEGREDO",
+        )
+    with CaptureQueriesContext(connection) as batch:
+        results = MatchingService.search(passenger=scene.passenger, query=query)
+    assert len(results) == 4
+    assert all(result.driver_score == Decimal("0.00") for result in results)
+    assert len(batch) == len(initial)
 
 
 @pytest.mark.django_db

@@ -2,7 +2,7 @@
 
 **Feature**: 007-calculo-reputacao; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001, T002 e T004 concluídas. T003 incorporada à T002. T005 e T006 abertas. [Evidência T030](evidence-t030.md) · [Evidência T004](evidence-t004.md).
+**Status**: T001, T002, T004 e T005 concluídas. T003 incorporada à T002. T006 aberta. [Evidência T030](evidence-t030.md) · [Recálculo T004](evidence-t004.md) · [Exibição T005](evidence-t005.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -30,7 +30,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 - [x] T004 [US2] Conectar signal em reviews/signals.py e reviews/apps.py ao serviço serializado; tests/test_reputation_integration.py comprova atualização, rollback, concorrência, cache ausente e reprocessamento idempotente. **Requisitos**: REQ-009, REQ-003, REQ-017; FR-003; SC-003. **Depende**: T002; Feature 006/T004 (inclui antiga T005). **Conclusão**: critérios citados aprovados na [evidência da T004](evidence-t004.md). **Roadmap**: T031.
 
-- [ ] T005 [US2] Integrar projeção no perfil de accounts e DTO/cartão em rides/services/matching_service.py e rides/templates/rides/_search_result.html; tests/test_reputation_integration.py cobre estrelas acessíveis, ausência de segredos e consultas sem N+1. **Requisitos**: REQ-009, REQ-003, REQ-017; FR-004; SC-004. **Depende**: T004; Feature 003/T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T031.
+- [x] T005 [US2] Integrar projeção no perfil de accounts e DTO/cartão em rides/services/matching_service.py e rides/templates/rides/_search_result.html; tests/test_reputation_integration.py cobre estrelas acessíveis, ausência de segredos e consultas sem N+1. **Requisitos**: REQ-009, REQ-003, REQ-017; FR-004; SC-004. **Depende**: T004; Feature 003/T004. **Conclusão**: critérios aprovados na [evidência](evidence-t005.md). **Roadmap**: T031.
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 

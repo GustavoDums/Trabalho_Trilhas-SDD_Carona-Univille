@@ -1,6 +1,6 @@
 # Quickstart de validação: Feature 007
 
-**Estado 2026-11-23**: T001 homologada, [cálculo e rebuild explícito](evidence-t030.md) na T002 e recálculo automático na T004. Perfil e busca são critérios da T005.
+**Estado 2026-11-23**: T001 homologada, [cálculo e rebuild explícito](evidence-t030.md) na T002, recálculo automático na T004 e [nota no perfil e na busca](evidence-t005.md) na T005.
 
 1. Fechar decisões da [spec](spec.md), implementar dependências, usar venv e PostgreSQL existentes, sem imprimir segredos.
 2. Após implementação, da raiz:
@@ -31,3 +31,7 @@ Sem at, relógio servidor é capturado uma vez após lock do usuário. Referênc
 ~~~
 
 Migração reviews 0002 verificada/aplicada no PostgreSQL local, preservando os dados anteriores. Cenários SC-001/SC-002 cobertos; SC-003/SC-004 dependem da integração T031 e não são concluídos nesta rodada. Sem nova rota para testar em navegador.
+
+## Exibição — T005 / T031
+
+Execute `python -m pytest tests/test_reputation_integration.py tests/test_matching.py tests/test_ride_search.py tests/test_privacy_lgpd.py`. Confira **Meu perfil** com uma conta fictícia avaliada e busque uma oferta futura do mesmo motorista com outro passageiro. As telas exibem a mesma nota. Uma conta sem projeção mostra 5,00 e a busca mantém o mesmo número de consultas ao exibir várias ofertas.

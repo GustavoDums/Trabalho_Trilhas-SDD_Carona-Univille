@@ -6,6 +6,7 @@
     <dt>Nome completo</dt><dd>{{ user.full_name }}</dd>
     <dt>Papel</dt><dd>{{ user.get_role_display }}</dd>
     <dt>Vínculo acadêmico</dt><dd>Ativo</dd>
+    <dt>Reputação</dt><dd>{% include "reviews/_reputation_score.html" with score=reputation_score only %}</dd>
 </dl>
 <section aria-labelledby="privacy-title">
     <h2 id="privacy-title">Sua privacidade</h2>

@@ -1,12 +1,18 @@
 # Contratos: Cálculo matemático de reputação
 
-**Status**: cálculo/rebuild entregues na [T002](../evidence-t030.md) e recálculo por signal integrado na T004. Projeção nas rotas de perfil e busca prevista na T005.
+**Status**: cálculo/rebuild entregues na [T002](../evidence-t030.md), recálculo por signal integrado na T004 e projeção nas rotas de perfil e busca entregue na [T005](../evidence-t005.md).
 
 Não cria endpoint de alteração pública da nota. Signal/serviço interno recebe user_id e instante aware; devolve projeção decimal. Templates de perfil e resultado de busca recebem score pronto e formato acessível; cliente não escolhe pontuação/pesos. Rebuild autorizado por comando administrativo futuro apenas se necessário à política aprovada.
 
 ## Regras comuns
 
 Identidade vem da sessão, não de campo oculto. Ação mutante exige POST/CSRF, salvo CLI administrativo documentado. Views delegam aos serviços, que também autorizam. Negativas não divulgam dados de terceiros. Escapar texto; sem e-mail/placa em atributos ou JSON públicos. Conflitos de domínio não retornam sucesso fictício nem stacktrace. Nomes propostos serão fixados na tarefa de decisão. Sem notificações externas nesta feature.
+
+## Leitura da nota na T005
+
+- `GET /accounts/profile/` mostra a nota da sessão. Parâmetros de identidade adicionais não selecionam terceiros.
+- `GET /caronas/buscar/` inclui a nota do motorista em cada resultado compatível. A busca mantém o nome abreviado e os dados públicos previstos na Feature 003.
+- As telas exibem a nota decimal em texto com uma estrela decorativa. Quando a projeção está ausente, exibem 5,00. A nota registrada de 0,00 é exibida normalmente.
 
 ## Homologação e recorte — 2026-11-23
 

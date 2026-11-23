@@ -48,42 +48,42 @@ flowchart TD
 ### Fase 1: Escopo Mínimo (MVP — REQ-001 a REQ-007)
 
 #### Feature 001: Cadastro Acadêmico, Validação de Vínculo e Perfis (`REQ-001`, `REQ-002`, `REQ-003`)
-*Artefato Oficial*: [specs/001-cadastro-validacao-perfis/tasks.md](file:///specs/001-cadastro-validacao-perfis/tasks.md) | *Status*: **Pronta para Execução**
+*Artefato oficial*: [Checklist e evidências da Feature 001](../specs/001-cadastro-validacao-perfis/tasks.md) | *Status*: **T001–T012 concluídas**
 
 - [x] **T001**: Inicializar projeto Django `carona_univille/`, dependências em `requirements.txt`, configuração do pytest em `pytest.ini` e variáveis de ambiente PostgreSQL em `.env.example` e `carona_univille/settings.py`.
   - *Requisitos*: REQ-014, REQ-018 | *Dependências*: Nenhuma | *Como verificar*: `python manage.py check` valida a integridade da configuração do Django e `pytest --collect-only` executa sem erros de configuração ou coleta (aceitando o código de saída 5 unicamente quando indicar ausência de testes coletados).
   - *Fusão*: Agrupa antigas T001, T002, T003 e T004.
-- [ ] **T002**: Implementar modelo `AcademicUser` em `accounts/models.py` (herdando de `AbstractUser` com `USERNAME_FIELD = 'email'`), migração inicial em `accounts/migrations/0001_initial.py` e testes de restrições em `tests/test_models.py` (e-mail único `@univille.br`, papel imutável, status e nome com 2 termos).
+- [x] **T002**: Implementar modelo `AcademicUser` em `accounts/models.py` (herdando de `AbstractUser` com `USERNAME_FIELD = 'email'`), migração inicial em `accounts/migrations/0001_initial.py` e testes de restrições em `tests/test_models.py` (e-mail único `@univille.br`, papel imutável, status e nome com 2 termos).
   - *Requisitos*: REQ-001, REQ-002, REQ-003 | *Dependências*: T001 | *Como verificar*: `pytest tests/test_models.py` valida as restrições do modelo no PostgreSQL.
   - *Fusão*: Agrupa antigas T005, T007 e T011.
-- [ ] **T003**: Criar modelo de auditoria `AcademicValidationRecord` em `accounts/models.py`, fixture `accounts/fixtures/academic_whitelist.json`, layout base `accounts/templates/accounts/base.html` e fixtures de teste em `tests/conftest.py`.
-  - *Requisitos*: REQ-001, REQ-002 | *Dependências*: T001, T002 | *Como verificar*: `python manage.py loaddata accounts/fixtures/academic_whitelist.json` carrega dados mockados.
+- [x] **T003**: Criar modelo de auditoria `AcademicValidationRecord` em `accounts/models.py`, fixture `accounts/fixtures/academic_whitelist.json`, layout base `accounts/templates/accounts/base.html` e fixtures de teste em `tests/conftest.py`.
+  - *Requisitos*: REQ-002, REQ-003 | *Dependências*: T001, T002 | *Como verificar*: `pytest tests/test_foundation.py` valida o catálogo JSON de homologação, a auditoria e as fixtures. [Quickstart](../specs/001-cadastro-validacao-perfis/quickstart.md).
   - *Fusão*: Agrupa antigas T006, T008, T009 e T010.
-- [ ] **T004**: Implementar formulário `AcademicRegistrationForm` em `accounts/forms.py` com validação de domínio `@univille.br` e nome com 2 termos, template `accounts/templates/accounts/register.html` e testes de formulário em `tests/test_registration.py` *(Confirmado em 2026-11-22: campos password e password_confirm, igualdade e validadores Django)*.
+- [x] **T004**: Implementar formulário `AcademicRegistrationForm` em `accounts/forms.py` com validação de domínio `@univille.br` e nome com 2 termos, template `accounts/templates/accounts/register.html` e testes de formulário em `tests/test_registration.py` *(Confirmado em 2026-11-22: campos password e password_confirm, igualdade e validadores Django)*.
   - *Requisitos*: REQ-001, REQ-002 | *Dependências*: T002 | *Como verificar*: Testes unitários do formulário aprovam dados válidos e rejeitam domínios externos.
   - *Fusão*: Agrupa antigas T014, T016 e parte de T012.
-- [ ] **T005**: Implementar view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` nascendo como `PENDENTE` *(Confirmado em 2026-11-22: redirecionamento para login sem autenticação automática)*.
+- [x] **T005**: Implementar view `RegisterView` em `accounts/views.py`, rotas em `accounts/urls.py` e testes de aceitação em `tests/test_registration.py` para cadastro com papéis `PASSAGEIRO` e `MOTORISTA` nascendo como `PENDENTE` *(Confirmado em 2026-11-22: redirecionamento para login sem autenticação automática)*.
   - *Requisitos*: REQ-001, REQ-002 | *Dependências*: T004 | *Como verificar*: `pytest tests/test_registration.py -k "test_signup"` valida Cenários 1.1, 1.2 e 1.3.
   - *Fusão*: Agrupa antigas T012, T015 e T017.
-- [ ] **T006**: Implementar tratamento de cadastro duplicado com resposta neutra/genérica na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` comprovando unicidade e preservação de dados originais.
+- [x] **T006**: Implementar tratamento de cadastro duplicado com resposta neutra/genérica na `RegisterView` em `accounts/views.py` e testes em `tests/test_registration.py` comprovando unicidade e preservação de dados originais.
   - *Requisitos*: REQ-001, REQ-003 | *Dependências*: T005 | *Como verificar*: `pytest tests/test_registration.py -k "test_duplicate"` valida Cenário 4.1.
   - *Fusão*: Agrupa antiga T013 e regras de proteção de enumeração da T015.
-- [ ] **T007**: Implementar serviço `AcademicValidationService` em `accounts/services.py` consultando `academic_whitelist.json` e testes unitários em `tests/test_activation.py` (contas elegíveis vs inelegíveis).
+- [x] **T007**: Implementar serviço `AcademicValidationService` em `accounts/services.py` consultando `academic_whitelist.json` e testes unitários em `tests/test_activation.py` (contas elegíveis vs inelegíveis).
   - *Requisitos*: REQ-002 | *Dependências*: T003 | *Como verificar*: Teste unitário comprova aprovação de `joao.silva@univille.br` e recusa de `visitante.externo@univille.br`.
   - *Fusão*: Agrupa antigas T018 e T020.
-- [ ] **T008**: Implementar view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` para ativação com transição para `ATIVA` ou recusa *(Confirmado em 2026-11-22: botão único, e-mail da sessão e nenhum campo adicional)*.
+- [x] **T008**: Implementar view `ActivationView` em `accounts/views.py`, template `accounts/templates/accounts/activation.html`, rota `/accounts/activation/` e testes de integração em `tests/test_activation.py` para ativação com transição para `ATIVA` ou recusa *(Confirmado em 2026-11-22: botão único, e-mail da sessão e nenhum campo adicional)*.
   - *Requisitos*: REQ-002 | *Dependências*: T007 | *Como verificar*: `pytest tests/test_activation.py` cobre Cenários 2.1 e 2.2.
   - *Fusão*: Agrupa antigas T019, T021, T022 e T023.
-- [ ] **T009**: Implementar middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `settings.py` e escrever testes de integração em `tests/test_access_control.py` para isolamento de contas pendentes e bloqueio de visitantes.
+- [x] **T009**: Implementar middleware `AcademicStatusMiddleware` em `accounts/middleware.py`, registrá-lo em `settings.py` e escrever testes de integração em `tests/test_access_control.py` para isolamento de contas pendentes e bloqueio de visitantes.
   - *Requisitos*: REQ-002, REQ-003 | *Dependências*: T002, T008 | *Como verificar*: `pytest tests/test_access_control.py` cobre Cenários 3.1 e 3.3.
   - *Fusão*: Agrupa antigas T024, T026 e T027.
-- [ ] **T010**: Implementar views `LoginView` e `ProfileView` em `accounts/views.py`, templates `login.html` e `profile.html` e testes de privacidade em `tests/test_privacy_lgpd.py` validando exibição de `user.display_name` ("Lucas A.") e sigilo estrito do e-mail.
-  - *Requisitos*: REQ-001, REQ-003 | *Dependências*: T009 | *Como verificar*: `pytest tests/test_privacy_lgpd.py` cobre Cenários 3.2 e 4.2.
+- [x] **T010**: Implementar views `LoginView` e `ProfileView` em `accounts/views.py`, templates `login.html` e `profile.html` e testes de privacidade em `tests/test_privacy_lgpd.py` validando exibição de `user.display_name` ("Lucas A.") e sigilo estrito do e-mail.
+  - *Requisitos*: REQ-002, REQ-003 | *Dependências*: T009 | *Como verificar*: `pytest tests/test_privacy_lgpd.py` cobre Cenários 3.2 e 4.2.
   - *Fusão*: Agrupa antigas T025, T028 e T029.
-- [ ] **T011**: Criar view placeholder `/caronas/` em `carona_univille/views.py` e testes de integração em `tests/test_access_control.py` comprovando interceptação de rotas protegidas para pendentes e liberação para contas ativas.
+- [x] **T011**: Criar view placeholder `/caronas/` em `carona_univille/views.py` e testes de integração em `tests/test_access_control.py` comprovando interceptação de rotas protegidas para pendentes e liberação para contas ativas.
   - *Requisitos*: REQ-002 | *Dependências*: T009 | *Como verificar*: Requisição a `/caronas/` redireciona conta pendente para ativação e libera conta ativa.
   - *Fusão*: Agrupa antiga T030 e asserções complementares de T024.
-- [ ] **T012**: **[PREPARAÇÃO DA MEDIÇÃO E FECHAMENTO DA FEATURE 001]**: Criar script PowerShell `scripts/check-quality-metrics.ps1`, executar a suíte de testes de `accounts/` gerando relatório inicial `coverage.json` comprovando cobertura $\ge 80\%$ da Feature 001, registrar contagem e cobertura iniciais no topo do `README.md` e validar o roteiro do `quickstart.md`.
+- [x] **T012**: **[PREPARAÇÃO DA MEDIÇÃO E FECHAMENTO DA FEATURE 001]**: Criar script PowerShell `scripts/check-quality-metrics.ps1`, executar a suíte de testes de `accounts/` gerando relatório inicial `coverage.json` comprovando cobertura $\ge 80\%$ da Feature 001, registrar contagem e cobertura iniciais no topo do `README.md` e validar o roteiro do `quickstart.md`.
   - *Requisitos*: REQ-018, REQ-019 | *Dependências*: T001 a T011 | *Como verificar*: Execução do script `scripts/check-quality-metrics.ps1` exibe contagem de testes e cobertura $\ge 80\%$ de `accounts/`; `README.md` exibe indicadores iniciais.
   - *Fusão*: Agrupa antigas T031, T032, T033 e T034.
 
@@ -179,7 +179,7 @@ flowchart TD
 ---
 
 #### Feature 007: Cálculo Matemático de Reputação (`REQ-009`)
-*Status*: D007-01/D007-02 homologadas. Média simples das últimas 20 avaliações recebidas, sem corte por dias, validada na [T030/T002](../specs/007-calculo-reputacao/evidence-t030.md). O recálculo automático da T031 foi entregue na [T004 local](../specs/007-calculo-reputacao/evidence-t004.md). A exibição corresponde à T005 local.
+*Status*: D007-01/D007-02 homologadas. Média simples das últimas 20 avaliações recebidas, sem corte por dias, validada na [T030/T002](../specs/007-calculo-reputacao/evidence-t030.md). A T031 foi concluída com recálculo automático na [T004 local](../specs/007-calculo-reputacao/evidence-t004.md) e exibição na [T005 local](../specs/007-calculo-reputacao/evidence-t005.md).
 
 - [x] **T030**: **[TESTE ESPECÍFICO DE CÁLCULO NUMÉRICO DE REPUTAÇÃO]**: Implementar modelo `ReputationProfile` em `reviews/models.py` e testes unitários em `tests/test_reputation_calc.py` cobrindo cenários numéricos determinísticos:
   - (1) *Novato*: pontuação base inicial `5.00★`.
@@ -188,7 +188,7 @@ flowchart TD
   - (4) *Janela Deslizante*: na 21ª avaliação recebida, a nota mais antiga por created_at/id é descartada da média simples das últimas 20, com pesos iguais.
   - *Requisitos*: REQ-009, REQ-017 | *Dependências*: T028 | *Como verificar*: `pytest tests/test_reputation_calc.py` valida as equações matemáticas com precisão decimal.
   - *Fusão*: Agrupa antigas T083 e T084.
-- [ ] **T031**: Implementar serviço `ReputationService`, conectar signals `post_save` em `RideReview` para recálculo automático, exibir estrelas no perfil/busca (LGPD) e testes integrados em `tests/test_reputation_integration.py`.
+- [x] **T031**: Implementar serviço `ReputationService`, conectar signals `post_save` em `RideReview` para recálculo automático, exibir estrelas no perfil/busca (LGPD) e testes integrados em `tests/test_reputation_integration.py`.
   - *Requisitos*: REQ-003, REQ-009, REQ-017 | *Dependências*: T030 | *Como verificar*: Nova avaliação atualiza imediatamente a pontuação pública exibida no perfil.
   - *Fusão*: Agrupa antigas T085, T086, T087, T088, T089 e T090.
 
@@ -254,8 +254,8 @@ flowchart TD
 
 *Status*: **Planejada no Roadmap** | *Objetivo*: Auditoria, métricas finais, conformidade da entrega e apresentação.
 
-- [ ] **T041**: **[RASTREABILIDADE RIGOROSA]**: Auditar e garantir que 100% dos commits de implementação sigam o padrão `feat(Txxx): ...` apontando para sua respectiva task e requisito formal.
-  - *Requisitos*: REQ-014, REQ-015 | *Dependências*: Todas as tarefas de código | *Como verificar*: `git log --oneline` inspecionado comprovando rastreabilidade total.
+- [x] **T041**: **[RASTREABILIDADE RIGOROSA]**: Auditar 100% dos commits de implementação e verificar o vínculo com a tarefa e o requisito formal. Usar `feat(Txxx): ...` para novas funcionalidades e resolver as referências explícitas dos formatos históricos segundo o Princípio V.
+  - *Requisitos*: REQ-014, REQ-015 | *Dependências*: Todas as tarefas de código | *Como verificar*: conferir `git log --oneline`, a mensagem completa quando necessário e a [matriz commit → tarefa → requisito](auditoria-t041.md).
   - *Fusão*: Antiga T119 preservada como marco de auditoria de commits.
 - [ ] **T042**: **[AUDITORIA DE PROMPTS]**: Consolidar o arquivo `docs/prompts.md` com o registro cronológico e integral de todos os prompts, comandos Spec Kit e decisões conjuntas da dupla.
   - *Requisitos*: REQ-016, Princípio V | *Dependências*: Todas as interações com IA | *Como verificar*: Verificação de integridade e completude de `docs/prompts.md`.

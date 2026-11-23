@@ -12,7 +12,8 @@ from django.views.generic.edit import CreateView
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 
-from reviews.models import ConductProfile, PenaltyRecord
+from reviews.models import ConductProfile, PenaltyRecord, ReputationProfile
+from reviews.services.reputation_service import INITIAL_SCORE
 
 from .forms import AcademicAuthenticationForm, AcademicRegistrationForm
 from .services import AcademicValidationService
@@ -115,6 +116,12 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "accounts/profile.html"
     login_url = "/accounts/login/"
     http_method_names = ["get", "head", "options"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        score = ReputationProfile.objects.filter(user_id=self.request.user.pk).values_list("score", flat=True).first()
+        context["reputation_score"] = INITIAL_SCORE if score is None else score
+        return context
 
 
 @method_decorator(never_cache, name="dispatch")

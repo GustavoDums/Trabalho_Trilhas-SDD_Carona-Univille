@@ -2267,3 +2267,41 @@ Pode implementar
 ~~~
 
 A confirmação da T040 foi registrada no [planejamento](preparacao-features-004-009.md) e no [plano da Feature 011](../specs/011-fila-espera-fifo/plan.md).
+
+## T041 — Auditoria de rastreabilidade
+
+~~~text
+Execute somente a tarefa T041 do Carona Univille.\
+\
+Área da tarefa — Entrega geral, Entrega e governança.\
+\
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e\
+tasks da feature antes de editar. Confirme o requisito, as dependências e os\
+critérios de conclusão da tarefa selecionada.\
+\
+Use a entrada T041 da seção de entrega de docs/roadmap-implementacao.md e\
+consulte os artefatos que ela referencia. Execute o trabalho de\
+documentação, auditoria ou verificação definido para esse item.\
+\
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.\
+Se houver divergência entre os artefatos ou uma decisão pendente que afete\
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já\
+existentes no repositório.\
+\
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações\
+pertinentes. Registre sua conclusão no checklist somente se os critérios\
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,\
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem\
+de commit com a referência feature / task / requisito. Deixe o staging e o\
+commit para minha revisão e encerre a rodada.
+~~~
+
+~~~text
+Arrume o que for preciso e realize a T041
+~~~
+
+~~~text
+Sim, conclua a T031 e a T041
+~~~
+
+A autorização inclui a exibição de reputação da Feature 007/T005, dependência da auditoria. Os vínculos históricos de commits estão na [matriz da T041](auditoria-t041.md).
