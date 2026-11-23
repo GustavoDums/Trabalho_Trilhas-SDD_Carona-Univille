@@ -1,26 +1,21 @@
 # Data Model: Avaliação mútua pós-viagem
 
-**Status**: desenho proposto, não migração aplicada. Decisões da [spec](spec.md) bloqueiam campos dependentes.
+D006-01/D006-02 confirmadas em 2026-11-23; implementação T002 unificada, sem interface.
 
-## Entidades e restrições canônicas
+## Campos canônicos
 
-RideReview: offer FK PROTECT, reviewer FK PROTECT, reviewed_user FK PROTECT, rating inteiro 1..5, comment opcional (max_length pendente D006-02), created_at aware. UniqueConstraint (offer, reviewer, reviewed_user), CheckConstraint rating e reviewer!=reviewed_user. Participação é validada no serviço. Referência de término e eventual campo/entidade adicional dependem de D006-01; não inventar completed_at nem arrival_at como já existentes.
+- RideOffer.completed_at: DateTimeField aware opcional null/blank, default NULL; servidor grava ao concluir, apenas motorista titular ativo e instante >= departure_at. CheckConstraint: NULL ou >= departure_at e status ABERTA. Não criar estado CONCLUIDA nem alterar capacidade. Histórico legado mantém NULL.
+- RideBooking.no_show_at: DateTimeField aware opcional null/blank, default NULL; marcador de inelegibilidade preparado para integração futura da Feature 008. Esta tarefa não cria fluxo de marcação, penalidade ou reputação. Não inferir no-show da ausência de avaliação; legados mantêm NULL. API de marcação e auditoria pertencem à 008 e deverão seguir lock global.
+- RideReview.offer: FK RideOffer PROTECT, related_name reviews.
+- RideReview.reviewer / reviewed_user: FK AUTH_USER_MODEL PROTECT, related_names reviews_written/reviews_received.
+- RideReview.rating: PositiveSmallIntegerField, validadores 1..5, rejeitar bool/fracionário antes da conversão; CheckConstraint intervalo.
+- RideReview.comment: CharField max_length=500, blank=True, default vazio; normalizar espaços externos. Limite varchar(500) no PostgreSQL; não alegar CheckConstraint adicional de tamanho.
+- RideReview.created_at: DateTimeField aware obrigatório, default timezone.now, não editável; serviço captura relógio uma vez e passa instante da operação.
 
-## Persistência
+UniqueConstraint (offer, reviewer, reviewed_user); CheckConstraint reviewer != reviewed_user. Modelo valida nota, comentário e imutabilidade de avaliações salvas. FKs preservam histórico. Regras de elegibilidade entre linhas pertencem a ReviewService, não são garantias de insert SQL isolado.
 
-PostgreSQL e timestamps aware. Relações históricas não desaparecem por exclusão de usuário/oferta. Constraints locais complementam serviço; regras entre linhas exigem transações e locks. Migrações tratam registros legados sem sobrescrevê-los; validar plano e aplicação no PostgreSQL local e banco isolado de testes, sem reset destrutivo.
+## Serviços e transações
 
-## Fronteiras
+ReviewService.complete_offer(*, user, offer_id, clock=None) retorna RideOffer; ReviewService.create_review(*, user, offer_id, reviewed_user_id, rating, comment='', clock=None) retorna RideReview. Bloquear oferta → usuários por PK → reserva participante. Reconsultar atores ATIVA/is_active e papéis fixos. Só motorista↔passageiro confirmado; no_show_at não nulo, reserva/oferta canceladas ou conclusão ausente recusam. Janela UTC fechada de 48h; relógio aware injetável capturado uma vez. Duplicata é recusada, sem editar avaliação existente. Falha de gravação reverte tudo; constraint única protege duplicata concorrente.
 
-Entidades/campos futuros, salvo os explicitamente existentes. [plan.md](plan.md) delimita componentes e [tasks.md](tasks.md) distribui implementação. Fechar decisões e atualizar contrato antes de criar campos condicionais, preservando IDs.
-
-## Índice de campos canônicos
-
-Os campos abaixo são os nomes exatos referidos pelas tarefas; tipos e restrições estão em Entidades e restrições canônicas. Campos condicionais mantêm bloqueio de produto.
-
-- `RideReview.offer`
-- `RideReview.reviewer`
-- `RideReview.reviewed_user`
-- `RideReview.rating`
-- `RideReview.comment`
-- `RideReview.created_at`
+Criação direta/bulk/SQL não é API de domínio; SQL protege invariantes locais, serviços protegem relações e autorização. Alteração de avaliação persistida recusada pelo modelo; nenhuma API de edição. Migrações aditivas preservam todos os dados anteriores, novos timestamps NULL e tabela vazia. Verificar SQL/plano e aplicar no PostgreSQL local sem reset, além do banco de testes.

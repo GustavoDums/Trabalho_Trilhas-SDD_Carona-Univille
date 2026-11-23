@@ -59,7 +59,10 @@ def test_booking_fields_and_protection():
         assert not field.null and field.remote_field.on_delete.__name__ == "PROTECT"
     assert set(field.name for field in model._meta.fields) == {
         "id", "offer", "passenger", "boarding_point", "alighting_point", "status",
-        "created_at", "updated_at", "cancelled_at"}
+        "created_at", "updated_at", "cancelled_at", "no_show_at"}
+    # Feature 006/T002 prepara inelegibilidade sem implementar marcação/penalidade.
+    assert model._meta.get_field("no_show_at").null
+    assert model._meta.get_field("no_show_at").blank
 
 
 def test_booking_default_and_no_side_effect_on_capacity(booking_scene):

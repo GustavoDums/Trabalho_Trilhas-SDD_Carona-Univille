@@ -1665,3 +1665,63 @@ Referência anexada: docs/prompts.md. Contexto anterior explícito: Feature 003/
 Dependências conferidas: tarefas locais T001–T006 e funcionalidades das Features 001–004; qualidade 002/003 comprovada conforme aceites humanos registrados. Pré-requisitos Spec Kit sem persistir ponteiro; nenhum hook/checklist adicional. Venv Python 3.12.10 e PostgreSQL existentes, git limpo no início. Criado check-mvp-quality.ps1 para toda tests/, cobertura consolidada accounts/rides/carona_univille e arquivos críticos separados, meta 80% em linhas/branches/combinada, JSON/JUnit próprios e bloco MVP do README. Auditoria sem mudança de comportamento ou falha artificial de TDD. Matriz REQ-001–REQ-007 e limites em evidence-t027.md. Sem staging/commit.
 
 Resultado T027/T007: 668 aprovados, zero ignorados, 87.04s; consolidado 905/920 linhas (98.3695652173913%), 208/216 branches (96.29629629629629%), combinada 97.97535211267606%. Arquivos críticos >=80%, última vaga duas transações independentes: 1 confirmada/saldo zero. Migrações locais aplicadas, sem mudanças. Novo script usa UTF-8 BOM para compatibilidade com PowerShell 5.1; bloco MVP corrigido após detectar acentos incorretos na primeira geração. Task/roadmap concluídos somente após gates, sem encerrar T041–T045 ou qualidade própria da Feature 004. Sem staging/commit.
+
+## 2026-11-23 — Consolidação local da T028 / Feature 006
+
+Prompt integral:
+
+~~~text
+não seria possível mesclar essas tasks locais? para virarem 1 só
+~~~
+
+Referência anexada: docs/prompts.md. Contexto: T028 dividida entre T002 (modelo) e T003 (término/serviço), ambas bloqueadas por T001/D006-01/D006-02. Usuário solicitou unificação. T002 absorveu T003 com todos os requisitos, critérios e dependências; T003 mantida como referência histórica não executável, T004 passou a depender de T002. IDs T004/T005/T006 preservados. tasks.md e plan.md atualizados, correspondência única T028 → Feature 006/T002. Nenhuma aprovação implícita de regras propostas, nenhuma implementação/teste/migração, staging ou commit.
+
+## 2026-11-23 — Feature 006 / T001 + T002 unificada / roadmap T028
+
+Prompt integral original de implementação:
+
+~~~text
+Execute somente a tarefa T028 do Carona Univille.
+
+Área da tarefa — Features 006 a 009, Escopo completo.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T028 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md. Identificadas T002/T003 e decisões pendentes, nenhuma implementação feita antes de esclarecer. Recomendadas conclusão explícita pelo motorista depois da partida, janela inclusiva de 48h, pares motorista↔passageiro confirmado excluindo cancelados/no-show, nota 1..5, comentário opcional até 500, sem edição e legados sem conclusão não avaliáveis. Tarefas unificadas a pedido do usuário conforme registro anterior.
+
+Prompt integral de aprovação/execução atual:
+
+~~~text
+sim, pode executar a t001 primeiro e depoias a t002 (que são t002 + t003)
+~~~
+
+Referência anexada: docs/prompts.md. Decisões D006-01/D006-02 homologadas em spec/data-model/contracts/research/plan e levantamento antes da implementação. T001 documental seguida da T002 unificada, sem interface ou reputação. Como referência canônica de término/no-show, novos RideOffer.completed_at e RideBooking.no_show_at opcionais; marcador no-show apenas prepara exclusão, sem fluxo de marcação/penalidade da Feature 008. Fields legados permanecem NULL.
+
+TDD: 50 testes executados antes da produção, todos falharam pelo módulo reviews ausente; após modelos/serviços/migrações, 50 passaram. Regressão detectou lista fechada de campos em test_booking_flow: atualizada estritamente para novo no_show_at, com asserts null/blank. Verificações complementares de ModelForm/exclusão de campos, gravação sem alteração, timestamps/constraints e comentário nulo: comentário None inicialmente escapava da validação por blank=True e chegava ao NOT NULL do banco; teste falhou, modelo corrigido para ValidationError antes da gravação. Focado final: 55 reviews + 120 booking, 175 aprovados; reviews 100% linhas/branches.
+
+Migrações SQL/plano revisados: rides 0005 e reviews 0001 aplicadas no PostgreSQL local. Snapshot em memória de todas as colunas antigas de accounts/validações/pontos/ofertas/paradas/reservas/cancelamentos preservado; novos campos NULL e reviews vazia. Nenhum dado pessoal impresso ou snapshot versionado. Testes usam PostgreSQL isolado, incluindo duplicata concorrente com conexões/TxIDs distintos. Venv existente, ponteiro de feature preservado, sem hooks/checklists adicionais. Alterações documentais preexistentes preservadas. Sem staging/commit. Resultados e arquivos em specs/006-avaliacao-mutua/evidence-t028.md.
+
+Resultado final T028/T002: 723 aprovados (55 novos/668 anteriores), 89.13s; reviews 100% linhas/branches, consolidado 98.56870229007633% linhas/96.875% branches. Duplicata concorrente: PIDs 21824/13104, TxIDs 53508/53509, uma criação e uma recusa. Evidência, README, roadmap e checklists sincronizados; T001/T002 concluídas, T003 incorporada, T004–T006 abertas. Sem staging/commit.

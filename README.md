@@ -1,5 +1,14 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-006-t028-quality:start -->
+Feature 006 / T001 documental + T002 unificada / roadmap T028 — **723 testes aprovados**, 0 ignorados: 55 novos e 668 anteriores. TDD inicial: 50 falhas pelo recurso ausente, depois verde; verificações complementares e regressão concluídas.
+Cobertura consolidada de accounts/rides/reviews/carona_univille: **98.2361963190184%** combinada; linhas 1033/1048 (**98.56870229007633%**); ramificações 248/256 (**96.875%**). Pacote reviews, modelo e serviço: **100% de linhas e ramificações**. Meta: 80%.
+Relatórios: [JSON](coverage-feature006-t028.json), [JUnit](test-results-feature006-t028.xml), [evidência](specs/006-avaliacao-mutua/evidence-t028.md). Medição: 2026-11-23.
+Reproduzir: `venv/Scripts/python.exe -m pytest tests -q --tb=short --cov=accounts --cov=rides --cov=reviews --cov=carona_univille --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature006-t028.json --junitxml=test-results-feature006-t028.xml`.
+Migrações rides 0005/reviews 0001 aplicadas e verificadas no PostgreSQL local, com dados anteriores preservados. Conclusão e avaliação somente por serviço; formulários/rotas, marcação de no-show e reputação permanecem tarefas futuras.
+<!-- feature-006-t028-quality:end -->
+
+
 <!-- mvp-quality:start -->
 MVP / Feature 005 / T007 local / roadmap T027 — **668 testes aprovados**, 0 ignorados; REQ-001–REQ-007. Medição: 2026-11-23.
 Cobertura consolidada de `accounts/`, `rides/` e `carona_univille/`: **97.975352112676063%** combinada; linhas 905/920 (**98.3695652173913%**); ramificações 208/216 (**96.296296296296276%**). Meta: >=80% combinada, linhas e ramificações, também por módulo crítico de negócio.

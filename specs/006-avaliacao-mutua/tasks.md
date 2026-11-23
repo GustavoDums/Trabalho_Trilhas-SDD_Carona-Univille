@@ -2,12 +2,12 @@
 
 **Feature**: 006-avaliacao-mutua; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: todas abertas, nenhuma execução nesta preparação.
+**Status**: T001/T002 concluídas; T003 incorporada, T004–T006 abertas. [Evidência](evidence-t028.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
 
-- [ ] T001 Resolver D006-01/D006-02 em spec.md e data-model.md com critérios de término, janela, pares, comentário e cancelamento; conclusão: cenários temporais verificáveis e esquema de término definido. **Requisitos**: REQ-008, REQ-003, REQ-017; decisões. **Depende**: —. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: preparação.
+- [x] T001 Resolver D006-01/D006-02 em spec.md e data-model.md com critérios de término, janela, pares, comentário e cancelamento; conclusão: cenários temporais verificáveis e esquema de término definido. **Requisitos**: REQ-008, REQ-003, REQ-017; decisões. **Depende**: —. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: preparação.
 
 ## Phase 2: Foundational
 
@@ -19,16 +19,16 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 **Objetivo**: Participante elegível avalia contraparte com nota de 1 a 5 e comentário opcional após término verificável.
 **Teste independente**: SC-001: rejeitar notas 0/6/fracionárias, autor e alvo iguais, não participante e duplicata; aceitar 1 e 5 com comentário vazio.
 
-- [ ] T002 [US1] Criar app reviews, registrar configuração no módulo settings efetivo e testar/migrar RideReview de data-model.md em reviews/models.py e reviews/migrations/; tests/test_reviews.py cobre rating, unicidade, autoavaliação e FKs preservadas. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-001/FR-004; SC-001. **Depende**: T001; Feature 004/T002. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T028. Fonte canônica de campos em [data-model.md](data-model.md): `RideReview.offer`, `RideReview.reviewer`, `RideReview.reviewed_user`, `RideReview.rating`, `RideReview.comment`, `RideReview.created_at`. Campos condicionais só após T001.
+- [x] T002 [US1] Implementar integralmente o núcleo de avaliação da T028 do roadmap, reunindo as antigas T002/T003: criar app reviews e registrá-lo no settings efetivo; implementar RideReview em reviews/models.py e reviews/migrations/; implementar a referência de término aprovada em rides/models.py e sua migração quando necessária, e ReviewService em reviews/services/review_service.py. Escrever e executar primeiro tests/test_reviews.py para rating inteiro 1..5, comentário, unicidade, autoavaliação, FKs preservadas, participação, cancelamento/no-show e bordas temporais aprovadas; confirmar falhas comportamentais esperadas antes da implementação, depois verde e regressão. Não assumir término na partida. Verificar migrações e constraints no PostgreSQL local e de testes, preservando dados legados. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-001/FR-002/FR-004; SC-001/SC-002. **Depende**: T001; Feature 004/T002; Feature 005/T004. **Conclusão**: modelo, referência de término, serviço, integridade/transações, cenários e migrações aprovados com evidência; pendência de decisão mantém bloqueio. **Roadmap**: T028, correspondência única. Fonte canônica de campos em [data-model.md](data-model.md): `RideReview.offer`, `RideReview.reviewer`, `RideReview.reviewed_user`, `RideReview.rating`, `RideReview.comment`, `RideReview.created_at`. Campos condicionais somente após T001. Sem formulário, view, rota ou cálculo de reputação nesta tarefa.
 
-- [ ] T003 [US1] Implementar referência de término aprovada em rides/models.py e migração se necessária, e ReviewService em reviews/services/review_service.py; tests/test_reviews.py cobre participação, cancelamento/no-show e bordas de tempo sem assumir término na partida. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-002/FR-004; SC-002. **Depende**: T002; Feature 005/T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T028. Fonte canônica de campos em [data-model.md](data-model.md): `RideReview.offer`, `RideReview.reviewer`, `RideReview.reviewed_user`, `RideReview.rating`, `RideReview.comment`, `RideReview.created_at`. Campos condicionais só após T001.
+**T003 — incorporada à T002 em 2026-11-23 por solicitação do usuário.** ID mantido como referência histórica, sem tarefa executável independente e sem conclusão fictícia de implementação.
 
 ## Phase 4: User Story 2 (P2)
 
 **Objetivo**: Usuário autenticado envia formulário sem poder escolher avaliador ou adulterar elegibilidade.
 **Teste independente**: SC-003: contraparte válida registra avaliação por POST com CSRF; adulteração, GET de escrita e comentário HTML não burlam autorização nem escape.
 
-- [ ] T004 [US2] Implementar RideReviewForm em reviews/forms.py e reviews/templates/reviews/submit_review.html; testes de formulário/renderização em tests/test_reviews.py cobrem campos, comentário opcional e escape. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-001/FR-003; SC-001/SC-003. **Depende**: T003. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T029.
+- [ ] T004 [US2] Implementar RideReviewForm em reviews/forms.py e reviews/templates/reviews/submit_review.html; testes de formulário/renderização em tests/test_reviews.py cobrem campos, comentário opcional e escape. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-001/FR-003; SC-001/SC-003. **Depende**: T002. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T029.
 
 - [ ] T005 [US2] Implementar SubmitReviewView e rotas em reviews/views.py, reviews/urls.py e URLconf raiz efetiva; tests/test_reviews.py cobre sessão, CSRF, adulteração, redirecionamento e duplicata concorrente. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-002/FR-003/FR-004; SC-003. **Depende**: T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T029.
 
@@ -44,10 +44,14 @@ Dependências explícitas de cada tarefa são obrigatórias; número não permit
 
 | Roadmap | Requisito / objetivo detalhado na tarefa | IDs locais |
 | --- | --- | --- |
-| T028 | REQ-008 | T002, T003 |
+| T028 | REQ-008; modelo, término e serviço de elegibilidade | T002 (inclui antiga T003) |
 | T029 | REQ-008 | T004, T005 |
 | Preparação/qualidade | Decisões e evidência | T001, T006 |
 
 ## Parallel Opportunities & Implementation Strategy
 
 Sem [P]: estado e contratos compartilhados, com decisões condicionais. Revisão pode ocorrer em paralelo; execução dependente não. Uma tarefa por rodada revisável, preservando IDs, checkboxes e alterações de outras features. Aprovar documentação não confirma automaticamente valores de produto.
+
+## Consolidação de tarefas — 2026-11-23
+
+Usuário solicitou unir as tarefas locais que dividiam a T028. T002 absorve integralmente T003, preservando requisitos, critérios e dependências; T004 passa a depender de T002. T003 fica como referência histórica, não reutilizada nem marcada como implementada. T001 documental continua necessária para D006-01/D006-02 e não foi executada ou aprovada por esta reorganização. T004/T005/T006 mantêm IDs e escopo. Ordem: T001 → T002 → T004 → T005 → T006. Nenhum código ou migração criado, nenhum teste executado; somente consistência documental verificada.

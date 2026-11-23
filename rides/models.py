@@ -59,6 +59,7 @@ class RideOffer(ValidatedModel):
     departure_at = models.DateTimeField()
     status = models.CharField(max_length=9, choices=Status.choices, default=Status.ABERTA)
     cancelled_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
+    completed_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
     seats = models.PositiveBigIntegerField(validators=[MinValueValidator(1)])
     vehicle_model = models.CharField(max_length=100)
     vehicle_color = models.CharField(max_length=50)
@@ -69,6 +70,11 @@ class RideOffer(ValidatedModel):
         ordering = ["departure_at", "created_at", "id"]
         indexes = [models.Index(fields=["driver", "departure_at"], name="ride_driver_departure_idx")]
         constraints = [
+            models.CheckConstraint(
+                condition=models.Q(completed_at__isnull=True) | (
+                    models.Q(completed_at__gte=models.F("departure_at")) & models.Q(status="ABERTA")
+                ), name="ride_completion_valid",
+            ),
             models.CheckConstraint(condition=models.Q(status__in=["ABERTA", "CANCELADA"]), name="ride_offer_status_valid"),
             models.CheckConstraint(condition=models.Q(seats__gte=1), name="ride_seats_positive"),
             models.CheckConstraint(condition=~models.Q(origin=models.F("destination")), name="ride_endpoints_distinct"),
@@ -150,6 +156,7 @@ class RideBooking(ValidatedModel):
     )
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.CONFIRMADA)
     cancelled_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
+    no_show_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

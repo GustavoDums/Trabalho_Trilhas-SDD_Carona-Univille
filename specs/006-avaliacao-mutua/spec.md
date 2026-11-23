@@ -1,7 +1,7 @@
 # Feature Specification: Avaliação mútua pós-viagem
 
 **Feature**: 006-avaliacao-mutua | **Created**: 2026-11-22
-**Status**: rascunho preparado; decisões abaixo bloqueiam tarefas afetadas. Nenhuma implementação realizada.
+**Status**: decisões homologadas; T001 documental concluída, T002 unificada concluída ([evidência](evidence-t028.md)). Interface T004/T005 futura.
 **Input**: REQ-008 e solicitação de preparação documental.
 
 ## Contexto e rastreabilidade
@@ -10,10 +10,10 @@ Fontes: [constitution](../../.specify/memory/constitution.md), [levantamento](..
 Requisito principal REQ-008; transversais REQ-002, REQ-003, REQ-014–REQ-019. Correspondências oficiais em [tasks.md](tasks.md).
 Propostas do roadmap não equivalem a decisões homologadas. Estes artefatos permitem revisar o escopo, sem decidir produto por suposição.
 
-## Clarifications — decisões pendentes
+## Clarifications — decisões homologadas
 
-- **D006-01 — PENDENTE**: Definir término verificável da viagem: oferta contém somente departure_at. Levantamento fala em conclusão do horário previsto, mas não há chegada prevista. Não equiparar partida a término. Escolher referência e responsável pelo registro antes de alterar dados.
-- **D006-02 — PENDENTE**: Confirmar janela proposta de 48h, bordas, elegibilidade de cancelados/no-show e pares permitidos (proposta: motorista↔passageiro, nunca passageiro↔passageiro); fixar limite do comentário e edição/revisão.
+- **D006-01 — CONFIRMADA em 2026-11-23**: motorista titular ativo registra completed_at pelo relógio do servidor, após partida (>= departure_at); repetição preserva primeiro término; canceladas não concluem e legado NULL não habilita avaliação.
+- **D006-02 — CONFIRMADA em 2026-11-23**: janela [completed_at, completed_at+48h] inclusiva; somente motorista↔passageiro confirmado, ambos ativos/habilitados, excluídos cancelados/no-show. Nota inteira 1..5, comentário opcional <=500 caracteres, uma avaliação por direção/contraparte, sem edição.
 
 ## User Scenarios & Testing
 
@@ -57,3 +57,11 @@ Não inclui bônus 010/011, staging, commits ou integrações externas. Critéri
 - SC-003: contraparte válida registra avaliação por POST com CSRF; adulteração, GET de escrita e comentário HTML não burlam autorização nem escape.
 
 Todos os critérios exigem testes fictícios. Qualidade: >=80% de linhas e ramificações críticas, relatório versionável e métricas reais identificadas por feature no README; nenhuma métrica estimada nesta rodada.
+
+## Homologação D006-01/D006-02 — 2026-11-23
+
+Usuário aprovou as recomendações e autorizou T001 documental seguida da T002 unificada (antigas T002/T003). D006-01 CONFIRMADA: motorista titular ativo registra explicitamente conclusão após a partida (instante >= departure_at), relógio do servidor aware em UTC. RideOffer.completed_at opcional representa o término informado, não previsão de chegada nem detecção automática. Repetição autorizada preserva a primeira data. Oferta CANCELADA não pode ser concluída; ofertas legadas recebem NULL e não permitem avaliação sem conclusão registrada.
+
+D006-02 CONFIRMADA: janela fechada [completed_at, completed_at+48h], ambos extremos inclusivos; bloquear antes e depois. Somente motorista↔passageiro com reserva CONFIRMADA na mesma oferta, ambos habilitados/com vínculo ativo; excluir cancelados e no-show. Uma avaliação por oferta/avaliador/avaliado, nota inteira 1..5, comentário opcional até 500 caracteres, sem edição. Sem passageiro↔passageiro, autoavaliação, reputação, penalidade ou interface nesta rodada.
+
+Referências a decisões pendentes nas seções anteriores representam o estado histórico e são substituídas por esta homologação. T002 abrange domínio/migrações/serviços/testes; formulários e rotas permanecem T004/T005.

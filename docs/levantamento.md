@@ -211,3 +211,7 @@ D004-01/D004-02 resolvidas; escopo atual: modelo e migração da [T002 local / r
 
 Usuário confirmou: passageiro 2h, motorista 4h, referência na saída da origem, comparação aware em UTC e borda inclusiva (antecedência >= prazo). Cancelamento tardio antes da partida é aceito com auditoria; na partida/depois, recusado sem mutação. Dedução numérica fica na Feature 008.
 Autorizadas nesta rodada T002 local/T024 e T003 local (parcela de reserva da T025) para verificar liberação idempotente e concorrência. Cancelamento de oferta e interface excluídos. Estas decisões substituem as propostas pendentes correspondentes do levantamento; a constitution não é emendada nesta rodada.
+
+### Homologação de avaliações — Feature 006 (2026-11-23)
+
+Usuário aprovou D006-01/D006-02 e autorizou T001 documental seguida da T002 unificada (antigas T002/T003, roadmap T028). Motorista registra conclusão pelo relógio servidor após partida; sem conclusão, não há avaliação. Janela inclusiva de 48h após conclusão; somente motorista↔passageiro confirmado, ativos/habilitados; excluir cancelados/no-show. Nota inteira 1..5, comentário opcional até 500 caracteres, sem edição e sem duplicata por direção/contraparte. Legados permanecem sem conclusão; não inventar chegada. Sem penalidade/reputação ou interface nesta rodada. Referência canônica em specs/006-avaliacao-mutua/spec.md e data-model.md; constitution não emendada nesta rodada.
