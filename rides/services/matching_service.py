@@ -80,6 +80,7 @@ class MatchingService:
 
         now = timezone.now()
         candidates = RideOffer.objects.filter(
+            status=RideOffer.Status.ABERTA,
             departure_at__gt=now,
             departure_at__gte=query.desired_at - WINDOW,
             departure_at__lte=query.desired_at + WINDOW,

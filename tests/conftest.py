@@ -57,3 +57,31 @@ def active_client(active_user):
     client = Client()
     client.force_login(active_user)
     return client
+
+
+@pytest.fixture
+def cancellation_scene(academic_user_factory):
+    """Dados próprios para testes transacionais, sem depender de seeds após flush."""
+    from datetime import datetime, timezone as dt_timezone
+    from types import SimpleNamespace
+    from rides.models import RideOffer, RoutePoint, Waypoint
+    from rides.services.booking_service import BookingService
+    users = [academic_user_factory(role=role, password=None)
+             for role in ("MOTORISTA", "PASSAGEIRO", "PASSAGEIRO")]
+    for user in users:
+        user.academic_status = "ATIVA"
+        user.save(update_fields=["academic_status", "updated_at"])
+    points = [RoutePoint.objects.get_or_create(code=code, defaults={"name": name})[0]
+              for code, name in (("cancel-origin", "Origem Sintética"),
+                                 ("cancel-stop", "Parada Sintética"),
+                                 ("cancel-destination", "Destino Sintético"))]
+    departure = datetime(2030, 1, 4, 12, tzinfo=dt_timezone.utc)
+    offer = RideOffer.objects.create(
+        driver=users[0], origin=points[0], destination=points[-1], departure_at=departure,
+        seats=1, vehicle_model="Veículo Sintético", vehicle_color="Azul", vehicle_plate="PRIVADA")
+    Waypoint.objects.create(offer=offer, point=points[1], position=1)
+    booking = BookingService.create_booking(
+        passenger=users[1], offer_id=offer.pk,
+        boarding_point_id=points[0].pk, alighting_point_id=points[-1].pk)
+    return SimpleNamespace(driver=users[0], passenger=users[1], other=users[2],
+                           offer=offer, booking=booking, points=points, departure=departure)

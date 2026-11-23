@@ -54,7 +54,7 @@ class BookingService:
         driver = accounts[offer.driver_id]
         now = timezone.now()
         if not (driver.is_active and driver.role == "MOTORISTA" and driver.is_activated
-                and offer.departure_at > now):
+                and offer.status == RideOffer.Status.ABERTA and offer.departure_at > now):
             raise ValidationError({"offer_id": "Esta oferta não está disponível para reserva."})
 
         confirmed = RideBooking.objects.filter(offer=offer, status=RideBooking.Status.CONFIRMADA)

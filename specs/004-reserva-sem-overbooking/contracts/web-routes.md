@@ -14,7 +14,7 @@ Assinatura implementada: BookingService.create_booking(*, passenger, offer_id, b
 
 Retorna RideBooking CONFIRMADA após commit da própria transação (se chamado dentro de transação externa, o commit final pertence ao chamador). Embarque/desembarque devem satisfazer data-model.md; uma reserva ocupa a oferta inteira.
 
-Ordem de bloqueio: oferta → contas de passageiro/motorista por PK crescente. Revalidar papel/vínculo/is_active de ambos; saída deve ser estritamente futura no instante capturado após obter locks. Não confiar nos objetos passados ou em saldo calculado anteriormente. Não há estado de cancelamento de oferta no esquema atual; sua futura inclusão e verificação ficam na Feature 005, sem campo fictício aqui.
+Ordem de bloqueio: oferta → contas de passageiro/motorista por PK crescente. Revalidar papel/vínculo/is_active de ambos; saída deve ser estritamente futura no instante capturado após obter locks. Não confiar nos objetos passados ou em saldo calculado anteriormente. Evolução Feature 005/T002–T003: RideOffer.status existe e BookingService exige ABERTA; MatchingService também exclui CANCELADA. A operação de cancelar oferta permanece na Feature 005/T004.
 
 Sob lock da oferta: recusar duplicidade CONFIRMADA por passageiro; contar todas as CONFIRMADA da oferta, independentemente do trecho, e criar somente se a contagem for menor que seats. Não alterar seats, não criar contador, não tocar matching/cartão (T006).
 

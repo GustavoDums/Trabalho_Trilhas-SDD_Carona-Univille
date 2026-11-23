@@ -1,28 +1,37 @@
 # Data Model: Cancelamento e liberação de vaga
 
-**Status**: desenho proposto, não migração aplicada. Decisões da [spec](spec.md) bloqueiam campos dependentes.
+**Status**: D005-01/D005-02 confirmadas pelo usuário em 2026-11-22; T002/T003 implementadas e verificadas em 2026-11-23 ([evidência](evidence-t024.md)). Sem cancelamento de oferta/HTTP nesta rodada.
 
-## Entidades e restrições canônicas
+## Campos e restrições canônicas
 
-RideOffer.status: ABERTA/CANCELADA, default ABERTA com migração dos registros atuais; cancelled_at aware nullable. RideBooking.cancelled_at aware nullable. CancellationRecord: actor FK PROTECT, offer FK PROTECT, booking FK PROTECT nullable (alvo oferta quando ausente), occurred_at aware, classification conforme política aprovada. Um evento por transição efetiva; repetição não cria evento novo. Estados e registros preservam autoria e histórico; capacity permanece RideOffer.seats.
+| Campo | Tipo/regra |
+| --- | --- |
+| RideOffer.status | CharField max_length=9, ABERTA/CANCELADA, default ABERTA; CheckConstraint enum; ofertas existentes recebem ABERTA |
+| RideOffer.cancelled_at | DateTimeField aware opcional (null/blank), default None; efetivação do cancelamento de oferta pertence à T004 |
+| RideBooking.cancelled_at | DateTimeField aware opcional; cancelamento efetivo grava o instante capturado; histórico anterior pode continuar None |
+| CancellationRecord.id | BigAutoField |
+| CancellationRecord.actor | FK obrigatória AcademicUser, PROTECT, cancellation_records; autoria vem do ator autenticado |
+| CancellationRecord.offer | FK obrigatória RideOffer, PROTECT, cancellation_records |
+| CancellationRecord.booking | FK opcional RideBooking, PROTECT, cancellation_records; quando informada, deve pertencer à offer; None representa futura transição da oferta |
+| CancellationRecord.occurred_at | DateTimeField aware obrigatório, mesmo instante da transição |
+| CancellationRecord.classification | CharField max_length=10, TEMPESTIVO/TARDIO; choices e CheckConstraint |
 
-## Persistência
+UniqueConstraint parcial por booking não nula e por offer quando booking é nula: um evento por transição efetiva. Repetição de reserva CANCELADA não gera evento nem atualiza datas, mesmo após a partida; legado cancelado sem auditoria não tem evento inventado. Não apagar histórico por cascata.
 
-PostgreSQL e timestamps aware. Relações históricas não desaparecem por exclusão de usuário/oferta. Constraints locais complementam serviço; regras entre linhas exigem transações e locks. Migrações tratam registros legados sem sobrescrevê-los; validar plano e aplicação no PostgreSQL local e banco isolado de testes, sem reset destrutivo.
+Django full_clean valida timestamps aware; campo opcional admite None. Não exigir cancelled_at de reservas CANCELADA legadas nem inventar data. CancellationRecord valida vínculo booking.offer. Restrições locais no PostgreSQL complementam o serviço.
 
-## Fronteiras
+## Política aprovada
 
-Entidades/campos futuros, salvo os explicitamente existentes. [plan.md](plan.md) delimita componentes e [tasks.md](tasks.md) distribui implementação. Fechar decisões e atualizar contrato antes de criar campos condicionais, preservando IDs.
+Passageiro: antecedência >=2h é TEMPESTIVO; motorista: >=4h é TEMPESTIVO. Referência única: RideOffer.departure_at na origem. Comparar instantes completos em UTC; borda inclusiva. Antes da partida e abaixo do prazo: TARDIO aceito com auditoria. Na partida ou depois: recusar sem mutação. Sem dedução numérica, nota automática ou suspensão; penalidade futura pertence à Feature 008.
 
-## Índice de campos canônicos
+## Estado e capacidade
 
-Os campos abaixo são os nomes exatos referidos pelas tarefas; tipos e restrições estão em Entidades e restrições canônicas. Campos condicionais mantêm bloqueio de produto.
+CONFIRMADA→CANCELADA e cancelled_at/auditoria são gravados no mesmo atomic. Repetição é idempotente. RideOffer.seats continua capacidade original; saldo deriva apenas de CONFIRMADA. Não incrementar contador. Modelo/status de oferta são preparados nesta T002; fechar oferta e cancelar reservas em lote pertence à T004. BookingService e MatchingService devem recusar/excluir status CANCELADA desde a inclusão do campo, sem implementar a transição de oferta.
 
-- `RideOffer.status`
-- `RideOffer.cancelled_at`
-- `RideBooking.cancelled_at`
-- `CancellationRecord.actor`
-- `CancellationRecord.offer`
-- `CancellationRecord.booking`
-- `CancellationRecord.occurred_at`
-- `CancellationRecord.classification`
+## Migração
+
+Criar campos e tabela vazia de auditoria preservando todos os campos anteriores. Estado padrão ABERTA para ofertas legadas, datas opcionais None. Verificar plano/SQL, aplicar no PostgreSQL local sem reset e conferir snapshots dos campos antigos, FKs/constraints e migração registrada.
+
+## Serviço e locks
+
+Cancelamento suportado somente por CancellationService; criação direta/bulk/SQL não é API de domínio. Ordem comum com BookingService: oferta → usuários por PK → reservas por PK. Resolver referência da reserva inicialmente sem lock, depois revalidar reserva/autor após locks. Capturar relógio uma vez dentro da transação para transição; nenhum relógio de navegador decide prazo. Auditoria e alteração de estado revertem juntas em erro.

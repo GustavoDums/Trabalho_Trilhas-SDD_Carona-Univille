@@ -1354,3 +1354,65 @@ TDD antes da produção: 35 casos HTTP novos selecionados, com 29 falhas por URL
 Fluxo real de Client com CSRF habilitado: login por e-mail/senha, busca pública com saldo, POST de reserva, redirecionamento à consulta privada e nova busca esgotada; repetição não duplica. Matriz de acesso com middleware completo, 405, CSRF ausente/inválido, dados forjados, erros sem escrita e IDs de terceiros verificados. Regressão e métricas finais em specs/004-reserva-sem-overbooking/evidence-t023.md.
 
 Somente produção em rides/urls.py; serviços, views, modelos, templates e migrações permanecem inalterados. T007 de qualidade final não executada nesta rodada. Sem staging ou commit; alterações existentes preservadas.
+
+---
+
+## 2026-11-22/23 — Feature 005 / T002–T003 / T024 e parcela da T025
+
+Prompt integral:
+
+~~~text
+Execute somente a tarefa T024 do Carona Univille.
+
+Área da tarefa — Feature 005, Cancelamento e liberação de vaga.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T024 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Implemente o cancelamento conforme o prazo, o ponto de referência e a regra
+de borda aprovados. Use um relógio controlado para testar imediatamente
+antes, no instante exato e imediatamente depois do limite. Confira a
+liberação de vaga nos casos aceitos e a preservação do estado quando o
+cancelamento for recusado.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Antes de editar foi identificada T024 → T002 local, bloqueada por D005-01/D005-02, e diferença do prompt (liberação atribuída à T003/T025; penalidade numérica atribuída à 008). Recomendação: 2h passageiro/4h motorista, saída da origem e borda inclusiva; tardio antes da partida aceito/auditado sem dedução; partida/depois recusado sem mutação; incluir T003 de reserva, sem cancelar oferta ou implementar interface.
+
+Resposta integral do usuário:
+
+~~~text
+sim
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Confirmação registrada em 2026-11-22; trabalho atravessou a meia-noite e foi validado em 2026-11-23. Skills: speckit-implement restrita a T001 documental/T002/T003 e python-fact-grounded-coding. Sem hooks/checklist adicional; venv e PostgreSQL existentes; ponteiro ativo preservado.
+
+TDD: 34 falhas de prazos + 8 de fluxo por serviço/modelo/campos ausentes, antes da produção; depois 42 aprovações. Verificação adicional de constraints/vínculo/NULL resultou em 43 aprovados. Regressão final 598 aprovados. Migração 0004 planejada/SQL revisado/aplicada no PostgreSQL local, campos antigos preservados, ofertas ABERTA e datas opcionais NULL; auditoria vazia.
+
+Nova política e CancellationService cancelam reserva atomicamente com auditoria/idempotência, sem contador. BookingService/MatchingService passam a considerar status de oferta, preparado por T002. Motorista tem política de 4h testada; cancel_offer/HTTP/penalidade numérica não foram implementados. Testes PostgreSQL com conexões/TxIDs distintos cobrem cancelar/reservar e cancelar/cancelar.
+
+Resultados e arquivos em specs/005-cancelamento-liberacao-vaga/evidence-t024.md. Sem staging ou commit; alterações existentes preservadas.

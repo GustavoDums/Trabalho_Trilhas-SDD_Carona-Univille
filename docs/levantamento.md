@@ -206,3 +206,8 @@ Atualiza as pendências da seção 5: após a recomendação apresentada, o usu�
 
 Decisão explícita do usuário: confirmação instantânea, estados CONFIRMADA/CANCELADA; uma reserva ocupa uma vaga durante toda a oferta, sem reutilização por trecho. Persistir os pontos de embarque/desembarque escolhidos do catálogo, em ordem do itinerário. WhatsApp adiado, sem coleta de telefone nesta tarefa; e-mail continua confidencial. As tarefas posteriores poderão liberar nome completo e placa somente à contraparte confirmada.
 D004-01/D004-02 resolvidas; escopo atual: modelo e migração da [T002 local / roadmap T020](../specs/004-reserva-sem-overbooking/tasks.md). Serviço/concorrência e interface permanecem tarefas seguintes.
+
+### Confirmação de cancelamento — Feature 005 (2026-11-22)
+
+Usuário confirmou: passageiro 2h, motorista 4h, referência na saída da origem, comparação aware em UTC e borda inclusiva (antecedência >= prazo). Cancelamento tardio antes da partida é aceito com auditoria; na partida/depois, recusado sem mutação. Dedução numérica fica na Feature 008.
+Autorizadas nesta rodada T002 local/T024 e T003 local (parcela de reserva da T025) para verificar liberação idempotente e concorrência. Cancelamento de oferta e interface excluídos. Estas decisões substituem as propostas pendentes correspondentes do levantamento; a constitution não é emendada nesta rodada.

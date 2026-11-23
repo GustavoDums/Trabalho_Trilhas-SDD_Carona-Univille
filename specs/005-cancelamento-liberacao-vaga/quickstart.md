@@ -1,9 +1,9 @@
 # Quickstart de validação: Feature 005
 
-**Roteiro futuro**: módulos e testes serão criados nas tarefas, não executados nesta preparação.
+**Estado em 2026-11-23**: T001–T003 implementadas/verificadas; 43 testes de prazos/fluxo, 598 na regressão completa e migração 0004 aplicada no PostgreSQL local. [Evidência](evidence-t024.md). Cancelamento de oferta e rotas/GUI aguardam T004–T006.
 
-1. Fechar decisões da [spec](spec.md), implementar dependências, usar venv e PostgreSQL existentes, sem imprimir segredos.
-2. Após implementação, da raiz:
+1. D005-01/D005-02 da [spec](spec.md) homologadas; usar venv e PostgreSQL existentes, sem imprimir segredos.
+2. Da raiz, repetir a verificação da API de cancelamento de reserva:
 
 ~~~powershell
 .\venv\Scripts\python.exe manage.py check

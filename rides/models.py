@@ -24,6 +24,11 @@ def require_integer(value, field):
         raise ValidationError({field: "Informe um número inteiro."})
 
 
+def require_aware_datetime(value):
+    if timezone.is_naive(value):
+        raise ValidationError("Informe data e horário com fuso definido.")
+
+
 class ValidatedModel(models.Model):
     class Meta:
         abstract = True
@@ -44,10 +49,16 @@ class RoutePoint(ValidatedModel):
 
 
 class RideOffer(ValidatedModel):
+    class Status(models.TextChoices):
+        ABERTA = "ABERTA", "Aberta"
+        CANCELADA = "CANCELADA", "Cancelada"
+
     driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="ride_offers")
     origin = models.ForeignKey(RoutePoint, on_delete=models.PROTECT, related_name="origin_offers")
     destination = models.ForeignKey(RoutePoint, on_delete=models.PROTECT, related_name="destination_offers")
     departure_at = models.DateTimeField()
+    status = models.CharField(max_length=9, choices=Status.choices, default=Status.ABERTA)
+    cancelled_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
     seats = models.PositiveBigIntegerField(validators=[MinValueValidator(1)])
     vehicle_model = models.CharField(max_length=100)
     vehicle_color = models.CharField(max_length=50)
@@ -58,6 +69,7 @@ class RideOffer(ValidatedModel):
         ordering = ["departure_at", "created_at", "id"]
         indexes = [models.Index(fields=["driver", "departure_at"], name="ride_driver_departure_idx")]
         constraints = [
+            models.CheckConstraint(condition=models.Q(status__in=["ABERTA", "CANCELADA"]), name="ride_offer_status_valid"),
             models.CheckConstraint(condition=models.Q(seats__gte=1), name="ride_seats_positive"),
             models.CheckConstraint(condition=~models.Q(origin=models.F("destination")), name="ride_endpoints_distinct"),
         ]
@@ -137,6 +149,7 @@ class RideBooking(ValidatedModel):
         RoutePoint, on_delete=models.PROTECT, related_name="alighting_bookings",
     )
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.CONFIRMADA)
+    cancelled_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -191,3 +204,44 @@ class RideBooking(ValidatedModel):
                     errors["alighting_point"] = "O desembarque deve estar depois do embarque."
         if errors:
             raise ValidationError(errors)
+
+
+class CancellationRecord(ValidatedModel):
+    """Feature 005/T002 — um evento por transição efetiva, sem penalidade numérica."""
+
+    class Classification(models.TextChoices):
+        TEMPESTIVO = "TEMPESTIVO", "Tempestivo"
+        TARDIO = "TARDIO", "Tardio"
+
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="cancellation_records",
+    )
+    offer = models.ForeignKey(RideOffer, on_delete=models.PROTECT, related_name="cancellation_records")
+    booking = models.ForeignKey(
+        RideBooking, on_delete=models.PROTECT, null=True, blank=True, related_name="cancellation_records",
+    )
+    occurred_at = models.DateTimeField(validators=[require_aware_datetime])
+    classification = models.CharField(max_length=10, choices=Classification.choices)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(classification__in=["TEMPESTIVO", "TARDIO"]),
+                name="cancellation_class_valid",
+            ),
+            models.UniqueConstraint(
+                fields=["booking"], condition=models.Q(booking__isnull=False),
+                name="cancellation_booking_unique",
+            ),
+            models.UniqueConstraint(
+                fields=["offer"], condition=models.Q(booking__isnull=True),
+                name="cancellation_offer_unique",
+            ),
+        ]
+
+    def clean(self):
+        super().clean()
+        if self.booking_id:
+            offer_id = RideBooking.objects.filter(pk=self.booking_id).values_list("offer_id", flat=True).first()
+            if offer_id is not None and offer_id != self.offer_id:
+                raise ValidationError({"offer": "A reserva deve pertencer à oferta auditada."})

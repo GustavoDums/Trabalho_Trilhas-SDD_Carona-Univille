@@ -1,5 +1,15 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-005-t024-quality:start -->
+Feature 005 / T002–T003 locais / T024 e parcela de reserva da T025 — **598 testes aprovados**, 0 ignorados.
+**43 testes novos**, 555 de regressão anterior. TDD inicial: 42 falhas por funcionalidades ausentes, depois verde; 1 verificação adicional de esquema.
+Cobertura de `rides/`: **99.30167597765363%** combinada; linhas: 563/564 (99.822695035461%); ramificações: 148/152 (97.36842105263158%). Serviço de cancelamento: 98.07692307692308% linhas e 95% ramificações. Meta: 80%.
+Relatórios: [coverage-feature005-t024.json](coverage-feature005-t024.json), [test-results-feature005-t024.xml](test-results-feature005-t024.xml) e [evidência](specs/005-cancelamento-liberacao-vaga/evidence-t024.md). Medição: 2026-11-23.
+Reproduzir: `venv/Scripts/python.exe -m pytest tests -q --tb=short --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature005-t024.json --junitxml=test-results-feature005-t024.xml`.
+Migração 0004 aplicada/verificada no PostgreSQL local. Cancelamento de reserva idempotente; oferta, interface e penalidade numérica permanecem tarefas futuras.
+<!-- feature-005-t024-quality:end -->
+
+
 <!-- feature-004-t023-quality:start -->
 Feature 004 / T005 local / roadmap T023 — **555 testes aprovados na suíte de regressão**, 0 ignorados.
 **35 novos testes de URLs/fluxo HTTP nesta tarefa**; 160 acumulados da Feature 004, 395 de regressão anterior.
