@@ -2,7 +2,7 @@
 
 **Feature**: 002-oferta-caronas-paradas. IDs abaixo são locais à Feature 002.
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contratos](contracts/web-routes.md), [quickstart.md](quickstart.md).
-**Prerequisites**: Feature 001 concluída; identidade e middleware disponíveis; PostgreSQL e venv existentes. Rodada de implementação autorizada: roadmap T013 corresponde a T002 local; preparação T001 e fundação T002 concluídas. T003 e T004 concluídas nos recortes da T014; T005 concluída em rodada T015; T006–T007 permanecem abertas.
+**Prerequisites**: Feature 001 concluída; identidade e middleware disponíveis; PostgreSQL e venv existentes. Rodada de implementação autorizada: roadmap T013 corresponde a T002 local; preparação T001 e fundação T002 concluídas. T003 e T004 concluídas nos recortes da T014; T005 concluída em rodada T015; T006 concluída em rodada T016; T007 permanece aberta.
 **Tests**: obrigatórios pela constitution, com dados sintéticos e TDD dentro de cada tarefa: escrever/rodar testes, registrar falha esperada, implementar, rodar novamente. Não aceitar erro de configuração como prova de comportamento.
 
 ## Phase 1: Setup
@@ -38,7 +38,7 @@
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T006 Completar aceitação ponta a ponta em `tests/test_rides_offer.py` com cadastro/login manual/ativação da Feature 001 → oferta → consulta própria, trajeto direto e com paradas, dois autores, falhas sem publicação parcial e ausência de exposição de placa/e-mail; executar regressão dos seis arquivos existentes da Feature 001, sem enfraquecer seus testes. REQ-004, REQ-002, REQ-003, REQ-017; SC-001–SC-004; dependência T005; conclusão: cenários integrados e regressão aprovados no PostgreSQL.
+- [x] T006 Completar aceitação ponta a ponta em `tests/test_rides_offer.py` com cadastro/login manual/ativação da Feature 001 → oferta → consulta própria, trajeto direto e com paradas, dois autores, falhas sem publicação parcial e ausência de exposição de placa/e-mail; executar regressão dos seis arquivos existentes da Feature 001, sem enfraquecer seus testes. REQ-004, REQ-002, REQ-003, REQ-017; SC-001–SC-004; dependência T005; conclusão: cenários integrados e regressão aprovados no PostgreSQL.
 - [ ] T007 Criar `scripts/check-feature002-quality.ps1` para executar `tests/test_rides_offer.py`, medir `rides` com pytest-cov/branch e meta 80% combinada e separada em linhas/ramificações, gerar `coverage-feature002.json` e `test-results-feature002.xml`, atualizar bloco Feature 002 próprio em `README.md`, registrar execução e validação de [quickstart.md](quickstart.md) sem misturar ou sobrescrever indicadores da Feature 001. Validar visualmente o formset e medir/registrar demo com duas paradas até 2 minutos, distinguindo resultado humano de duração de suíte; não concluir se critério falhar. REQ-018, REQ-019, REQ-004; SC-001–SC-005; dependência T006; conclusão: relatórios reais, regressão aprovada, roteiro validado e métricas >=80% versionáveis, sem staging/commit automático.
 
 ## Dependencies & Execution Order
@@ -67,7 +67,7 @@ Nenhuma tarefa marcada [P]: os passos compartilham `models.py`, `forms.py`, `vie
 
 ## Implementation Strategy
 
-Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de execução são marcados; T006–T007 permanecem abertos. Respeitar limites de validação do modelo de dados e nunca alegar garantias SQL de regras que dependem de serviço. Não alterar a constitution, as pendências de matching/cancelamento nem os comportamentos da Feature 001.
+Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de execução são marcados; T007 permanece aberta. Respeitar limites de validação do modelo de dados e nunca alegar garantias SQL de regras que dependem de serviço. Não alterar a constitution, as pendências de matching/cancelamento nem os comportamentos da Feature 001.
 
 ## Evidência — roadmap T013 / Feature 002 T002 local, preparação T001 (2026-11-22)
 
@@ -112,3 +112,14 @@ Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de ex
 - Comando: `venv/Scripts/python.exe -m pytest tests/test_rides_offer.py --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature002.json --junitxml=test-results-feature002.xml`. Cobertura combinada 98,86792452830188%; linhas 213/213 (100%) e ramificações 49/52 (94,23076923076923%). Relatórios e bloco próprio do README sincronizados.
 - Regressão dos seis módulos Feature 001: 152 aprovados; total das duas execuções 260 casos. `manage.py check` sem problemas; `makemigrations --check --dry-run` sem diferenças; diagnósticos Python sem erros; `git diff --check` sem erros. Sem mudança de esquema.
 - Template validado pela renderização HTTP em testes, sem afirmar inspeção visual manual. Aceitação abrangente T006 local/T016 do roadmap e qualidade final T007 local não executadas nesta rodada. T005 local e T015 do roadmap concluídas. Alterações preexistentes preservadas; nenhum staging ou commit.
+
+## Evidência — roadmap T016 / Feature 002 T006 local (2026-11-22)
+
+- Correspondência única por objetivo e requisito: aceitação integrada = T006 local. Dependência T005 satisfeita; REQ-004, REQ-002, REQ-003 e REQ-017; SC-001–SC-004. Nenhum artefato ou decisão pendente afeta o recorte.
+- Acrescentados seis testes `test_acceptance_*` e fixture local `academic_journey` em `tests/test_rides_offer.py`. Cadastro, login manual e ativação HTTP reais, sem force_login/criação de conta via ORM; cliente exige CSRF e recebe o token de cada formulário, inclusive após rotação no login.
+- Dois cenários de jornada completa (trajeto direto e com duas paradas) com dois motoristas em sessões separadas, autoria adulterada, ordem de paradas, persistência e consulta própria. Verificado que cada autor vê somente sua oferta e que nenhuma listagem contém placa ou e-mail dos envolvidos.
+- Outros cenários: dado inválido sem escrita e reenvio corrigido; falha sintética na segunda parada pelo POST HTTP com rollback de oferta/primeira parada e ausência de sucesso; recusa acadêmica por registro inelegível e e-mail ausente, seguida de tentativa de publicação bloqueada. Dados exclusivamente sintéticos.
+- Primeira execução dos seis cenários passou contra a aplicação existente. Por ser tarefa de aceitação, não foi criada falha artificial nem alterado código de produção. Nenhum defeito de produção foi demonstrado pelo novo recorte.
+- Suíte Feature 002: 114 aprovados. Comando: `venv/Scripts/python.exe -m pytest tests/test_rides_offer.py --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature002.json --junitxml=test-results-feature002.xml`. Cobertura combinada 98,86792452830188%; linhas 213/213 (100%) e ramificações 49/52 (94,23076923076923%). Relatórios e bloco próprio do README sincronizados.
+- Regressão dos seis módulos existentes de accounts: 152 aprovados no PostgreSQL; total das duas execuções 266 casos. Testes anteriores preservados. `manage.py check` sem problemas; editor sem diagnósticos no teste alterado; `git diff --check` sem erros.
+- Validação integrada pelo cliente HTTP Django e PostgreSQL de testes, sem alegar automação completa em navegador ou medição de tempo humano. Qualidade, script e demonstração final da T007 local não executados. T006 local e T016 do roadmap concluídas. Alterações preexistentes preservadas; nenhum staging ou commit.

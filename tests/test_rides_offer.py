@@ -606,3 +606,121 @@ def test_my_offers_prefetch_avoids_per_stop_queries(client, active_driver, offer
         for item in offers:
             assert item.origin.name and item.destination.name
             assert [stop.point.name for stop in item.waypoints.all()]
+
+
+@pytest.fixture
+def academic_journey():
+    """Cadastro, login e ativação HTTP reais, sem force_login ou criação via ORM."""
+    def start(email):
+        client = Client(enforce_csrf_checks=True)
+
+        def post_from_form(url, data):
+            assert client.get(url).status_code == 200
+            payload = dict(data, csrfmiddlewaretoken=client.cookies["csrftoken"].value)
+            return client.post(url, payload, follow=True)
+
+        response = post_from_form(reverse("accounts:register"), {
+            "email": email, "full_name": "Motorista Sintético", "role": "MOTORISTA",
+            "password": "Ficticia!Rota-2026#", "password_confirm": "Ficticia!Rota-2026#",
+        })
+        assert response.status_code == 200
+        assert response.redirect_chain == [("/accounts/login/", 302)]
+        assert "_auth_user_id" not in client.session
+        user = get_user_model().objects.get(email=email)
+        assert user.is_pending
+        response = post_from_form(reverse("accounts:login"), {"email": email, "password": "Ficticia!Rota-2026#"})
+        assert response.redirect_chain == [("/accounts/activation/", 302)]
+        assert client.session["_auth_user_id"] == str(user.pk)
+        response = post_from_form(reverse("accounts:activation"), {})
+        user.refresh_from_db()
+        return client, user, response, post_from_form
+
+    return start
+
+
+@pytest.mark.parametrize("with_stops", [False, True])
+def test_acceptance_full_journey_two_authors(academic_journey, publication_data, with_stops):
+    first_client, first, activation, first_post = academic_journey("lucas.aluno@univille.br")
+    second_client, second, second_activation, second_post = academic_journey("mariana.motorista@univille.br")
+    assert first.is_activated and second.is_activated
+    assert activation.redirect_chain == [("/accounts/profile/", 302)]
+    assert second_activation.status_code == 200
+    assert first.validation_records.get().simulation_result == "APROVADO"
+    assert second.validation_records.get().simulation_result == "APROVADO"
+    data = dict(publication_data, driver=second.pk, vehicle_model="Primeiro Veículo Demo", vehicle_plate="PRIMEIRAFICTICIA")
+    if with_stops:
+        points = apps.get_model("rides", "RoutePoint").objects
+        data.update({"waypoints-TOTAL_FORMS": "2", "waypoints-0-point": points.get(code="terminal-norte").pk,
+                     "waypoints-1-point": points.get(code="bairro-america").pk})
+    response = first_post(reverse("rides:offer-create"), data)
+    assert response.status_code == 200
+    assert response.redirect_chain == [("/caronas/minhas-ofertas/", 302)]
+    offer = apps.get_model("rides", "RideOffer").objects.get(driver=first)
+    assert offer.seats == 3 and offer.vehicle_model == "Primeiro Veículo Demo"
+    assert list(offer.waypoints.values_list("point__code", flat=True)) == (["terminal-norte", "bairro-america"] if with_stops else [])
+    second_response = second_post(reverse("rides:offer-create"), dict(publication_data,
+        vehicle_model="Segundo Veículo Demo", vehicle_plate="SEGUNDAFICTICIA"))
+    assert second_response.status_code == 200
+    assert apps.get_model("rides", "RideOffer").objects.count() == 2
+    for client, own, expected, forbidden in [
+        (first_client, first, "Primeiro Veículo Demo", "Segundo Veículo Demo"),
+        (second_client, second, "Segundo Veículo Demo", "Primeiro Veículo Demo"),
+    ]:
+        response = client.get(reverse("rides:my-offers"), {"driver": second.pk if own == first else first.pk})
+        html = response.content.decode()
+        assert response.status_code == 200 and expected in html and forbidden not in html
+        assert [item.driver_id for item in response.context["offers"]] == [own.pk]
+        for secret in (first.email, second.email, "PRIMEIRAFICTICIA", "SEGUNDAFICTICIA"):
+            assert secret not in html
+    assert connection.vendor == "postgresql"
+
+
+def test_acceptance_invalid_then_corrected_publication(academic_journey, publication_data):
+    client, user, _, post = academic_journey("joao.silva@univille.br")
+    assert user.is_activated
+    invalid = dict(publication_data, **{"waypoints-TOTAL_FORMS": "1", "waypoints-0-point": "999999"})
+    response = post(reverse("rides:offer-create"), invalid)
+    assert response.status_code == 200
+    assert response.context["waypoint_formset"].errors
+    assert response.context["form"]["vehicle_plate"].value() == ""
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+    assert not apps.get_model("rides", "Waypoint").objects.exists()
+    response = post(reverse("rides:offer-create"), publication_data)
+    assert response.status_code == 200
+    assert len(response.context["offers"]) == 1
+
+
+def test_acceptance_http_failure_rolls_back_complete_offer(academic_journey, publication_data, monkeypatch):
+    client, user, _, post = academic_journey("lucas.aluno@univille.br")
+    points = apps.get_model("rides", "RoutePoint").objects
+    waypoint = apps.get_model("rides", "Waypoint")
+    original = waypoint.save
+
+    def fail_second(instance, *args, **kwargs):
+        if instance.position == 2:
+            raise RuntimeError("Falha sintética de persistência")
+        return original(instance, *args, **kwargs)
+
+    monkeypatch.setattr(waypoint, "save", fail_second)
+    data = dict(publication_data)
+    data.update({"waypoints-TOTAL_FORMS": "2", "waypoints-0-point": points.get(code="bairro-america").pk,
+                 "waypoints-1-point": points.get(code="terminal-norte").pk})
+    with pytest.raises(RuntimeError, match="Falha sintética"):
+        post(reverse("rides:offer-create"), data)
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+    assert not waypoint.objects.exists()
+    response = client.get(reverse("rides:my-offers"))
+    assert "Você ainda não publicou ofertas de carona." in response.content.decode()
+    assert "Oferta de carona publicada com sucesso." not in response.content.decode()
+
+
+@pytest.mark.parametrize("email", ["bloqueado@univille.br", "motorista.ausente@univille.br"])
+def test_acceptance_refused_activation_never_publishes(academic_journey, publication_data, email):
+    client, user, response, _ = academic_journey(email)
+    assert response.status_code == 200 and user.is_pending
+    assert user.validation_records.get().simulation_result == "RECUSADO"
+    # POST com CSRF válido ainda precisa passar pelo controle acadêmico.
+    data = dict(publication_data, csrfmiddlewaretoken=client.cookies["csrftoken"].value)
+    response = client.post(reverse("rides:offer-create"), data)
+    assert response.status_code == 302 and response.url == "/accounts/activation/"
+    assert not apps.get_model("rides", "RideOffer").objects.exists()

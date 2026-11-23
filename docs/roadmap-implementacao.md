@@ -90,7 +90,7 @@ flowchart TD
 ---
 
 #### Feature 002: Oferta de Caronas e Gestão de Itinerário com Paradas (`REQ-004`)
-*Status*: **Fundação T013, publicação T014 e consulta T015 concluídas; aceitação T016 pendente**. [Plano](../specs/002-oferta-caronas-paradas/plan.md) e [tarefas locais](../specs/002-oferta-caronas-paradas/tasks.md). T013 do roadmap corresponde à Feature 002/T002, com T001 como preparação. [Spec da Feature 002](../specs/002-oferta-caronas-paradas/spec.md). Em 2026-11-22 foram adotados pontos discretos ordenados e modelo/cor/placa antes da primeira publicação. A janela de matching permanece na Feature 003. T013 do roadmap concluída como Feature 002/T002 local, após preparação T001. T014 concluída pelas tarefas locais T003/T004; T015 concluída como Feature 002/T005 local; T016 permanece aberta. Evidências em tasks.md da feature.
+*Status*: **T013–T016 concluídas; qualidade e demonstração final T007 local pendentes**. [Plano](../specs/002-oferta-caronas-paradas/plan.md) e [tarefas locais](../specs/002-oferta-caronas-paradas/tasks.md). T013 do roadmap corresponde à Feature 002/T002, com T001 como preparação. [Spec da Feature 002](../specs/002-oferta-caronas-paradas/spec.md). Em 2026-11-22 foram adotados pontos discretos ordenados e modelo/cor/placa antes da primeira publicação. A janela de matching permanece na Feature 003. T013 do roadmap concluída como Feature 002/T002 local, após preparação T001. T014 concluída pelas tarefas locais T003/T004; T015 concluída como Feature 002/T005 local; T016 concluída como Feature 002/T006 local; T007 local permanece aberta. Evidências em tasks.md da feature.
 
 - [x] **T013**: Implementar modelos `RideOffer` e `Waypoint` em `rides/models.py` com restrição de papel `MOTORISTA` ativo, migrações e testes unitários de ordenação sequencial de paradas em `tests/test_rides_offer.py`.
   - *Requisitos*: REQ-004 | *Dependências*: T002 | *Como verificar*: Testes unitários validam persistência da sequência de waypoints.
@@ -101,7 +101,7 @@ flowchart TD
 - [x] **T015**: Implementar view `MyOffersView` em `rides/views.py`, template `my_offers.html` e rotas `/caronas/oferecer/` e `/caronas/minhas-ofertas/` em `rides/urls.py` para gestão das caronas ofertadas pelo motorista.
   - *Requisitos*: REQ-004 | *Dependências*: T014 | *Como verificar*: Motorista visualiza suas caronas criadas e vagas restantes.
   - *Fusão*: Agrupa antigas T041, T042 e T043.
-- [ ] **T016**: Escrever testes de integração em `tests/test_rides_offer.py` validando o fluxo ponta a ponta de oferta de carona com paradas intermediárias.
+- [x] **T016**: Escrever testes de integração em `tests/test_rides_offer.py` validando o fluxo ponta a ponta de oferta de carona com paradas intermediárias.
   - *Requisitos*: REQ-004, REQ-017 | *Dependências*: T015 | *Como verificar*: `pytest tests/test_rides_offer.py` passa com 100% de sucesso.
   - *Fusão*: Antiga T044 preservada como suíte de aceitação da feature.
 
