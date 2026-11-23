@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
+from notifications.services import NotificationService
 from reviews.services.conduct_service import require_unsuspended
 
 from ..models import RideBooking, RideOffer
@@ -41,9 +42,9 @@ class BookingService:
         if passenger.pk == offer.driver_id:
             raise PermissionDenied("Não é permitido reservar vaga na própria carona.")
 
-        # Ordem compartilhada com futuros cancelamentos: oferta, depois usuários por PK.
+        # Serializa mudanças na conta sem impedir a validação das FKs dos avisos concorrentes.
         accounts = {
-            user.pk: user for user in get_user_model().objects.select_for_update().filter(
+            user.pk: user for user in get_user_model().objects.select_for_update(no_key=True).filter(
                 pk__in=(passenger.pk, offer.driver_id),
             ).order_by("pk")
         }
@@ -79,4 +80,5 @@ class BookingService:
             if constraint == "booking_active_passenger_unique":
                 raise _already_booked() from error
             raise
+        NotificationService.booking_confirmed(booking)
         return booking

@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
 INSTALLED_APPS = [
     'rides.apps.RidesConfig',
     'reviews.apps.ReviewsConfig',
+    'notifications.apps.NotificationsConfig',
     'accounts',
     'django.contrib.admin',
     'django.contrib.auth',

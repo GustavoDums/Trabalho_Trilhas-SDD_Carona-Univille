@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
 
+from notifications.services import NotificationService
 from reviews.services.penalty_service import PenaltyService
 from ..models import CancellationRecord, RideBooking, RideOffer
 
@@ -78,6 +79,7 @@ class CancellationService:
             occurred_at=now, classification=classification,
         )
         PenaltyService.apply_cancellation(cancellation_id=event.pk)
+        NotificationService.cancellation_recorded(event)
         return booking
 
     @staticmethod
@@ -122,4 +124,5 @@ class CancellationService:
             occurred_at=now, classification=classification,
         )
         PenaltyService.apply_cancellation(cancellation_id=event.pk)
+        NotificationService.cancellation_recorded(event, affected_passenger_ids=[item.passenger_id for item in bookings])
         return offer
