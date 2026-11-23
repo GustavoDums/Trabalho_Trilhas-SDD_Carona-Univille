@@ -2,11 +2,13 @@
 {% load tz %}
 {% block title %}Suspensão disciplinar | Carona Univille{% endblock %}
 {% block content %}
-<h1>Suspensão disciplinar</h1>
+<div class="page-heading"><h1>Suspensão disciplinar</h1></div>
+<div class="panel panel--narrow">
 {% timezone "America/Sao_Paulo" %}
 <p>Você pode voltar a oferecer ou reservar caronas em
     <time datetime="{{ suspended_until|date:'c' }}">{{ suspended_until|date:"d/m/Y H:i:s" }}</time>
     (horário de Brasília).</p>
 {% endtimezone %}
 <p><a href="{% url 'conduct:history' %}">Consultar meu extrato de conduta</a></p>
+</div>
 {% endblock %}

@@ -3,11 +3,11 @@
 {% block title %}Notificações | Carona Univille{% endblock %}
 
 {% block content %}
-<h1>Notificações</h1>
+<div class="page-heading"><h1>Notificações</h1></div>
 {% if notifications %}
-<ul>
+<ul class="notice-list">
     {% for notification in notifications %}
-    <li>
+    <li class="record-card notice-item{% if not notification.read_at %} notice-item--unread{% endif %}">
         <p>
             <strong>{{ notification.get_kind_display }}</strong>
             · Carona #{{ notification.offer_reference }}
@@ -24,6 +24,6 @@
     {% endfor %}
 </ul>
 {% else %}
-<p>Você ainda não recebeu notificações.</p>
+<p class="empty-state">Você ainda não recebeu notificações.</p>
 {% endif %}
 {% endblock %}

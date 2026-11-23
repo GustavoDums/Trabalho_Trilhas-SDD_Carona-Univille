@@ -1,22 +1,26 @@
 {% extends "accounts/base.html" %}
 {% block title %}Meu perfil | Carona Univille{% endblock %}
 {% block content %}
-<h1>Meu perfil acadêmico</h1>
-<dl>
-    <dt>Nome completo</dt><dd>{{ user.full_name }}</dd>
-    <dt>Papel</dt><dd>{{ user.get_role_display }}</dd>
-    <dt>Vínculo acadêmico</dt><dd>Ativo</dd>
-    <dt>Reputação</dt><dd>{% include "reviews/_reputation_score.html" with score=reputation_score only %}</dd>
+<div class="page-heading"><h1>Meu perfil acadêmico</h1></div>
+<div class="panel panel--narrow">
+<dl class="data-list">
+    <div><dt>Nome completo</dt><dd>{{ user.full_name }}</dd></div>
+    <div><dt>Papel</dt><dd>{{ user.get_role_display }}</dd></div>
+    <div><dt>Vínculo acadêmico</dt><dd>Ativo</dd></div>
+    <div><dt>Reputação</dt><dd>{% include "reviews/_reputation_score.html" with score=reputation_score only %}</dd></div>
 </dl>
-<section aria-labelledby="privacy-title">
+</div>
+<section class="panel panel--narrow" aria-labelledby="privacy-title">
     <h2 id="privacy-title">Sua privacidade</h2>
     <p>Em listagens, você será apresentado como <strong>{{ user.display_name }}</strong>.</p>
     <p>Seu e-mail institucional é confidencial e não é exibido a outros usuários.
     Seu nome completo será compartilhado com a contraparte apenas após uma reserva confirmada.</p>
+    <div class="button-group">
+        <a class="button-link button-link--secondary" href="{% url 'conduct:history' %}">Consultar meu extrato de conduta</a>
+        <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button class="button-secondary" type="submit">Sair</button>
+        </form>
+    </div>
 </section>
-<p><a href="{% url 'conduct:history' %}">Consultar meu extrato de conduta</a></p>
-<form method="post" action="{% url 'accounts:logout' %}">
-    {% csrf_token %}
-    <button type="submit">Sair</button>
-</form>
 {% endblock %}

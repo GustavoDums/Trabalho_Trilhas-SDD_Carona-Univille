@@ -1,14 +1,25 @@
 {% extends "accounts/base.html" %}
 {% block title %}Entrar | Carona Univille{% endblock %}
+{% block body_class %}auth-page{% endblock %}
 {% block content %}
-<h1>Entrar no Carona Univille</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {% for field in form %}
-    <div>{{ field.label_tag }}{{ field.errors }}{{ field }}</div>
-    {% endfor %}
-    <p><button type="submit">Entrar</button></p>
-</form>
-<p><a href="{% url 'accounts:register' %}">Criar conta acadêmica</a></p>
+<div class="auth-layout">
+    {% include 'accounts/_auth_art.html' %}
+    <section class="auth-card auth-card--login" aria-labelledby="login-title">
+        <div class="page-heading">
+            <h1 id="login-title">Entrar</h1>
+            <p>Acesse sua conta com seu e-mail institucional.</p>
+        </div>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid form-grid--single">
+                {% for field in form %}
+                <div class="form-field">{{ field.label_tag }}{{ field }}{{ field.errors }}</div>
+                {% endfor %}
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        <p class="auth-card__switch">Primeira vez aqui? <a href="{% url 'accounts:register' %}">Criar conta acadêmica</a></p>
+    </section>
+</div>
 {% endblock %}

@@ -2,7 +2,8 @@
 {% load tz %}
 {% block title %}Avaliar viagem | Carona Univille{% endblock %}
 {% block content %}
-<h1>Avaliar viagem</h1>
+<div class="page-heading"><h1>Avaliar viagem</h1></div>
+<div class="panel panel--narrow">
 {% if review_error %}
 <p role="alert">{{ review_error }}</p>
 {% else %}
@@ -19,5 +20,6 @@
     <button type="submit">Enviar avaliação</button>
 </form>
 {% endif %}
-<p><a href="{% url 'accounts:profile' %}">Voltar ao perfil</a></p>
+<p class="section-note"><a href="{% url 'accounts:profile' %}">Voltar ao perfil</a></p>
+</div>
 {% endblock %}

@@ -3,7 +3,9 @@
 {% block title %}Fila de espera | Carona Univille{% endblock %}
 
 {% block content %}
-<h1>Não foi possível entrar na fila</h1>
+<div class="page-heading"><h1>Não foi possível entrar na fila</h1></div>
+<div class="panel panel--narrow">
 <div role="alert">{{ form.errors }}</div>
-<p><a href="{% url 'rides:search' %}">Voltar à busca</a></p>
+<p class="section-note"><a href="{% url 'rides:search' %}">Voltar à busca</a></p>
+</div>
 {% endblock %}

@@ -2,19 +2,32 @@
 {% load l10n %}
 {% block title %}Buscar carona | Carona Univille{% endblock %}
 {% block content %}
-<h1>Buscar carona</h1>
-<p>Horários no fuso America/Sao_Paulo.</p>
-<p id="search-window">Janela fixa de ±30 minutos em relação à saída da origem. Não representa previsão de passagem nas paradas.</p>
-<form method="get" aria-describedby="search-window">
-    {{ form.as_p }}
-    <button type="submit">Buscar caronas</button>
-</form>
+<div class="page-heading">
+    <h1>Buscar carona</h1>
+    <p>Informe o trecho e o horário da viagem. Horários no fuso America/Sao_Paulo.</p>
+</div>
+<section class="panel trip-search" aria-label="Filtros da busca">
+    <p id="search-window">Janela fixa de ±30 minutos em relação à saída da origem. Não representa previsão de passagem nas paradas.</p>
+    <form method="get" aria-describedby="search-window">
+        {{ form.non_field_errors }}
+        <div class="search-fields">
+            {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}{{ field }}{{ field.errors }}
+                {% if field.help_text %}<div class="helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <button type="submit">Buscar caronas</button>
+    </form>
+</section>
 {% if searched %}
     {% if form.errors %}
     <p role="alert">Corrija os campos indicados para buscar caronas.</p>
     {% else %}
-    <section aria-label="Resultados da busca">
+    <section class="card-grid" aria-label="Resultados da busca">
         {% for result in results %}
+            <div class="result-tile">
             {% include "rides/_search_result.html" with result=result only %}
             {% if result.available_seats == 0 and form.cleaned_data.boarding_id %}
             <form method="post" action="{% url 'rides:join_waitlist' result.offer_id %}">
@@ -24,13 +37,14 @@
                 <button type="submit">Entrar na fila de espera</button>
             </form>
             {% endif %}
+            </div>
         {% empty %}
-            <p>Nenhuma oferta compatível com os filtros informados.</p>
+            <p class="empty-state">Nenhuma oferta compatível com os filtros informados.</p>
         {% endfor %}
     </section>
     {% endif %}
 {% else %}
-    <p>Informe os filtros para buscar ofertas compatíveis.</p>
+    <p class="empty-state">Informe os filtros para buscar ofertas compatíveis.</p>
 {% endif %}
 {% endblock %}
 

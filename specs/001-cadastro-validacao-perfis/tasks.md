@@ -77,6 +77,10 @@
 
 ---
 
+## Revisão visual transversal
+
+- [x] T013 Renovar a apresentação das telas públicas e autenticadas com folha de estilos local e navegação por papel em `accounts/templates/accounts/base.html`, `accounts/static/accounts/carona.css` e nos templates das features. **Requisitos** REQ-001, REQ-002, REQ-003, REQ-014, REQ-015, REQ-017, REQ-018 e REQ-019. **Aceite** cadastro, login e áreas operacionais com apresentação responsiva e consistente, foco e rótulos preservados, regressão no PostgreSQL e métricas sincronizadas no README. **Identificador de commit** Feature 001 / T013 local. [Evidência](evidence-t013.md).
+
 ## Dependencies & Execution Order
 
 ### Phase Dependencies

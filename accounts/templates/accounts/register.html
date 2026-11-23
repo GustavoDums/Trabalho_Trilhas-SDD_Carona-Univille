@@ -1,20 +1,32 @@
 {% extends "accounts/base.html" %}
 {% block title %}Cadastro acadêmico | Carona Univille{% endblock %}
+{% block body_class %}auth-page{% endblock %}
 {% block content %}
-<h1>Cadastro acadêmico</h1>
-<p>Informe seus dados institucionais e escolha seu papel. Sua conta ficará pendente até a validação do vínculo acadêmico.</p>
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {% for field in form %}
-    <div>
-        {{ field.label_tag }}
-        {{ field.errors }}
-        {{ field }}
-        {% if field.help_text %}<div id="{{ field.auto_id }}_helptext">{{ field.help_text }}</div>{% endif %}
-    </div>
-    {% endfor %}
-    <p>O papel escolhido é fixo nesta versão. Seu e-mail institucional é confidencial.</p>
-    <button type="submit">Criar conta</button>
-</form>
+<div class="auth-layout">
+    {% include 'accounts/_auth_art.html' %}
+    <section class="auth-card" aria-labelledby="registration-title">
+        <div class="page-heading">
+            <h1 id="registration-title">Crie sua conta</h1>
+            <p>Seu cadastro fica pendente até a validação do vínculo acadêmico.</p>
+        </div>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="form-grid">
+                {% for field in form %}
+                <div class="form-field{% if field.name == 'full_name' %} form-field--wide{% endif %}">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                    {% if field.help_text and field.name != 'password' %}<div class="helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</div>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="password-rules helptext" id="{{ form.password.auto_id }}_helptext">{{ form.password.help_text }}</div>
+            <p class="form-note">O papel escolhido é fixo. Seu e-mail institucional é confidencial.</p>
+            <button type="submit">Criar conta</button>
+        </form>
+        <p class="auth-card__switch">Já tem conta? <a href="{% url 'accounts:login' %}">Entre no Carona Univille</a></p>
+    </section>
+</div>
 {% endblock %}

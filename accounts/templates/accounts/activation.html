@@ -1,17 +1,19 @@
 {% extends "accounts/base.html" %}
 {% block title %}Validar vínculo | Carona Univille{% endblock %}
 {% block content %}
-<h1>Validação do vínculo acadêmico</h1>
-<dl>
-    <dt>Nome completo</dt><dd>{{ user.full_name }}</dd>
-    <dt>E-mail institucional</dt><dd>{{ user.email }}</dd>
-    <dt>Estado acadêmico</dt><dd>{{ user.get_academic_status_display }}</dd>
+<div class="page-heading"><h1>Validação do vínculo acadêmico</h1></div>
+<section class="panel panel--narrow" aria-label="Status e validação">
+<dl class="data-list">
+    <div><dt>Nome completo</dt><dd>{{ user.full_name }}</dd></div>
+    <div><dt>E-mail institucional</dt><dd>{{ user.email }}</dd></div>
+    <div><dt>Estado acadêmico</dt><dd>{{ user.get_academic_status_display }}</dd></div>
 </dl>
-<p>Esta prova de conceito utiliza uma lista de contas acadêmicas fictícias.
+<p class="section-note">Esta prova de conceito utiliza uma lista de contas acadêmicas fictícias.
 Somente contas elegíveis nessa lista podem ser ativadas. O domínio institucional,
 por si só, não comprova o vínculo.</p>
 <form method="post">
     {% csrf_token %}
     <button type="submit">Validar Vínculo Institucional</button>
 </form>
+</section>
 {% endblock %}

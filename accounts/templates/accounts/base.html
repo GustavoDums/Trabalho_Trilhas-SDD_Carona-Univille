@@ -1,42 +1,45 @@
-<!doctype html>
+{% load static %}<!doctype html>
 <html lang="pt-br">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Carona Univille{% endblock %}</title>
-    <style>
-        :root { font-family: system-ui, sans-serif; color: #172f28; background: #f4f7f5; }
-        body { margin: 0; line-height: 1.5; }
-        header, main, footer { max-width: 48rem; margin: auto; padding: 1.5rem; }
-        header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid #c7d8cf; }
-        .notification-bell { display: inline-flex; align-items: center; gap: .4rem; padding: .5rem; border: 1px solid #c7d8cf; border-radius: .3rem; text-decoration: none; }
-        .notification-count { min-width: 1.5em; padding: 0 .25em; border-radius: 1em; background: #135e42; color: #fff; text-align: center; }
-        main { min-height: 55vh; }
-        a { color: #135e42; }
-        label { display: block; margin-top: 1rem; }
-        input, select, button { font: inherit; padding: .65rem; max-width: 100%; box-sizing: border-box; }
-        button { color: white; background: #135e42; border: 0; border-radius: .3rem; cursor: pointer; }
-        :focus-visible { outline: 3px solid #a34c00; outline-offset: 3px; }
-        .messages, .errorlist { padding: 1rem 1rem 1rem 2rem; background: #fff; border: 1px solid #c7d8cf; }
-        .errorlist { color: #8f2020; }
-        .skip-link { position: absolute; left: -10000px; }
-        .skip-link:focus { position: static; }
-    </style>
+    <meta name="theme-color" content="#f5f7f3">
+    <link rel="stylesheet" href="{% static 'accounts/carona.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <a class="skip-link" href="#content">Ir para o conteúdo</a>
-    <header>
-        <strong>Carona Univille</strong>
-        {% if notification_unread_count is not None %}
-        <nav aria-label="Notificações">
-            <a href="{% url 'notifications:list' %}" class="notification-bell" aria-label="Notificações, {{ notification_unread_count }} não lidas">
-                <span aria-hidden="true">🔔</span><span class="notification-count">{{ notification_unread_count }}</span>
+    <header class="site-header">
+        <div class="site-header__inner">
+            <a class="brand" href="{% if request.user.is_activated %}{% url 'accounts:profile' %}{% elif request.user.is_authenticated %}{% url 'accounts:activation' %}{% else %}{% url 'accounts:login' %}{% endif %}">
+                <span class="brand-mark" aria-hidden="true"><i></i></span>
+                <span>Carona <b>Univille</b></span>
             </a>
-        </nav>
-        {% endif %}
+            {% if request.user.is_active and request.user.is_activated %}
+            {% with current=request.resolver_match.url_name %}
+            <nav class="primary-nav" aria-label="Navegação principal">
+                {% if request.user.role == 'PASSAGEIRO' %}
+                <a href="{% url 'rides:search' %}"{% if current == 'search' %} aria-current="page"{% endif %}>Buscar caronas</a>
+                <a href="{% url 'rides:my_bookings' %}"{% if current == 'my_bookings' %} aria-current="page"{% endif %}>Minhas reservas</a>
+                {% elif request.user.role == 'MOTORISTA' %}
+                <a href="{% url 'rides:my-offers' %}"{% if current == 'my-offers' %} aria-current="page"{% endif %}>Minhas ofertas</a>
+                <a href="{% url 'rides:offer-create' %}"{% if current == 'offer-create' %} aria-current="page"{% endif %}>Oferecer carona</a>
+                {% endif %}
+                <a href="{% url 'accounts:profile' %}"{% if current == 'profile' %} aria-current="page"{% endif %}>Meu perfil</a>
+            </nav>
+            {% endwith %}
+            {% endif %}
+            {% if notification_unread_count is not None %}
+            <nav class="header-actions" aria-label="Notificações">
+                <a href="{% url 'notifications:list' %}" class="notification-bell" aria-label="Notificações, {{ notification_unread_count }} não lidas">
+                    <span class="bell-icon" aria-hidden="true"></span><span class="notification-count">{{ notification_unread_count }}</span>
+                </a>
+            </nav>
+            {% endif %}
+        </div>
     </header>
-    <main id="content">
+    <main id="content" class="main-content">
         {% if messages %}
         <ul class="messages" aria-live="polite">
             {% for message in messages %}<li>{{ message }}</li>{% endfor %}
@@ -44,7 +47,7 @@
         {% endif %}
         {% block content %}{% endblock %}
     </main>
-    <footer>Mobilidade da comunidade acadêmica Univille.</footer>
+    <footer class="site-footer">Carona Univille · Mobilidade acadêmica</footer>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

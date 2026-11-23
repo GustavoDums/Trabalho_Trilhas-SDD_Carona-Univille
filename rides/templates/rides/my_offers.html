@@ -2,14 +2,19 @@
 {% load tz %}
 {% block title %}Minhas ofertas | Carona Univille{% endblock %}
 {% block content %}
-<h1>Minhas ofertas de carona</h1>
+<div class="page-heading">
+    <h1>Minhas ofertas de carona</h1>
+    <p>Horários no fuso America/Sao_Paulo. As vagas informadas são para passageiros.</p>
+</div>
 {% if cancellation_error %}<p role="alert">{{ cancellation_error }}</p>{% endif %}
-<p><a href="{% url 'rides:offer-create' %}">Oferecer carona</a></p>
-<p><a href="{% url 'rides:recurring_offers' %}">Caronas recorrentes</a></p>
-<p>Horários no fuso America/Sao_Paulo. As vagas informadas são para passageiros.</p>
+<div class="button-group">
+    <a class="button-link" href="{% url 'rides:offer-create' %}">Oferecer carona</a>
+    <a class="button-link button-link--secondary" href="{% url 'rides:recurring_offers' %}">Caronas recorrentes</a>
+</div>
 {% timezone "America/Sao_Paulo" %}
+<div class="card-grid">
 {% for offer in offers %}
-<article data-offer-id="{{ offer.pk }}">
+<article data-offer-id="{{ offer.pk }}" class="record-card">
     <h2>{{ offer.vehicle_model }} — {{ offer.vehicle_color }}</h2>
     <p>Estado: {{ offer.status }}</p>
     {% if offer.completed_at %}
@@ -32,7 +37,7 @@
     </details>
     {% endif %}
     <h3>Itinerário</h3>
-    <ol>
+    <ol class="itinerary">
         <li>{{ offer.origin.name }} (origem)</li>
         {% for stop in offer.waypoints.all %}<li>{{ stop.point.name }}</li>{% endfor %}
         <li>{{ offer.destination.name }} (destino)</li>
@@ -41,7 +46,8 @@
     <p>{{ offer.seats }} vagas ofertadas</p>
 </article>
 {% empty %}
-<p>Você ainda não publicou ofertas de carona.</p>
+<p class="empty-state">Você ainda não publicou ofertas de carona.</p>
 {% endfor %}
+</div>
 {% endtimezone %}
 {% endblock %}

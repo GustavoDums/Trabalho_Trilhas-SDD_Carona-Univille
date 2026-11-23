@@ -1,5 +1,11 @@
 # Feature Specification: Cadastro Acadêmico, Validação de Vínculo e Perfis
 
+## Revisão visual transversal — 001/T013
+
+O cadastro mantém nome completo, e-mail institucional, papel, senha e confirmação. Cadastro e login usam formulários com hierarquia visual clara e campos com rótulos persistentes. As áreas públicas e autenticadas compartilham a identidade do Carona Univille. A navegação da sessão ativa apresenta os destinos do papel atual e mantém os avisos privados da conta.
+
+Em telas estreitas, as colunas se reorganizam e os comandos permanecem acessíveis. A apresentação mantém foco visível, associação de rótulos, mensagens de erro e estados de leitura e disponibilidade. As regras de acesso, os dados coletados, as ações e os contratos das demais features continuam regidos por suas especificações. **Requisitos relacionados** REQ-001, REQ-002, REQ-003, REQ-014 e REQ-015.
+
 **Feature Branch**: `001-cadastro-validacao-perfis`  
 **Created**: 2026-11-18  
 **Status**: Draft  

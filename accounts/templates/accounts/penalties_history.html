@@ -2,10 +2,12 @@
 {% load tz %}
 {% block title %}Meu extrato de conduta | Carona Univille{% endblock %}
 {% block content %}
-<h1>Meu extrato de conduta</h1>
-<p>Horários de Brasília.</p>
+<div class="page-heading">
+    <h1>Meu extrato de conduta</h1>
+    <p>Horários de Brasília.</p>
+</div>
 {% timezone "America/Sao_Paulo" %}
-<section aria-labelledby="suspension-title">
+<section class="panel" aria-labelledby="suspension-title">
     <h2 id="suspension-title">Suspensão</h2>
     {% if suspended_until %}
     <p>
@@ -17,9 +19,10 @@
     <p>Sem suspensão registrada.</p>
     {% endif %}
 </section>
-<section aria-labelledby="penalties-title">
+<section class="panel" aria-labelledby="penalties-title">
     <h2 id="penalties-title">Ocorrências</h2>
     {% if penalties %}
+    <div class="table-scroll">
     <table aria-labelledby="penalties-title">
         <thead>
             <tr><th scope="col">Data e hora</th><th scope="col">Motivo</th><th scope="col">Ajuste na nota</th></tr>
@@ -34,10 +37,11 @@
             {% endfor %}
         </tbody>
     </table>
+    </div>
     {% else %}
     <p>Nenhuma ocorrência registrada.</p>
     {% endif %}
 </section>
 {% endtimezone %}
-<p><a href="{% url 'accounts:profile' %}">Voltar ao meu perfil</a></p>
+<p class="section-note"><a href="{% url 'accounts:profile' %}">Voltar ao meu perfil</a></p>
 {% endblock %}

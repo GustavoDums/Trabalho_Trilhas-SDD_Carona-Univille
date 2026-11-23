@@ -1,5 +1,9 @@
 # Implementation Plan: Cadastro Acadêmico, Validação de Vínculo e Perfis
 
+## Revisão visual transversal — 001/T013
+
+Usar o template-base de `accounts` e uma folha de estilos local compartilhada. Cadastro e login adotam uma composição de duas colunas que se reorganiza em telas estreitas. Navegação, formulários, cartões, mensagens e estados usam componentes consistentes em `accounts`, `rides`, `reviews` e `notifications`. Preservar os formulários Django, CSRF, condições de autorização e identificadores usados pelo formset de paradas. Verificar renderização em larguras móvel e desktop, regressão no PostgreSQL e métricas da entrega.
+
 **Branch**: `001-cadastro-validacao-perfis` | **Date**: 2026-11-21 | **Spec**: [spec.md](file:///specs/001-cadastro-validacao-perfis/spec.md)
 
 **Input**: Feature specification from `/specs/001-cadastro-validacao-perfis/spec.md`, alinhada à [Constitution v1.1.0](file:///.specify/memory/constitution.md) e ao [Levantamento de Requisitos](file:///docs/levantamento.md).

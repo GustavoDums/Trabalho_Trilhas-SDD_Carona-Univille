@@ -2,8 +2,8 @@
 {% load static %}
 {% block title %}Caronas recorrentes | Carona Univille{% endblock %}
 {% block content %}
-<h1>Caronas recorrentes</h1>
-<section aria-labelledby="new-rule">
+<div class="page-heading"><h1>Caronas recorrentes</h1></div>
+<section class="panel panel--narrow" aria-labelledby="new-rule">
     <h2 id="new-rule">Criar regra</h2>
     <p>As caronas serão geradas nos dias escolhidos dentro dos próximos 16 dias corridos.</p>
     <form method="post">
@@ -26,10 +26,10 @@
         <p><button type="submit">Criar regra e gerar caronas</button></p>
     </form>
 </section>
-<section aria-labelledby="my-rules">
+<section class="panel" aria-labelledby="my-rules">
     <h2 id="my-rules">Minhas regras</h2>
     {% for rule in rules %}
-    <article>
+    <article class="record-card">
         <h3>{{ rule.origin.name }} → {{ rule.destination.name }}</h3>
         <p>Saída às {{ rule.local_time|time:"H:i" }} · {% if rule.active %}Ativa{% else %}Desativada{% endif %}</p>
         {% if rule.upcoming %}
@@ -45,9 +45,9 @@
         {% endif %}
     </article>
     {% empty %}
-    <p>Nenhuma regra cadastrada.</p>
+    <p class="empty-state">Nenhuma regra cadastrada.</p>
     {% endfor %}
 </section>
-<p><a href="{% url 'rides:my-offers' %}">Voltar para minhas ofertas</a></p>
+<p class="section-note"><a href="{% url 'rides:my-offers' %}">Voltar para minhas ofertas</a></p>
 {% endblock %}
 {% block extra_scripts %}<script src="{% static 'rides/offer.js' %}" defer></script>{% endblock %}

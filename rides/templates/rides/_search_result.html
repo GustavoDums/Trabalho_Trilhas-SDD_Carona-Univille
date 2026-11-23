@@ -1,17 +1,19 @@
 {% load tz %}
 {% timezone "America/Sao_Paulo" %}
 <article data-offer-id="{{ result.offer_id }}">
-    <h2>Motorista: {{ result.driver_display_name }}</h2>
+    <div class="result-card__top">
+        <h2>Motorista: {{ result.driver_display_name }}</h2>
+        <p class="seat-status{% if result.available_seats == 0 %} seat-status--full{% endif %}">{% if result.available_seats == 1 %}1 vaga disponível{% else %}{{ result.available_seats }} vagas disponíveis{% endif %}</p>
+    </div>
     {% if result.driver_score is not None %}
     <p>Reputação: {% include "reviews/_reputation_score.html" with score=result.driver_score only %}</p>
     {% endif %}
     <h3>Itinerário</h3>
-    <ol>{% for point in result.itinerary %}<li>{{ point }}</li>{% endfor %}</ol>
+    <ol class="itinerary">{% for point in result.itinerary %}<li>{{ point }}</li>{% endfor %}</ol>
     <p>Saída da origem: <time datetime="{{ result.departure_at|date:'c' }}">{{ result.departure_at|date:"d/m/Y H:i:s" }}</time></p>
-    <p>Janela fixa de ±30 minutos em relação à saída da origem. Não representa previsão de passagem nas paradas.</p>
-    <p>{% if result.available_seats == 1 %}1 vaga disponível{% else %}{{ result.available_seats }} vagas disponíveis{% endif %}</p>
+    <p class="result-card__meta">Janela fixa de ±30 minutos em relação à saída da origem. Não representa previsão de passagem nas paradas.</p>
     {% if result.available_seats == 0 %}<p>Vagas esgotadas.</p>{% endif %}
-    <p>A disponibilidade pode mudar até a confirmação da reserva.</p>
+    <p class="result-card__meta">A disponibilidade pode mudar até a confirmação da reserva.</p>
     <p>Veículo: {{ result.vehicle_model }} — {{ result.vehicle_color }}</p>
 </article>
 {% endtimezone %}
