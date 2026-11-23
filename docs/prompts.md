@@ -2715,3 +2715,28 @@ Siga da maneira correta como antes
 Anexo da conversa desse pedido — imagem de referência de uma tela de cadastro.
 
 A [tarefa 001/T013](../specs/001-cadastro-validacao-perfis/tasks.md#revisão-visual-transversal) registra os requisitos relacionados. A [evidência da revisão visual](../specs/001-cadastro-validacao-perfis/evidence-t013.md) reúne os resultados.
+
+## Remoção de caronas de Minhas ofertas — Feature 005 / T008 local — 2026-11-23
+
+~~~text
+Nessa tela de oferecer carona quero uma lixeira vermelha no canto de cada carona para poder deletar ela e limpar a tela, se a carona ja foi cancelada ele só deleta, se ainda não foi cancelada ele primeiro cancela depois deleta.&#x20;
+Em anexo imagem para contexto.
+
+Atualiza toda a documentação necessária.
+~~~
+
+Anexo da conversa desse pedido — imagem da tela **Minhas ofertas** com cartões de caronas canceladas.
+
+A tarefa atende aos requisitos REQ-003 e REQ-007 e aos critérios FR-006 e SC-006. [Checklist da Feature 005](../specs/005-cancelamento-liberacao-vaga/tasks.md#phase-6-remoção-de-ofertas-do-painel) · [Evidência da T008](../specs/005-cancelamento-liberacao-vaga/evidence-t008.md).
+
+## Janela de 15 dias úteis com BrasilAPI — Feature 009 / T008 local — 2026-11-23
+
+~~~text
+Agora uma atualização de uma escolha que foi feita errada anteriormente.
+
+Na parte de criar regra ele gera a partir de 16 dias corridos, preciso mudar isso para 15 dias úteis, use um calendário que atualizado, use o [https://brasilapi.com.br](https://brasilapi.com.br) para pegar as datas de feriados e ter os dias úteis de forma correta.
+
+Adicione nas documentações
+~~~
+
+A tarefa revisa a decisão D009-01 e atende ao REQ-011. [Checklist da Feature 009](../specs/009-caronas-recorrentes/tasks.md#revisão-da-janela-de-recorrência) · [Evidência da T008](../specs/009-caronas-recorrentes/evidence-t008.md).
