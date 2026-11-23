@@ -7,7 +7,7 @@ from django.db import transaction
 from django.utils import timezone
 
 from rides.models import RideBooking, RideOffer
-from ..models import RideReview
+from ..models import PenaltyRecord, RideReview
 
 
 def _authenticated(user):
@@ -88,6 +88,8 @@ class ReviewService:
             offer=offer, passenger_id=passenger_id, status=RideBooking.Status.CONFIRMADA,
         ).order_by('pk').first()
         if booking is None or booking.no_show_at is not None:
+            raise ValidationError('Participação não elegível para avaliação.', code='ineligible_booking')
+        if PenaltyRecord.objects.filter(offer=offer, subject_id=offer.driver_id, kind=PenaltyRecord.Kind.NO_SHOW).exists():
             raise ValidationError('Participação não elegível para avaliação.', code='ineligible_booking')
         if offer.status == RideOffer.Status.CANCELADA or offer.completed_at is None:
             raise ValidationError('A oferta precisa estar concluída e não cancelada.', code='not_completed')

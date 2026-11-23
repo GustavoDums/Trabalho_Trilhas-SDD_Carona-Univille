@@ -11,6 +11,14 @@
 <article data-offer-id="{{ offer.pk }}">
     <h2>{{ offer.vehicle_model }} — {{ offer.vehicle_color }}</h2>
     <p>Estado: {{ offer.status }}</p>
+    {% if offer.completed_at %}
+    <p>Conclusão registrada em <time datetime="{{ offer.completed_at|date:'c' }}">{{ offer.completed_at|date:"d/m/Y H:i" }}</time>.</p>
+    {% elif offer.status == "ABERTA" and offer.departure_at <= now %}
+    <form method="post" action="{% url 'reviews:complete_ride' offer_id=offer.pk %}">
+        {% csrf_token %}
+        <button type="submit">Registrar conclusão da carona</button>
+    </form>
+    {% endif %}
     {% if offer.status == "ABERTA" %}
     <details>
         <summary>Cancelar oferta {{ offer.pk }}</summary>

@@ -195,7 +195,7 @@ flowchart TD
 ---
 
 #### Feature 008: Penalidades por Cancelamento Tardio e No-Show (`REQ-010`)
-*Status*: D008-01 e D008-02 homologadas. [T032 concluída](../specs/008-penalidades-conduta/evidence-t032.md). A [T003 local](../specs/008-penalidades-conduta/evidence-t003.md) concluiu a integração de cancelamentos da T033. O fluxo de denúncia corresponde à T004 local.
+*Status*: D008-01 e D008-02 homologadas. [T032 concluída](../specs/008-penalidades-conduta/evidence-t032.md). T033 concluída com [cancelamentos na T003 local](../specs/008-penalidades-conduta/evidence-t003.md) e [denúncia de no-show na T004 local](../specs/008-penalidades-conduta/evidence-t004.md). A T034 começa pela T005 local.
 
 - [x] **T032**: **[TESTE ESPECÍFICO DE DEDUÇÃO NUMÉRICA DE PENALIDADES]**: Implementar os modelos `PenaltyRecord` e `ConductProfile` em `reviews/models.py` e testes em `tests/test_penalties.py` cobrindo:
   - (1) *Cancelamento Tardio*: dedução fixa de $-0.20$ pontos na reputação (ex.: `4.80★` $\rightarrow$ `4.60★`).
@@ -203,7 +203,7 @@ flowchart TD
   - (3) *Reincidência*: 3 no-shows distintos em 30 dias geram suspensão temporária de 14 dias.
   - *Requisitos*: REQ-010, REQ-003, REQ-017 | *Dependências*: T030 e homologação D008-01/D008-02 | *Como verificar*: `pytest tests/test_penalties.py` valida unicidade, deduções, nota automática e prazo de suspensão. A aplicação dos efeitos e o bloqueio de ações são verificados em T033 e T034.
   - *Fusão*: Agrupa antigas T091 e T092.
-- [ ] **T033**: Implementar serviço `PenaltyService` em `reviews/services/penalty_service.py`, integração com cancelamentos tardios de `CancellationService` e fluxo de registro de No-Show (após 10 min de tolerância).
+- [x] **T033**: Implementar serviço `PenaltyService` em `reviews/services/penalty_service.py`, integração com cancelamentos tardios de `CancellationService` e fluxo de registro de No-Show (após 10 min de tolerância).
   - *Requisitos*: REQ-007, REQ-010 | *Dependências*: T024, T032 | *Como verificar*: Cancelamento tardio ou registro de no-show grava penalidade e reduz nota no banco.
   - *Fusão*: Agrupa antigas T093, T094 e T095.
 - [ ] **T034**: Implementar verificação de suspensão no `AcademicStatusMiddleware`, tela de extrato de conduta `accounts/templates/accounts/penalties_history.html` e testes integrados em `tests/test_penalties_flow.py`.

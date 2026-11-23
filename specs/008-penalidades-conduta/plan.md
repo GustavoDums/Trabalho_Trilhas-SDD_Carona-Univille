@@ -27,7 +27,7 @@ Python 3.12+, Django 5.1.x, PostgreSQL 15+, pytest/pytest-django/pytest-cov, tem
 
 PenaltyService em reviews/services/penalty_service.py consome CancellationRecord idempotentemente e fluxo autorizado de no-show. Bloquear oferta antes de usuário, ordem compartilhada pelos serviços; transação grava ocorrência e reconstrói projeções. Signal de reputação não cria segunda punição. Middleware acadêmico mantém responsabilidade de vínculo e delega restrição disciplinar separada; serviços também verificam suspensão para impedir bypass. Integrar extrato em accounts sem divulgar histórico a terceiros. Sem processo externo, sensor de presença ou notificação bônus.
 
-A T002 cobre o modelo, as restrições, a dedução decimal e a projeção de suspensão. Na T003, CancellationService delega ao PenaltyService, que vincula o cancelamento tardio à penalidade e reconstrói a nota pelo ReputationService dentro da mesma transação. O registro autorizado de no-show e a aplicação da sua projeção disciplinar pertencem à T004.
+A T002 cobre o modelo, as restrições, a dedução decimal e a projeção de suspensão. Na T003, CancellationService delega ao PenaltyService, que vincula o cancelamento tardio à penalidade e reconstrói a nota pelo ReputationService na mesma transação. Na T004, o motorista titular registra a conclusão em Minhas ofertas, e a contraparte confirmada declara ausência em Minhas reservas. A transação mantém o relato e a projeção disciplinar consistentes com a reputação.
 
 ## Data & Interfaces
 

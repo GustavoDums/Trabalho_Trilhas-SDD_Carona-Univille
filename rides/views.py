@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
+from django.utils import timezone
 from django.views.generic import TemplateView
 from django.views.generic import ListView
 from django.db.models import Prefetch
@@ -63,6 +64,11 @@ class MyOffersView(ActiveDriverRequiredMixin, ListView):
     template_name = "rides/my_offers.html"
     context_object_name = "offers"
     http_method_names = ["get", "head", "options"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["now"] = timezone.now()
+        return context
 
     def get_queryset(self):
         return RideOffer.objects.filter(driver=self.request.user).select_related(

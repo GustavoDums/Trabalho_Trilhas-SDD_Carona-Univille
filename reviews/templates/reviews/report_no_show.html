@@ -1,0 +1,18 @@
+{% extends "accounts/base.html" %}
+{% block title %}Declarar não comparecimento | Carona Univille{% endblock %}
+{% block content %}
+<h1>Declarar não comparecimento</h1>
+{% if report_error %}
+<p role="alert">{{ report_error }}</p>
+{% else %}
+<p>Contraparte: {{ report_context.counterpart_name }}</p>
+<form method="post" action="{% url 'reviews:report_no_show' booking_id=report_context.booking_id %}">
+    {% csrf_token %}
+    <label><input type="checkbox" name="declared" value="yes" required>
+        Declaro que a contraparte não compareceu até o fim do prazo de tolerância.
+    </label>
+    <button type="submit">Registrar declaração</button>
+</form>
+{% endif %}
+<p><a href="{% url 'rides:my_bookings' %}">Voltar para minhas reservas</a></p>
+{% endblock %}

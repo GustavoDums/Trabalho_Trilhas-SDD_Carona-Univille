@@ -13,6 +13,7 @@ from django.db.models.deletion import ProtectedError
 from reviews.models import ConductProfile, PenaltyRecord, ReputationProfile, RideReview
 from reviews.services.penalty_service import PenaltyService
 from reviews.services.reputation_service import ReputationService, calculate_score
+from reviews.services.review_service import ReviewService
 from rides.models import CancellationRecord, RideBooking, RideOffer
 from rides.services import cancellation_service
 from rides.services.cancellation_service import CancellationService
@@ -468,3 +469,49 @@ def test_late_cancellation_and_direct_review_rebuild_without_blocking_fk_validat
 
     assert RideReview.objects.count() == PenaltyRecord.objects.count() == 1
     assert ReputationProfile.objects.get(user=scene.passenger).score == Decimal('3.80')
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('out_of_order', [False, True])
+def test_report_projects_fourteen_days_from_third_distinct_no_show(cancellation_scene, out_of_order):
+    scene = cancellation_scene
+    occurred = scene.departure + timedelta(minutes=10)
+    third = occurred + timedelta(minutes=15) if out_of_order else occurred
+    for instant in (third-timedelta(days=30), third if out_of_order else third-timedelta(days=1)):
+        booking = additional_booking(scene, departure=instant)
+        PenaltyRecord.objects.create(**no_show_data(scene, offer=booking.offer, booking=booking, when=instant))
+    reported = occurred + timedelta(hours=1)
+    ReviewService.complete_offer(user=scene.driver, offer_id=scene.offer.pk, clock=lambda: reported)
+
+    for _ in range(2):
+        PenaltyService.report_no_show(user=scene.driver, booking_id=scene.booking.pk,
+                                      declared=True, clock=lambda: reported)
+    conduct = ConductProfile.objects.get(user=scene.passenger)
+    assert conduct.suspended_until == third + timedelta(days=14)
+    assert not conduct.is_suspended_at(at=conduct.suspended_until)
+    assert PenaltyRecord.objects.count() == 3
+    scene.passenger.refresh_from_db()
+    assert scene.passenger.academic_status == 'ATIVA' and scene.passenger.is_active
+
+
+@pytest.mark.django_db
+def test_report_rebuild_failure_rolls_back_booking_penalty_and_suspension(cancellation_scene, monkeypatch):
+    scene = cancellation_scene
+    at = scene.departure + timedelta(minutes=15)
+    for offset in (1, 2):
+        when = at - timedelta(days=offset)
+        booking = additional_booking(scene, departure=when)
+        PenaltyRecord.objects.create(**no_show_data(scene, offer=booking.offer, booking=booking, when=when))
+    ReviewService.complete_offer(user=scene.driver, offer_id=scene.offer.pk, clock=lambda: at)
+
+    def fail_rebuild(**kwargs):
+        raise RuntimeError('falha sintética de reputação')
+
+    monkeypatch.setattr(ReputationService, 'rebuild', fail_rebuild)
+    with pytest.raises(RuntimeError, match='falha sintética'):
+        PenaltyService.report_no_show(user=scene.driver, booking_id=scene.booking.pk,
+                                      declared=True, clock=lambda: at)
+    scene.booking.refresh_from_db()
+    assert scene.booking.no_show_at is None
+    assert PenaltyRecord.objects.count() == 2
+    assert not ConductProfile.objects.exists()

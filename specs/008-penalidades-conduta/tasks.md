@@ -2,7 +2,7 @@
 
 **Feature**: 008-penalidades-conduta; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001 homologada, T002 e T003 concluídas. [Evidência T002/T032](evidence-t032.md) · [Evidência T003/T033](evidence-t003.md).
+**Status**: T001 homologada, T002, T003 e T004 concluídas. [Evidência T002/T032](evidence-t032.md) · [Evidência T003/T033](evidence-t003.md) · [Evidência T004/T033](evidence-t004.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -23,7 +23,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 - [x] T003 [US1] Integrar PenaltyService ao CancellationService e ao ReputationService. tests/test_penalties.py cobre origem única, concorrência, rollback e recálculo determinístico. **Requisitos**: REQ-007, REQ-009, REQ-010, REQ-003, REQ-017; FR-001/FR-002; SC-001/SC-002. **Depende**: T002; Feature 005/T002; Feature 007/T004. **Conclusão**: transações, recálculo e regressão aprovados na [evidência](evidence-t003.md). **Roadmap**: T033, integração de cancelamentos.
 
-- [ ] T004 [US1] Implementar fluxo autorizado de no-show em reviews/services/penalty_service.py, reviews/views.py e reviews/urls.py após contrato aprovado; tests/test_penalties.py e tests/test_penalties_flow.py cobrem denúncia, evidência, limites, elegibilidade e efeito único. **Requisitos**: REQ-010, REQ-003, REQ-017; FR-001/FR-005; SC-003. **Depende**: T003; Feature 006/T005. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T033.
+- [x] T004 [US1] Implementar fluxo autorizado de no-show em reviews/services/penalty_service.py, reviews/views.py e reviews/urls.py, incluindo a conclusão pelo motorista e a exceção de prazo homologada. tests/test_penalties.py e tests/test_penalties_flow.py cobrem denúncia, evidência, limites, elegibilidade e efeito único. **Requisitos**: REQ-010, REQ-003, REQ-017; FR-001/FR-005; SC-003. **Depende**: T003; Feature 006/T004, que incorporou a antiga T005. **Conclusão**: critérios e regressão aprovados na [evidência](evidence-t004.md). **Roadmap**: T033.
 
 ## Phase 4: User Story 2 (P2)
 

@@ -14,6 +14,7 @@ Propostas do roadmap não equivalem a decisões homologadas. Estes artefatos per
 
 - **D008-01**: Três no-shows distintos em 30 dias geram 14 dias de suspensão. Tolerância de 10 minutos a partir do horário previsto de embarque e denúncia até 2 horas após a conclusão registrada da carona. Em parada sem horário previsto, a denúncia fica indisponível até existir referência de embarque.
 - **D008-02**: Deduzir 0,20 por cancelamento tardio. No-show contribui com uma nota 1,0 na média e deduz 0,50 uma vez após o cálculo, com nota final entre 0,00 e 5,00. Somente a contraparte confirmada pode denunciar, com declaração vinculada à reserva e horário registrado. Contestação tem revisão administrativa. A suspensão bloqueia novas ofertas e reservas e mantém acesso à conta, ao extrato e ao cancelamento de compromissos existentes.
+- **Complemento à D008-01**: O motorista titular pode registrar a conclusão pela interface. Para a denúncia de ausência do motorista sem conclusão registrada, a janela de 2 horas começa no fim dos 10 minutos de tolerância. A avaliação mútua continua condicionada à conclusão registrada.
 
 ## User Scenarios & Testing
 
