@@ -43,6 +43,12 @@ T001 fecha decisões → testes/modelo → serviço → interface → integraç�
 
 TDD: falha comportamental esperada antes, implementação e verde; regressão pertinente após cada mudança. Serviço sem HTTP e interface com sessão/CSRF reais; constraints no banco, rollback e conexões independentes para concorrência. Relógio injetado, sem sleep para bordas. Cobrir todos os SC; seguir [quickstart](quickstart.md). Separar testes novos/regressão e não inventar métricas.
 
+## Extensão T008 local — remoção do painel
+
+Adicionar um instante de remoção em `RideOffer` via migração aditiva e usar o campo como filtro somente em `MyOffersView`. Implementar POST com CSRF, autorização do titular e confirmação no próprio cartão. O serviço reutiliza `CancellationService.cancel_offer` dentro de uma transação que mantém o lock da oferta até gravar a remoção. Assim, cancelamento, eventuais penalidades, notificações e remoção confirmam juntos. Cada ocorrência recorrente mantém sua identidade e seu vínculo com a série.
+
+Depende da política T002, do serviço T004 e da interface T006. Verificar o fluxo com dados fictícios por testes HTTP e transacionais, conferir as migrações e executar o relatório consolidado para REQ-017 a REQ-019.
+
 ## Complexity Tracking
 
 Persistência auditável, serviços e projeções limitados ao requisito; sem arquitetura distribuída. Campos dependentes de produto não serão inventados para contornar decisões.

@@ -2,12 +2,13 @@ from django.urls import path
 
 from .views import (
     BookRideView, CancelBookingView, CancelOfferView, JoinWaitlistView, MyBookingsView, MyOffersView,
-    RecurringOffersView, RideCreateView, RideSearchView,
+    RecurringOffersView, RemoveOfferView, RideCreateView, RideSearchView,
 )
 
 app_name = "rides"
 urlpatterns = [
     path("<int:offer_id>/cancelar/", CancelOfferView.as_view(), name="cancel_offer"),
+    path("<int:offer_id>/remover/", RemoveOfferView.as_view(), name="remove_offer"),
     path("reservas/<int:booking_id>/cancelar/", CancelBookingView.as_view(), name="cancel_booking"),
     path("<int:offer_id>/reservar/", BookRideView.as_view(), name="book"),
     path("<int:offer_id>/fila/", JoinWaitlistView.as_view(), name="join_waitlist"),

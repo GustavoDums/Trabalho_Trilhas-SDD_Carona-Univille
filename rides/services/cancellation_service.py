@@ -134,3 +134,13 @@ class CancellationService:
         PenaltyService.apply_cancellation(cancellation_id=event.pk)
         NotificationService.cancellation_recorded(event, affected_passenger_ids=[item.passenger_id for item in bookings])
         return offer
+
+    @staticmethod
+    @transaction.atomic
+    def remove_offer(*, user, offer_id):
+        """Retira a oferta do painel após o cancelamento, mantendo o histórico."""
+        offer = CancellationService.cancel_offer(user=user, offer_id=offer_id)
+        if offer.removed_from_driver_at is None:
+            offer.removed_from_driver_at = timezone.now()
+            offer.save(update_fields=["removed_from_driver_at"])
+        return offer

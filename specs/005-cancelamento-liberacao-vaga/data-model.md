@@ -4,6 +4,8 @@
 
 ## Campos e restrições canônicas
 
+A extensão T008 adiciona `RideOffer.removed_from_driver_at`, instante opcional com fuso. A migração `rides.0008_rideoffer_removed_from_driver_at` inicia o campo como nulo nas ofertas existentes. `MyOffersView` seleciona apenas as ofertas do titular com o campo nulo. O serviço grava a remoção sob o mesmo lock da oferta após confirmar seu estado cancelado. Reservas, eventos de cancelamento e referências de ocorrências recorrentes continuam apontando para a oferta.
+
 | Campo | Tipo/regra |
 | --- | --- |
 | RideOffer.status | CharField max_length=9, ABERTA/CANCELADA, default ABERTA; CheckConstraint enum; ofertas existentes recebem ABERTA |

@@ -532,7 +532,7 @@ def test_my_offers_empty(client, active_driver):
     response = client.get(reverse("rides:my-offers"))
     assert response.status_code == 200
     html = response.content.decode()
-    assert "Você ainda não publicou ofertas de carona." in html
+    assert "Nenhuma carona para exibir em Minhas ofertas." in html
     assert reverse("rides:offer-create") in html
 
 
@@ -710,7 +710,7 @@ def test_acceptance_http_failure_rolls_back_complete_offer(academic_journey, pub
     assert not apps.get_model("rides", "RideOffer").objects.exists()
     assert not waypoint.objects.exists()
     response = client.get(reverse("rides:my-offers"))
-    assert "Você ainda não publicou ofertas de carona." in response.content.decode()
+    assert "Nenhuma carona para exibir em Minhas ofertas." in response.content.decode()
     assert "Oferta de carona publicada com sucesso." not in response.content.decode()
 
 

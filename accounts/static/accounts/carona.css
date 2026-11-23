@@ -139,9 +139,57 @@ thead { background: var(--soft); }
 .card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; margin-top: 1.25rem; }
 .card-grid > .record-card { margin: 0; }
 .card-grid > .empty-state { grid-column: 1 / -1; }
-.record-card details { margin: 1rem 0; border-top: 1px solid var(--line); padding-top: .8rem; }
-.record-card details button { border-color: var(--warning); background: var(--warning); }
-.record-card details button:hover { background: #6e2018; }
+.record-card > details { margin: 1rem 0; border-top: 1px solid var(--line); padding-top: .8rem; }
+.record-card > details button, .offer-remove__button { border-color: var(--warning); background: var(--warning); }
+.record-card > details button:hover, .offer-remove__button:hover { background: #6e2018; }
+.offer-card-heading { position: relative; display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+.offer-card-heading h2 { overflow-wrap: anywhere; }
+.offer-remove { flex: none; }
+.offer-remove > .offer-remove__trigger {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin: 0;
+    border: 1px solid #efc5be;
+    border-radius: .65rem;
+    color: #a62720;
+    background: #fff3f0;
+    list-style: none;
+}
+.offer-remove__trigger::-webkit-details-marker { display: none; }
+.offer-remove__trigger:hover, .offer-remove[open] > .offer-remove__trigger { background: #ffe2dc; }
+.offer-remove__icon {
+    position: relative;
+    width: .8rem;
+    height: .8rem;
+    margin-top: .24rem;
+    border: 2px solid currentColor;
+    border-top: 0;
+    border-radius: 0 0 .18rem .18rem;
+}
+.offer-remove__icon::before, .offer-remove__icon::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: .1rem;
+    background: currentColor;
+}
+.offer-remove__icon::before { top: -.19rem; width: 1.05rem; height: 2px; }
+.offer-remove__icon::after { top: -.36rem; width: .36rem; height: 3px; }
+.offer-remove__confirmation {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 100%;
+    inset-inline-end: 0;
+    width: min(100%, 19rem);
+    padding: .9rem;
+    border: 1px solid var(--line);
+    border-radius: .75rem;
+    background: var(--surface);
+    box-shadow: 0 8px 24px rgb(15 55 44 / .16);
+}
 .notice-list, .waitlist-items { margin: 0; padding: 0; list-style: none; }
 .notice-list { display: grid; gap: .75rem; }
 .notice-item { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .7rem 1.1rem; align-items: center; }

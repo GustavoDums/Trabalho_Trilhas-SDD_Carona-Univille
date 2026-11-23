@@ -146,6 +146,8 @@ flowchart TD
 #### Feature 005: Cancelamento de Reserva e Oferta com Prazo Mínimo (`REQ-007`)
 *Status*: **T024/T002 e T025/T003–T004 e T026/T005–T006 locais e auditoria T027/T007 concluídas**. D005-01/D005-02 confirmadas: 2h/4h, saída da origem, borda inclusiva; tardio antes da partida aceito/auditado sem dedução; partida ou depois recusado. [Evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t024.md).
 
+Extensão de painel acompanhada na [Feature 005/T008 local](../specs/005-cancelamento-liberacao-vaga/tasks.md). A lixeira retira a oferta de **Minhas ofertas**, com cancelamento prévio quando aplicável e preservação do histórico (REQ-003, REQ-007).
+
 - [x] **T024**: **[TESTE ESPECÍFICO DE INSTANTES DE CANCELAMENTO (BORDA)]**: Implementar serviço `CancellationService` em `rides/services/cancellation_service.py` e testes unitários em `tests/test_cancellation_deadlines.py` validando os 3 instantes de cancelamento:
   - (1) *Antes do prazo* ($\Delta t = 120\text{min } 01\text{s}$): tempestivo, livre de penalidade e vaga devolvida.
   - (2) *No limite exato de borda* ($\Delta t = 120\text{min } 00\text{s}$): tempestivo ($\Delta t \ge 120\text{min}$).

@@ -1,9 +1,9 @@
 # Carona Univille
 
 <!-- t043-quality:start -->
-Entrega geral / T043 — **992 testes aprovados**, 0 ignorados. Meta: **80%**.
-Cobertura combinada de accounts, rides, reviews, notifications, carona_univille — **98.49023090586145%**.
-Linhas: 1815/1834 (**98.96401308615049%**). Ramificações: 403/418 (**96.41148325358851%**).
+Entrega geral / T043 — **997 testes aprovados**, 0 ignorados. Meta: **80%**.
+Cobertura combinada de accounts, rides, reviews, notifications, carona_univille — **98.50942569048662%**.
+Linhas: 1842/1861 (**98.97904352498657%**). Ramificações: 405/420 (**96.42857142857143%**).
 Escopo de 11 features. Meta atingida globalmente e nos 37 módulos críticos.
 Relatórios: [coverage.json](coverage.json) e [test-results-t043.xml](test-results-t043.xml). Medição: 2026-11-23.
 Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1 -Consolidado`.
@@ -81,13 +81,15 @@ Abra o [cadastro local](http://127.0.0.1:8000/accounts/register/), use um e-mail
 | --- | --- | --- |
 | Cadastro e login | `/accounts/register/` e `/accounts/login/` | Criar conta e iniciar sessão. |
 | Ativação e perfil | `/accounts/activation/` e `/accounts/profile/` | Validar o vínculo e consultar o próprio perfil. |
-| Oferecer carona e gerenciar ofertas | `/caronas/oferecer/` e `/caronas/minhas-ofertas/` | Publicar, consultar e cancelar ofertas como motorista. |
+| Oferecer carona e gerenciar ofertas | `/caronas/oferecer/` e `/caronas/minhas-ofertas/` | Publicar, consultar, cancelar e remover ofertas do painel como motorista. |
 | Buscar caronas | `/caronas/buscar/` | Encontrar ofertas compatíveis e entrar na fila de ofertas lotadas como passageiro. |
 | Minhas reservas | `/caronas/minhas-reservas/` | Consultar reservas, cancelar uma reserva própria e acompanhar posições na fila. |
 | Caronas recorrentes | `/caronas/recorrentes/` | Configurar recorrência como motorista. |
 | Notificações e conduta | `/notificacoes/` e `/conta/conduta/` | Acessar avisos ou consultar o extrato próprio. |
 
 Para reproduzir a disputa pela última vaga via requisições autenticadas, siga o [roteiro da demonstração](docs/roteiro-live-demo.md). A geração de ocorrências recorrentes pode ser acionada com `manage.py generate_recurring_rides --all`. O [guia da Feature 009](specs/009-caronas-recorrentes/quickstart.md) descreve como agendar esse comando.
+
+Em **Minhas ofertas**, use a lixeira vermelha no canto do cartão e confirme. Uma carona cancelada sai diretamente do painel. Uma carona aberta é cancelada antes de ser removida, respeitando o horário limite. O histórico é preservado. [Regras da Feature 005/T008](specs/005-cancelamento-liberacao-vaga/spec.md#functional-requirements).
 
 ## Testes e cobertura
 

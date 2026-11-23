@@ -2701,3 +2701,17 @@ Agora quero que voce gere um README.md completo sobre o projeto, precisa conter 
 ~~~
 
 O [README](../README.md) descreve o produto, a instalação, as rotas e a reprodução dos testes. As métricas no topo vêm dos relatórios consolidados da T043.
+
+## Revisão visual — Feature 001 / T013 local — 2026-11-23
+
+~~~text
+As telas atuais estão muito basicas, deixe elas com um aspecto mais profissional, em anexo um exemplo&#x20;
+
+mantenha o vínculo entre commit, tarefa e requisito
+
+Siga da maneira correta como antes
+~~~
+
+Anexo da conversa desse pedido — imagem de referência de uma tela de cadastro.
+
+A [tarefa 001/T013](../specs/001-cadastro-validacao-perfis/tasks.md#revisão-visual-transversal) registra os requisitos relacionados. A [evidência da revisão visual](../specs/001-cadastro-validacao-perfis/evidence-t013.md) reúne os resultados.

@@ -29,3 +29,11 @@ Entrar com motorista sintético ativo e oferta própria aberta com reservas. Em 
 ## Auditoria MVP — T007 local / T027 (2026-11-23)
 
 Executado `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-mvp-quality.ps1`: 668 testes aprovados, zero ignorados; cobertura de accounts/rides/carona_univille 98.3695652173913% linhas e 96.29629629629629% ramificações. Gate >=80% consolidado e por arquivo crítico, JSON/JUnit próprios e bloco MVP no topo do README. Todos os comandos de check/schema/migrações e testes acima conferidos, sem migração pendente ou mudança de dados locais. Fluxos HTTP e privacidade validados por testes Django; demos humanas das Features 002/003 mantêm seus aceites próprios. [Matriz REQ-001–REQ-007, resultados e limites](evidence-t027.md). T041–T045 e qualidade própria Feature 004/T007 não encerradas aqui.
+
+## Remoção do painel — T008
+
+1. Execute `python manage.py migrate` e entre com um motorista fictício ativo.
+2. Em **Minhas ofertas**, abra a lixeira vermelha de uma oferta já cancelada e confirme **Remover carona**. Confira que só o cartão selecionado desaparece.
+3. Repita em uma oferta futura aberta com reserva fictícia. Confirme **Cancelar e remover**. Confira que a reserva consta como cancelada no histórico do passageiro e que a notificação de cancelamento foi recebida.
+4. Confira que a lixeira de uma oferta aberta cujo horário de partida passou informa o limite de cancelamento.
+5. Execute `python -m pytest tests/test_offer_removal.py tests/test_cancellation_flow.py tests/test_rides_offer.py`. Para atualizar o consolidado, execute `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1 -Consolidado`.

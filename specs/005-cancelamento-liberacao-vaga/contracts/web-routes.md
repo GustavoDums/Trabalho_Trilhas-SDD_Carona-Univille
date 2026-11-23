@@ -37,6 +37,13 @@ View delega a CancellationService.cancel_booking; sucesso/repetição redirecion
 
 POST /caronas/<offer_id>/cancelar/, nome rides:cancel_offer, CancelOfferView. Exige motorista titular ativo, POST e CSRF. Ator vem da sessão e alvo da URL, ignorando user_id/offer_id/next do corpo. Demais métodos retornam 405 para motorista elegível; terceiros/passageiros recebem 403, sessão anônima/inativa segue login e vínculo pendente segue ativação.
 
-Minhas ofertas mantém todas as ofertas próprias, incluindo CANCELADA, mostra estado e confirmação acessível details/summary apenas para ABERTA. Texto informa cancelamento das reservas confirmadas, preservação do histórico e prazo inclusivo de 4h pela saída da origem. Antes da partida, tardio é aceito/auditado; na partida ou depois, recusado.
+Minhas ofertas mostra o estado das ofertas próprias que permanecem no painel e a confirmação de cancelamento em details/summary para ABERTA. Texto informa cancelamento das reservas confirmadas, preservação do histórico e prazo inclusivo de 4h pela saída da origem. Antes da partida, tardio é aceito/auditado; na partida ou depois, recusado.
 
 View delega a CancellationService.cancel_offer. Sucesso e repetição redirecionam somente a /caronas/minhas-ofertas/, com mensagem de estado cancelado. CancellationRefused retorna 400 com alerta de prazo; demais ValidationError retornam 400 genérico e lista somente de ofertas próprias. PermissionDenied permanece 403. Serviço cancela lote, preserva histórico e impede novas reservas; projeções de reservas retiram placa/nome completo após cancelamento. Nenhuma notificação/penalidade implementada. T005/T006 encerram T026; T007 é auditoria futura.
+
+## Remoção do painel — T008 local
+
+- `POST /caronas/<offer_id>/remover/` (`rides:remove_offer`) exige CSRF e motorista titular ativo. O identificador vem da rota.
+- Sucesso e repetição redirecionam para `Minhas ofertas` (302). A oferta sai desse painel. A transição de cancelamento, quando necessária, reutiliza a política vigente.
+- Conta de outro motorista e CSRF inválido recebem 403. Métodos diferentes de POST recebem 405 para o motorista autenticado. Sessão anônima segue o fluxo de login.
+- Alvo inexistente ou oferta aberta cujo horário de partida foi atingido recebe 400 com mensagem no painel. O histórico permanece disponível aos fluxos que já tinham acesso.

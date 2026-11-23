@@ -15,7 +15,29 @@
 <div class="card-grid">
 {% for offer in offers %}
 <article data-offer-id="{{ offer.pk }}" class="record-card">
-    <h2>{{ offer.vehicle_model }} — {{ offer.vehicle_color }}</h2>
+    <div class="offer-card-heading">
+        <h2>{{ offer.vehicle_model }} — {{ offer.vehicle_color }}</h2>
+        <details class="offer-remove">
+            <summary class="offer-remove__trigger" aria-label="Remover carona {{ offer.pk }} da lista" title="Remover carona">
+                <span class="offer-remove__icon" aria-hidden="true"></span>
+            </summary>
+            <div class="offer-remove__confirmation">
+                {% if offer.status == "CANCELADA" %}
+                <p>Remover esta carona de Minhas ofertas? O histórico será preservado.</p>
+                {% elif offer.departure_at <= now %}
+                <p>O cancelamento e a remoção desta carona só podem ser feitos antes da saída da origem.</p>
+                {% else %}
+                <p>Cancelar esta carona e suas reservas confirmadas e removê-la de Minhas ofertas?</p>
+                {% endif %}
+                {% if offer.status == "CANCELADA" or offer.departure_at > now %}
+                <form method="post" action="{% url 'rides:remove_offer' offer_id=offer.pk %}">
+                    {% csrf_token %}
+                    <button class="offer-remove__button" type="submit">{% if offer.status == "CANCELADA" %}Remover carona{% else %}Cancelar e remover{% endif %}</button>
+                </form>
+                {% endif %}
+            </div>
+        </details>
+    </div>
     <p>Estado: {{ offer.status }}</p>
     {% if offer.completed_at %}
     <p>Conclusão registrada em <time datetime="{{ offer.completed_at|date:'c' }}">{{ offer.completed_at|date:"d/m/Y H:i" }}</time>.</p>
@@ -46,7 +68,7 @@
     <p>{{ offer.seats }} vagas ofertadas</p>
 </article>
 {% empty %}
-<p class="empty-state">Você ainda não publicou ofertas de carona.</p>
+<p class="empty-state">Nenhuma carona para exibir em Minhas ofertas.</p>
 {% endfor %}
 </div>
 {% endtimezone %}

@@ -76,7 +76,7 @@ class MyOffersView(ActiveDriverRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        return RideOffer.objects.filter(driver=self.request.user).select_related(
+        return RideOffer.objects.filter(driver=self.request.user, removed_from_driver_at__isnull=True).select_related(
             "origin", "destination",
         ).prefetch_related(
             Prefetch("waypoints", queryset=Waypoint.objects.select_related("point").order_by("position")),
@@ -276,3 +276,20 @@ class CancelOfferView(MyOffersView):
         return self.render_to_response(self.get_context_data(
             cancellation_error=error,
         ), status=400)
+
+
+class RemoveOfferView(MyOffersView):
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            CancellationService.remove_offer(user=request.user, offer_id=kwargs["offer_id"])
+        except CancellationRefused:
+            error = "A carona continua na lista. O cancelamento só pode ser feito antes da saída da origem."
+        except ValidationError:
+            error = "Não foi possível remover a oferta."
+        else:
+            messages.success(request, "Carona removida de Minhas ofertas.")
+            return redirect("rides:my-offers")
+        self.object_list = self.get_queryset()
+        return self.render_to_response(self.get_context_data(cancellation_error=error), status=400)

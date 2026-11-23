@@ -29,6 +29,10 @@ Motorista encerra oferta própria e cancela suas reservas vinculadas atomicament
 
 **Teste independente**: SC-005: auditoria do MVP executa REQ-001–REQ-007 e versão real de relatório >=80% de linhas e ramificações críticas, sem encerrar marcos globais T041–T045.
 
+### US3 — Remover uma carona de Minhas ofertas (P2)
+
+Como motorista, quero uma lixeira vermelha no canto de cada cartão para retirar caronas da minha lista. A confirmação explica se a ação também cancela a carona e as reservas confirmadas.
+
 ## Functional Requirements
 
 - FR-001 / REQ-007: somente titular cancela reserva ou oferta; avaliar relógio aware capturado uma vez dentro da transação conforme D005-01/D005-02.
@@ -36,6 +40,7 @@ Motorista encerra oferta própria e cancela suas reservas vinculadas atomicament
 - FR-003 / REQ-007: cancelamento de oferta impede novas reservas e cancela todas as confirmadas no mesmo commit; preservar histórico.
 - FR-004 / REQ-003: revogar acesso a contato/placa após cancelamento, mantendo resumo próprio sem segredos; não disparar mensagens externas.
 - FR-005 / REQ-007, REQ-010: registrar autor, instante, alvo e classificação temporal; dedução numérica pertence à Feature 008.
+- FR-006 / REQ-003, REQ-007: somente o motorista titular ativo pode remover a oferta do painel por uma ação confirmada. Oferta cancelada sai diretamente da lista. Oferta aberta é cancelada pelas regras em vigor e retirada do painel na mesma transação. O histórico de reservas, auditoria e ocorrências recorrentes é preservado. A ação é idempotente. Na partida ou depois, uma oferta ainda aberta permanece no painel com mensagem explicando a recusa.
 
 ## Fluxo e exceções
 
@@ -58,5 +63,6 @@ Não inclui bônus 010/011, staging, commits ou integrações externas. D005-01/
 - SC-003: cancelar oferta com várias reservas fecha oferta e cancela todas, ou rollback não altera nenhuma; nova reserva é rejeitada.
 - SC-004: terceiro não cancela nem lê contato; busca reflete cancelamento imediatamente após commit.
 - SC-005: auditoria do MVP executa REQ-001–REQ-007 e versão real de relatório >=80% de linhas e ramificações críticas, sem encerrar marcos globais T041–T045.
+- SC-006: verificar a lixeira e sua confirmação, a remoção de oferta aberta futura e de oferta já cancelada, a recusa na partida, a proteção por titularidade e CSRF, a repetição sem efeitos duplicados e o rollback conjunto em falha.
 
 Todos os critérios exigem testes fictícios. Qualidade: >=80% de linhas e ramificações críticas, relatório versionável e métricas reais identificadas por feature no README; nenhuma métrica estimada nesta rodada.

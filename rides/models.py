@@ -63,6 +63,7 @@ class RideOffer(ValidatedModel):
     departure_at = models.DateTimeField()
     status = models.CharField(max_length=9, choices=Status.choices, default=Status.ABERTA)
     cancelled_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
+    removed_from_driver_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
     completed_at = models.DateTimeField(null=True, blank=True, validators=[require_aware_datetime])
     seats = models.PositiveBigIntegerField(validators=[MinValueValidator(1)])
     vehicle_model = models.CharField(max_length=100)

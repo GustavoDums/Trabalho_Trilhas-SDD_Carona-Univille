@@ -38,6 +38,10 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 - [x] T007 Auditar MVP REQ-001–REQ-007 com toda a suíte tests/, após implementar/validar roadmap T001–T026; criar scripts/check-mvp-quality.ps1, coverage-mvp.json e test-results-mvp.xml; sincronizar bloco identificado no README.md com métricas reais e validar quickstart.md. **Requisitos**: REQ-007, REQ-014–REQ-019; todos os SC. **Depende**: todas as tarefas locais anteriores; Features 001–004 funcionais e qualidade pendente da 002/003 comprovada. **Conclusão**: cenários, privacidade, migração e regressão aprovados, >=80% linhas/ramificações críticas, relatórios versionáveis e roteiro verificado; não concluir sem evidência ou decisão. **Roadmap**: T027. Sem staging/commit.
 
+## Phase 6: Remoção de ofertas do painel
+
+- [x] T008 [US3] Adicionar lixeira vermelha e confirmação em Minhas ofertas, com remoção lógica da oferta e cancelamento prévio conforme a política vigente. **Requisitos** REQ-003, REQ-007, REQ-014, REQ-017–REQ-019; FR-006, SC-006. **Depende de** T002, T004, T006 e ferramental T012/T043. **Conclusão** fluxo funcional com histórico preservado, controle de acesso e CSRF, idempotência, rollback, migração conferida e métricas publicadas. [Evidência de conclusão](evidence-t008.md).
+
 ## Dependencies & Execution Order
 
 Dependências explícitas de cada tarefa são obrigatórias; número não permite ignorar ramo anterior. MVP local: US1 após decisões; entrega completa: US1+US2+T007. Implementação dependente de decisão permanece bloqueada.
@@ -50,6 +54,7 @@ Dependências explícitas de cada tarefa são obrigatórias; número não permit
 | T025 | REQ-007 | T003, T004 |
 | T026 | REQ-007 | T005, T006 |
 | T027 | REQ-014–REQ-019; auditoria MVP | T007 |
+| Extensão de painel | REQ-003, REQ-007, REQ-014, REQ-017–REQ-019 | T008 |
 | Preparação/qualidade | Decisões e evidência | T001 |
 
 ## Parallel Opportunities & Implementation Strategy
