@@ -1306,3 +1306,51 @@ TDD: 36 testes novos falharam por views/projeção ausentes; 49 anteriores do mo
 Contratos/DTO definidos na documentação; BookingQueryService só entrega resumos próprios e redigidos no cancelamento; BookRideView usa ator da sessão e BookingService existente; formulário mínimo e template com CSRF/escape. RequestFactory testa classes sem mapear rotas de produção; fluxo completo da T023 permanece pendente. Regressão, métricas e arquivos em specs/004-reserva-sem-overbooking/evidence-t022.md.
 
 Sem alteração de modelos/migrações, matching, BookingService ou URLs; sem staging ou commit. Alterações anteriores preservadas.
+
+---
+
+## 2026-11-22 — Feature 004 / T005 local / roadmap T023
+
+Prompt integral:
+
+~~~text
+Execute somente a tarefa T023 do Carona Univille.
+
+Área da tarefa — Feature 004, Reserva sem overbooking.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T023 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Correspondência executável: T023 → T005 local (URLs/fluxo HTTP). A T006 citada também no mapeamento já estava concluída; dependências T004 e T006 atendidas. Nenhuma decisão nova de produto, mantendo nome completo/placa só à contraparte confirmada e WhatsApp adiado.
+
+Skills aplicadas: speckit-implement restrita à T005 e python-fact-grounded-coding. Venv e PostgreSQL existentes, sem hooks/checklist adicional, ponteiro ativo preservado.
+
+TDD antes da produção: 35 casos HTTP novos selecionados, com 29 falhas por URLs ausentes/404/NoReverseMatch e 6 aprovações pelo middleware existente. Após mapear rides:book e rides:my_bookings para views existentes, 120 testes do módulo aprovados (85 anteriores + 35 novos).
+
+Fluxo real de Client com CSRF habilitado: login por e-mail/senha, busca pública com saldo, POST de reserva, redirecionamento à consulta privada e nova busca esgotada; repetição não duplica. Matriz de acesso com middleware completo, 405, CSRF ausente/inválido, dados forjados, erros sem escrita e IDs de terceiros verificados. Regressão e métricas finais em specs/004-reserva-sem-overbooking/evidence-t023.md.
+
+Somente produção em rides/urls.py; serviços, views, modelos, templates e migrações permanecem inalterados. T007 de qualidade final não executada nesta rodada. Sem staging ou commit; alterações existentes preservadas.

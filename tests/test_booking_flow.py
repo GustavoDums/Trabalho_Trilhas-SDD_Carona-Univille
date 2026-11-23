@@ -555,3 +555,217 @@ def test_book_view_csrf_middleware_rejects_missing_token_before_write(presentati
     refusal = CsrfViewMiddleware(lambda request: None).process_view(
         request, views.BookRideView.as_view(), (), {"offer_id": scene.offer.pk})
     assert refusal.status_code == 403 and booking_model().objects.count() == before
+
+
+# Feature 004/T005 local — roadmap T023; URLs reais e middleware completo.
+def booking_http_url(scene):
+    return f"/caronas/{scene.offer.pk}/reservar/"
+
+
+def test_booking_http_named_routes_and_existing_routes(presentation_scene):
+    from django.urls import resolve, reverse
+    from rides import views
+    scene = presentation_scene
+    assert reverse("rides:book", kwargs={"offer_id": scene.offer.pk}) == booking_http_url(scene)
+    assert reverse("rides:my_bookings") == "/caronas/minhas-reservas/"
+    assert resolve(booking_http_url(scene)).func.view_class is views.BookRideView
+    assert resolve("/caronas/minhas-reservas/").func.view_class is views.MyBookingsView
+    assert reverse("rides:search") == "/caronas/buscar/"
+    assert reverse("rides:offer-create") == "/caronas/oferecer/"
+    assert reverse("rides:my-offers") == "/caronas/minhas-ofertas/"
+    assert reverse("caronas") == "/caronas/"
+
+
+def test_booking_http_real_login_csrf_search_reserve_and_private_list(presentation_scene):
+    from django.conf import settings
+    from django.test import Client
+    scene = presentation_scene
+    scene.outsider.set_password("Senha-sintetica-2026!")
+    scene.outsider.save(update_fields=["password", "updated_at"])
+    client = Client(enforce_csrf_checks=True)
+    assert client.get("/accounts/login/").status_code == 200
+    token = client.cookies[settings.CSRF_COOKIE_NAME].value
+    login = client.post("/accounts/login/", {
+        "email": scene.outsider.email, "password": "Senha-sintetica-2026!",
+        "csrfmiddlewaretoken": token})
+    assert login.status_code == 302 and login.url == "/accounts/profile/"
+    query = {"boarding_id": scene.points[0].pk, "alighting_id": scene.points[-1].pk,
+             "desired_at": scene.offer.departure_at.isoformat()}
+    search = client.get("/caronas/buscar/", query)
+    assert search.status_code == 200
+    assert search.context["results"][0].available_seats == 1
+    assert scene.driver.full_name not in search.content.decode()
+    assert scene.offer.vehicle_plate not in search.content.decode()
+
+    token = client.cookies[settings.CSRF_COOKIE_NAME].value
+    data = {**valid_booking_post(scene), "csrfmiddlewaretoken": token,
+            "passenger_id": str(scene.second.pk), "status": "CANCELADA",
+            "next": "https://example.invalid/"}
+    response = client.post(booking_http_url(scene), data, follow=True)
+    assert response.status_code == 200
+    assert response.redirect_chain == [("/caronas/minhas-reservas/", 302)]
+    created = booking_model().objects.get(offer=scene.offer, passenger=scene.outsider)
+    assert created.status == "CONFIRMADA"
+    assert [dto.booking_id for dto in response.context["bookings"]] == [
+        created.pk, scene.external_booking.pk]
+    html = response.content.decode()
+    assert "Reserva confirmada com sucesso." in html
+    assert scene.driver.full_name in html and scene.offer.vehicle_plate in html
+    for value in (scene.passenger.full_name, scene.second.full_name, scene.driver.email,
+                  scene.outsider.email, scene.passenger.email, "application/json"):
+        assert value not in html
+    current = client.get("/caronas/buscar/", query)
+    assert current.context["results"][0].available_seats == 0
+    assert "Vagas esgotadas." in current.content.decode()
+    repeated = client.post(booking_http_url(scene), data)
+    assert repeated.status_code == 200
+    assert "Você já possui reserva confirmada" in repeated.content.decode()
+    assert booking_model().objects.filter(offer=scene.offer, passenger=scene.outsider).count() == 1
+
+
+@pytest.mark.parametrize("route", ["book", "mine"])
+@pytest.mark.parametrize("kind", ["visitor", "pending", "disabled", "driver", "passenger"])
+def test_booking_http_access_matrix_with_real_middleware(presentation_scene, route, kind):
+    from django.test import Client
+    scene = presentation_scene
+    client = Client()
+    actor = scene.driver if kind == "driver" else scene.outsider
+    if kind != "visitor":
+        client.force_login(actor)
+    if kind == "pending":
+        get_user_model().objects.filter(pk=actor.pk).update(academic_status="PENDENTE")
+    if kind == "disabled":
+        get_user_model().objects.filter(pk=actor.pk).update(is_active=False)
+    before = booking_model().objects.count()
+    url = booking_http_url(scene) if route == "book" else "/caronas/minhas-reservas/"
+    response = client.post(url, valid_booking_post(scene)) if route == "book" else client.get(url)
+    if kind in ("visitor", "disabled"):
+        assert response.status_code == 302
+        assert response.url == "/accounts/login/?next=" + url
+    elif kind == "pending":
+        assert response.status_code == 302 and response.url == "/accounts/activation/"
+    elif route == "book" and kind == "driver":
+        assert response.status_code == 403
+    elif route == "book":
+        assert response.status_code == 302 and response.url == "/caronas/minhas-reservas/"
+    else:
+        assert response.status_code == 200
+    assert booking_model().objects.count() == before + int(route == "book" and kind == "passenger")
+
+
+@pytest.mark.parametrize("with_cookie", [False, True])
+def test_booking_http_missing_or_invalid_csrf_never_creates(presentation_scene, with_cookie):
+    from django.test import Client
+    scene = presentation_scene
+    client = Client(enforce_csrf_checks=True)
+    if with_cookie:
+        client.get("/accounts/login/")
+    client.force_login(scene.outsider)
+    before = booking_model().objects.count()
+    payload = valid_booking_post(scene)
+    if with_cookie:
+        payload["csrfmiddlewaretoken"] = "token-invalido"
+    response = client.post(booking_http_url(scene), payload)
+    assert response.status_code == 403
+    assert booking_model().objects.count() == before
+
+
+@pytest.mark.parametrize("route,method", [
+    ("book", "get"), ("book", "put"), ("book", "patch"), ("book", "delete"),
+    ("mine", "post"), ("mine", "put"), ("mine", "patch"), ("mine", "delete"),
+])
+def test_booking_http_methods_are_restricted(presentation_scene, route, method):
+    from django.test import Client
+    scene = presentation_scene
+    client = Client()
+    client.force_login(scene.outsider)
+    before = list(booking_model().objects.order_by("pk").values())
+    url = booking_http_url(scene) if route == "book" else "/caronas/minhas-reservas/"
+    response = getattr(client, method)(url, data=valid_booking_post(scene))
+    assert response.status_code == 405
+    assert list(booking_model().objects.order_by("pk").values()) == before
+
+
+@pytest.mark.parametrize("kind", ["missing", "unknown_point", "equal", "reversed", "missing_offer", "duplicate", "full"])
+def test_booking_http_refusals_leave_domain_unchanged(presentation_scene, kind):
+    from django.test import Client
+    scene = presentation_scene
+    data = valid_booking_post(scene)
+    actor, url = scene.outsider, booking_http_url(scene)
+    if kind == "missing":
+        data.pop("alighting_point_id")
+    elif kind == "unknown_point":
+        data["boarding_point_id"] = "999999999"
+    elif kind == "equal":
+        data["alighting_point_id"] = data["boarding_point_id"]
+    elif kind == "reversed":
+        data["boarding_point_id"], data["alighting_point_id"] = (
+            data["alighting_point_id"], data["boarding_point_id"])
+    elif kind == "missing_offer":
+        url = "/caronas/999999999/reservar/"
+    elif kind == "duplicate":
+        actor = scene.passenger
+    else:
+        RideOffer.objects.filter(pk=scene.offer.pk).update(seats=2)
+    client = Client()
+    client.force_login(actor)
+    models = (booking_model(), RideOffer, Waypoint, RoutePoint, get_user_model())
+    before = tuple(list(model.objects.order_by("pk").values()) for model in models)
+    response = client.post(url, data)
+    assert response.status_code == 200
+    assert response.context["form"].errors
+    assert tuple(list(model.objects.order_by("pk").values()) for model in models) == before
+
+
+@pytest.mark.parametrize("who", ["passenger", "driver", "outsider", "other_driver"])
+def test_booking_http_private_lists_ignore_third_party_identifiers(presentation_scene, who):
+    from django.test import Client
+    scene = presentation_scene
+    actor = getattr(scene, who)
+    client = Client()
+    client.force_login(actor)
+    response = client.get("/caronas/minhas-reservas/", {
+        "user_id": scene.second.pk, "passenger_id": scene.outsider.pk,
+        "booking_id": scene.first_booking.pk, "offer_id": scene.offer.pk})
+    assert response.status_code == 200
+    expected = {"passenger": [scene.first_booking.pk],
+                "driver": [scene.first_booking.pk, scene.second_booking.pk],
+                "outsider": [scene.external_booking.pk],
+                "other_driver": [scene.external_booking.pk]}[who]
+    assert [dto.booking_id for dto in response.context["bookings"]] == expected
+    html = response.content.decode()
+    for person in (scene.passenger, scene.second, scene.outsider, scene.driver, scene.other_driver):
+        assert person.email not in html
+    if who in ("outsider", "other_driver"):
+        assert scene.driver.full_name not in html and scene.offer.vehicle_plate not in html
+    if who == "passenger":
+        assert scene.second.full_name not in html and "PLACA-EXTERNA" not in html
+
+
+def test_booking_http_cancelled_records_are_redacted_after_new_request(presentation_scene):
+    from django.test import Client
+    scene = presentation_scene
+    client = Client()
+    client.force_login(scene.passenger)
+    first = client.get("/caronas/minhas-reservas/")
+    assert first.status_code == 200
+    assert scene.driver.full_name in first.content.decode()
+    booking_model().objects.filter(pk=scene.first_booking.pk).update(status="CANCELADA")
+    current = client.get("/caronas/minhas-reservas/")
+    assert current.status_code == 200
+    assert current.context["bookings"][0].vehicle_plate is None
+    html = current.content.decode()
+    assert scene.driver.full_name not in html and scene.offer.vehicle_plate not in html
+    assert scene.driver.display_name in html
+
+
+def test_booking_http_get_list_does_not_write_domain(presentation_scene):
+    from django.test import Client
+    scene = presentation_scene
+    client = Client()
+    client.force_login(scene.passenger)
+    models = (booking_model(), RideOffer, Waypoint, RoutePoint, get_user_model())
+    before = tuple(list(model.objects.order_by("pk").values()) for model in models)
+    response = client.get("/caronas/minhas-reservas/")
+    assert response.status_code == 200
+    assert tuple(list(model.objects.order_by("pk").values()) for model in models) == before
