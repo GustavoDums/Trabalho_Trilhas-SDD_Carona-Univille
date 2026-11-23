@@ -1,0 +1,25 @@
+{% extends "accounts/base.html" %}
+{% load tz %}
+{% block title %}Minhas ofertas | Carona Univille{% endblock %}
+{% block content %}
+<h1>Minhas ofertas de carona</h1>
+<p><a href="{% url 'rides:offer-create' %}">Oferecer carona</a></p>
+<p>Horários no fuso America/Sao_Paulo. As vagas informadas são para passageiros.</p>
+{% timezone "America/Sao_Paulo" %}
+{% for offer in offers %}
+<article data-offer-id="{{ offer.pk }}">
+    <h2>{{ offer.vehicle_model }} — {{ offer.vehicle_color }}</h2>
+    <h3>Itinerário</h3>
+    <ol>
+        <li>{{ offer.origin.name }} (origem)</li>
+        {% for stop in offer.waypoints.all %}<li>{{ stop.point.name }}</li>{% endfor %}
+        <li>{{ offer.destination.name }} (destino)</li>
+    </ol>
+    <p>Saída: <time datetime="{{ offer.departure_at|date:'c' }}">{{ offer.departure_at|date:"d/m/Y H:i" }}</time></p>
+    <p>{{ offer.seats }} vagas ofertadas</p>
+</article>
+{% empty %}
+<p>Você ainda não publicou ofertas de carona.</p>
+{% endfor %}
+{% endtimezone %}
+{% endblock %}

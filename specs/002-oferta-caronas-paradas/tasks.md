@@ -2,7 +2,7 @@
 
 **Feature**: 002-oferta-caronas-paradas. IDs abaixo são locais à Feature 002.
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contratos](contracts/web-routes.md), [quickstart.md](quickstart.md).
-**Prerequisites**: Feature 001 concluída; identidade e middleware disponíveis; PostgreSQL e venv existentes. Rodada de implementação autorizada: roadmap T013 corresponde a T002 local; preparação T001 e fundação T002 concluídas. T003 e T004 concluídas nos recortes da T014; T005–T007 permanecem abertas.
+**Prerequisites**: Feature 001 concluída; identidade e middleware disponíveis; PostgreSQL e venv existentes. Rodada de implementação autorizada: roadmap T013 corresponde a T002 local; preparação T001 e fundação T002 concluídas. T003 e T004 concluídas nos recortes da T014; T005 concluída em rodada T015; T006–T007 permanecem abertas.
 **Tests**: obrigatórios pela constitution, com dados sintéticos e TDD dentro de cada tarefa: escrever/rodar testes, registrar falha esperada, implementar, rodar novamente. Não aceitar erro de configuração como prova de comportamento.
 
 ## Phase 1: Setup
@@ -34,7 +34,7 @@
 **Goal**: motorista consulta exclusivamente as próprias ofertas.
 **Independent Test**: ofertas de dois motoristas em sessões distintas, ordenação determinística, ausência de e-mail/placa e estado vazio.
 
-- [ ] T005 [US3] Escrever testes `test_my_offers_*` em `tests/test_rides_offer.py` e implementar `MyOffersView` em `rides/views.py`, rota em `rides/urls.py` e `rides/templates/rides/my_offers.html`, segundo [contratos](contracts/web-routes.md). Consulta filtra autor da sessão, usa select_related/prefetch_related e as ordenações de [data-model.md](data-model.md): `RideOffer.driver`, `RideOffer.departure_at`, `RideOffer.created_at`, `RideOffer.id`, `Waypoint.position`. Mostrar itinerário, vagas e modelo/cor; omitir e-mail e placa inclusive de atributos ocultos; vazio com link de criação. Testar 403 para passageiro, bloqueios anônimo/pendente, query de autoria adulterada e 405 em métodos de escrita. Sem edição, exclusão, cancelamento ou contador de reservas. REQ-004, REQ-003, REQ-002; FR-001, FR-009–FR-011; US3.1–3.3; dependência T004; conclusão: consulta segura e redirecionamento da publicação agora pode ser seguido até HTTP 200.
+- [x] T005 [US3] Escrever testes `test_my_offers_*` em `tests/test_rides_offer.py` e implementar `MyOffersView` em `rides/views.py`, rota em `rides/urls.py` e `rides/templates/rides/my_offers.html`, segundo [contratos](contracts/web-routes.md). Consulta filtra autor da sessão, usa select_related/prefetch_related e as ordenações de [data-model.md](data-model.md): `RideOffer.driver`, `RideOffer.departure_at`, `RideOffer.created_at`, `RideOffer.id`, `Waypoint.position`. Mostrar itinerário, vagas e modelo/cor; omitir e-mail e placa inclusive de atributos ocultos; vazio com link de criação. Testar 403 para passageiro, bloqueios anônimo/pendente, query de autoria adulterada e 405 em métodos de escrita. Sem edição, exclusão, cancelamento ou contador de reservas. REQ-004, REQ-003, REQ-002; FR-001, FR-009–FR-011; US3.1–3.3; dependência T004; conclusão: consulta segura e redirecionamento da publicação agora pode ser seguido até HTTP 200.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
@@ -67,7 +67,7 @@ Nenhuma tarefa marcada [P]: os passos compartilham `models.py`, `forms.py`, `vie
 
 ## Implementation Strategy
 
-Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de execução são marcados; T005–T007 permanecem abertos. Respeitar limites de validação do modelo de dados e nunca alegar garantias SQL de regras que dependem de serviço. Não alterar a constitution, as pendências de matching/cancelamento nem os comportamentos da Feature 001.
+Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de execução são marcados; T006–T007 permanecem abertos. Respeitar limites de validação do modelo de dados e nunca alegar garantias SQL de regras que dependem de serviço. Não alterar a constitution, as pendências de matching/cancelamento nem os comportamentos da Feature 001.
 
 ## Evidência — roadmap T013 / Feature 002 T002 local, preparação T001 (2026-11-22)
 
@@ -102,3 +102,13 @@ Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de ex
 - Regressão dos seis módulos da Feature 001: 152 aprovados, sem alterações em identidade/acesso. Total das duas execuções: 249 casos. Cobertura de rides: 98,83268482490273% combinada, linhas 205/205 (100%) e ramificações 49/52 (94,23076923076923%). Relatórios e README separados por feature.
 - `manage.py check` sem problemas; `makemigrations --check --dry-run` sem diferenças; diagnósticos dos arquivos Python alterados sem erros; `git diff --check` sem erros. Sem novas migrações ou mudança no banco local.
 - Critérios T004 atendidos e T014 do roadmap encerrada. T005/T015 agora pode ser executada em rodada própria; destino `/caronas/minhas-ofertas/` ainda não implementado nesta rodada. Nenhum staging ou commit; alterações preexistentes preservadas.
+
+## Evidência — roadmap T015 / Feature 002 T005 local (2026-11-22)
+
+- Correspondência única: consulta própria = T005 local; dependência T004 concluída. REQ-004, REQ-003 e REQ-002; FR-001, FR-009–FR-011; US3.1–3.3. Nenhuma decisão pendente afeta esta tarefa.
+- Implementados MyOffersView, rota `rides:my-offers` em `/caronas/minhas-ofertas/` e template. Filtro obrigatório driver da sessão, independentemente dos parâmetros; ordenação por departure_at/created_at/id e paradas por posição. Select_related de extremos e Prefetch de paradas/pontos evitam consultas por linha; teste confirma duas consultas do queryset.
+- Lista mostra itinerário, saída no fuso America/Sao_Paulo, vagas ofertadas, modelo e cor. Omite e-mail e placa, inclusive conteúdo oculto. Vazio apresenta mensagem e link de criação. Mixin exige motorista ativo; não implementa edição, exclusão, cancelamento ou contador de reservas. Rota de criação já existente preservada.
+- TDD: 11 testes novos falharam antes por ausência de rota/view; após implementação, 108 testes de rides aprovados no PostgreSQL. Cobertos vazio, ordem e desempate, sequência das paradas, isolamento entre autores/query adulterada, privacidade, acesso anônimo/pendente/passageiro, quatro métodos de escrita rejeitados sem alteração, consultas otimizadas e redirecionamento após publicação seguido até HTTP 200 na lista.
+- Comando: `venv/Scripts/python.exe -m pytest tests/test_rides_offer.py --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature002.json --junitxml=test-results-feature002.xml`. Cobertura combinada 98,86792452830188%; linhas 213/213 (100%) e ramificações 49/52 (94,23076923076923%). Relatórios e bloco próprio do README sincronizados.
+- Regressão dos seis módulos Feature 001: 152 aprovados; total das duas execuções 260 casos. `manage.py check` sem problemas; `makemigrations --check --dry-run` sem diferenças; diagnósticos Python sem erros; `git diff --check` sem erros. Sem mudança de esquema.
+- Template validado pela renderização HTTP em testes, sem afirmar inspeção visual manual. Aceitação abrangente T006 local/T016 do roadmap e qualidade final T007 local não executadas nesta rodada. T005 local e T015 do roadmap concluídas. Alterações preexistentes preservadas; nenhum staging ou commit.

@@ -3,9 +3,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
+from django.views.generic import ListView
+from django.db.models import Prefetch
 
 from .forms import RideOfferForm, WaypointFormSet
-from .models import RideOffer
+from .models import RideOffer, Waypoint
 from .services import publish_offer
 
 
@@ -49,3 +51,18 @@ class RideCreateView(ActiveDriverRequiredMixin, TemplateView):
         safe_data["vehicle_plate"] = ""
         form.data = safe_data
         return self.render_to_response(self.get_context_data(form=form, waypoint_formset=stops))
+
+
+class MyOffersView(ActiveDriverRequiredMixin, ListView):
+    """Feature 002/T005 local, roadmap T015 — consulta própria sem escrita."""
+
+    template_name = "rides/my_offers.html"
+    context_object_name = "offers"
+    http_method_names = ["get", "head", "options"]
+
+    def get_queryset(self):
+        return RideOffer.objects.filter(driver=self.request.user).select_related(
+            "origin", "destination",
+        ).prefetch_related(
+            Prefetch("waypoints", queryset=Waypoint.objects.select_related("point").order_by("position")),
+        ).order_by("departure_at", "created_at", "id")

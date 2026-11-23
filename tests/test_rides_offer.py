@@ -525,3 +525,84 @@ def test_invalid_service_unknown_catalog_point(offer_factory, active_driver):
         publish_offer(driver=active_driver, data=data, points=[phantom])
     assert type(source).objects.count() == 1
     assert not apps.get_model("rides", "Waypoint").objects.exists()
+
+
+def test_my_offers_empty(client, active_driver):
+    client.force_login(active_driver)
+    response = client.get(reverse("rides:my-offers"))
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "Você ainda não publicou ofertas de carona." in html
+    assert reverse("rides:offer-create") in html
+
+
+def test_my_offers_order_itinerary_and_privacy(client, active_driver, driver_factory, offer_factory):
+    now = timezone.now()
+    later = offer_factory(departure_at=now + timedelta(days=2), vehicle_model="Demo Posterior")
+    earlier = offer_factory(departure_at=now + timedelta(days=1), vehicle_model="Demo Primeiro")
+    tied = offer_factory(departure_at=earlier.departure_at, vehicle_model="Demo Empatado")
+    other = driver_factory()
+    offer_factory(driver=other, vehicle_model="Veículo Alheio", vehicle_plate="PLACAALHEIA")
+    point = apps.get_model("rides", "RoutePoint").objects
+    waypoint = apps.get_model("rides", "Waypoint")
+    waypoint.objects.create(offer=earlier, point=point.get(code="terminal-norte"), position=1)
+    waypoint.objects.create(offer=earlier, point=point.get(code="bairro-america"), position=2)
+    client.force_login(active_driver)
+    response = client.get(reverse("rides:my-offers"), {"driver": other.pk, "user_id": other.pk})
+    assert response.status_code == 200
+    assert [offer.pk for offer in response.context["offers"]] == [earlier.pk, tied.pk, later.pk]
+    html = response.content.decode()
+    assert "Veículo Alheio" not in html
+    for secret in (other.email, active_driver.email, "PLACAALHEIA", "FICTICIO"):
+        assert secret not in html
+    assert html.index("Demo Primeiro") < html.index("Demo Empatado") < html.index("Demo Posterior")
+    itinerary = html.split('data-offer-id="' + str(earlier.pk) + '"', 1)[1].split("</article>", 1)[0]
+    assert itinerary.index("Terminal Central") < itinerary.index("Terminal Norte") < itinerary.index("Bairro América") < itinerary.index("Campus Univille")
+    assert "3 vagas" in itinerary and "Azul" in itinerary and "America/Sao_Paulo" in html
+
+
+@pytest.mark.parametrize("identity,status,prefix", [("anonymous", 302, "/accounts/login/"),
+                                                  ("pending_driver", 302, "/accounts/activation/"),
+                                                  ("active_passenger", 403, "")])
+def test_my_offers_permissions(client, request, identity, status, prefix):
+    if identity != "anonymous":
+        client.force_login(request.getfixturevalue(identity))
+    response = client.get(reverse("rides:my-offers"))
+    assert response.status_code == status
+    if prefix:
+        assert response.url.startswith(prefix)
+
+
+@pytest.mark.parametrize("method", ["post", "put", "patch", "delete"])
+def test_my_offers_rejects_writes(client, active_driver, offer_factory, method):
+    offer = offer_factory()
+    before = type(offer).objects.values().get(pk=offer.pk)
+    client.force_login(active_driver)
+    assert getattr(client, method)(reverse("rides:my-offers")).status_code == 405
+    assert type(offer).objects.values().get(pk=offer.pk) == before
+
+
+def test_my_offers_publication_redirect_reaches_list(client, active_driver, publication_data):
+    client.force_login(active_driver)
+    response = client.post(reverse("rides:offer-create"), publication_data, follow=True)
+    assert response.status_code == 200
+    assert response.redirect_chain == [("/caronas/minhas-ofertas/", 302)]
+    assert len(response.context["offers"]) == 1
+    assert "Oferta de carona publicada com sucesso." in response.content.decode()
+
+
+def test_my_offers_prefetch_avoids_per_stop_queries(client, active_driver, offer_factory, django_assert_num_queries):
+    from rides.views import MyOffersView
+    offer = offer_factory()
+    point = apps.get_model("rides", "RoutePoint").objects.get(code="bairro-america")
+    apps.get_model("rides", "Waypoint").objects.create(offer=offer, point=point, position=1)
+    from django.test import RequestFactory
+    request = RequestFactory().get("/caronas/minhas-ofertas/")
+    request.user = active_driver
+    view = MyOffersView()
+    view.setup(request)
+    with django_assert_num_queries(2):
+        offers = list(view.get_queryset())
+        for item in offers:
+            assert item.origin.name and item.destination.name
+            assert [stop.point.name for stop in item.waypoints.all()]

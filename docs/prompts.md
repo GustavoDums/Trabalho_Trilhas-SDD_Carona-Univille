@@ -827,19 +827,40 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+
+## P028 — Roadmap T015 / Feature 002 T005 local
+
+neste caso, execute somente a tarefa T015 do Carona Univille.
+
+Área da tarefa — Feature 002, Oferta de caronas com paradas.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T015 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+
 Referência anexada: `docs/prompts.md`.
 
-### Autorização para concluir a dependência
-
-O agente identificou T004 local pendente e recomendou executá-la antes da
-T015 (T005 local). Resposta do usuário:
-
-o que achar mais recomendado, desde que funcione posteriormente
-
-Referência anexada: `docs/prompts.md`.
-
-Recorte adotado e informado antes da edição: somente T004 local, encerrando o
-restante da T014 do roadmap. T015/T005 local não implementada nesta rodada.
-Artefatos: forms, views, template de oferta, testes complementares, relatórios
-Feature 002, README, tasks e roadmap. Alterações preexistentes preservadas;
-sem staging ou commit.
+Correspondência única: roadmap T015 = Feature 002/T005 local, dependência T004
+concluída. Artefatos: view de consulta própria, rota, template, testes, relatórios
+Feature 002, README, tasks e roadmap. Sem reserva, edição, exclusão ou cancelamento.
+Alterações preexistentes preservadas; sem staging ou commit.
