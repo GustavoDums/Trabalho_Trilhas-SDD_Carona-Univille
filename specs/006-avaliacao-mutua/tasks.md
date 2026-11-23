@@ -2,7 +2,7 @@
 
 **Feature**: 006-avaliacao-mutua; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001/T002 concluídas; T003 incorporada, T004–T006 abertas. [Evidência](evidence-t028.md).
+**Status**: T001/T002/T004 concluídas; T003/T005 incorporadas, T006 aberta. [Interface T029](evidence-t029.md). [Evidência](evidence-t028.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -11,7 +11,7 @@
 
 ## Phase 2: Foundational
 
-Feature 004 para participantes; Feature 005 para estado cancelado. Criar app reviews somente na execução das tarefas; não existe hoje.
+Feature 004 para participantes; Feature 005 para estado cancelado. App reviews já criado e verificado pela T002; interface integrada na T004 unificada.
 Modelagem canônica em data-model.md: tarefas de modelo implementam integralmente entidades/restrições citadas após fechar campos condicionais. Não recriar ambiente por conveniência.
 
 ## Phase 3: User Story 1 (P1)
@@ -28,9 +28,9 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 **Objetivo**: Usuário autenticado envia formulário sem poder escolher avaliador ou adulterar elegibilidade.
 **Teste independente**: SC-003: contraparte válida registra avaliação por POST com CSRF; adulteração, GET de escrita e comentário HTML não burlam autorização nem escape.
 
-- [ ] T004 [US2] Implementar RideReviewForm em reviews/forms.py e reviews/templates/reviews/submit_review.html; testes de formulário/renderização em tests/test_reviews.py cobrem campos, comentário opcional e escape. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-001/FR-003; SC-001/SC-003. **Depende**: T002. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T029.
+- [x] T004 [US2] Implementar a interface integral da T029, reunindo antigas T004/T005: RideReviewForm em reviews/forms.py, reviews/templates/reviews/submit_review.html, SubmitReviewView em reviews/views.py, reviews/urls.py e inclusão no URLconf raiz. Tests/test_reviews.py escritos/executados antes da produção cobrem nota/comentário/escape, GET somente leitura, elegibilidade antes de apresentar formulário, sessão, CSRF, autoria da sessão/alvo da URL, adulteração, prazo, redirecionamento fixo e duplicata concorrente. Reutilizar ReviewService, revalidando na gravação; consulta de elegibilidade compartilhada com o serviço sem duplicar regra temporal. Não exibir e-mail/placa ou dados de alvo inelegível. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-001–FR-004; SC-001/SC-002/SC-003. **Depende**: T002. **Conclusão**: formulário/view/template/rotas e cenários HTTP/concorrência aprovados com evidência, TDD e regressão pertinente; preservar todos os contratos da T002. **Roadmap**: T029, correspondência única. Sem reputação, novas migrações ou nova interface de conclusão de oferta.
 
-- [ ] T005 [US2] Implementar SubmitReviewView e rotas em reviews/views.py, reviews/urls.py e URLconf raiz efetiva; tests/test_reviews.py cobre sessão, CSRF, adulteração, redirecionamento e duplicata concorrente. **Requisitos**: REQ-008, REQ-003, REQ-017; FR-002/FR-003/FR-004; SC-003. **Depende**: T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T029.
+**T005 — incorporada à T004 em 2026-11-23 por autorização do usuário.** Referência histórica, sem tarefa executável independente e sem alegação de implementação antecipada.
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
@@ -45,7 +45,7 @@ Dependências explícitas de cada tarefa são obrigatórias; número não permit
 | Roadmap | Requisito / objetivo detalhado na tarefa | IDs locais |
 | --- | --- | --- |
 | T028 | REQ-008; modelo, término e serviço de elegibilidade | T002 (inclui antiga T003) |
-| T029 | REQ-008 | T004, T005 |
+| T029 | REQ-008; formulário e fluxo HTTP de avaliação | T004 (inclui antiga T005) |
 | Preparação/qualidade | Decisões e evidência | T001, T006 |
 
 ## Parallel Opportunities & Implementation Strategy
@@ -55,3 +55,7 @@ Sem [P]: estado e contratos compartilhados, com decisões condicionais. Revisão
 ## Consolidação de tarefas — 2026-11-23
 
 Usuário solicitou unir as tarefas locais que dividiam a T028. T002 absorve integralmente T003, preservando requisitos, critérios e dependências; T004 passa a depender de T002. T003 fica como referência histórica, não reutilizada nem marcada como implementada. T001 documental continua necessária para D006-01/D006-02 e não foi executada ou aprovada por esta reorganização. T004/T005/T006 mantêm IDs e escopo. Ordem: T001 → T002 → T004 → T005 → T006. Nenhum código ou migração criado, nenhum teste executado; somente consistência documental verificada.
+
+## Consolidação da T029 — 2026-11-23
+
+Usuário autorizou unificar e implementar T004/T005 como T004 local, sem renumerar T006. T005 incorporada; ordem executável atual T001 → T002 → T004 → T006. Consolidações anteriores permanecem históricas. T006 de qualidade final fora desta rodada.

@@ -1,6 +1,6 @@
 # Quickstart de validação: Feature 006
 
-**Estado 2026-11-23**: T001 homologada e T002 unificada concluída ([evidência](evidence-t028.md)). Serviços de domínio disponíveis; formulários/views/rotas ainda futuros (T004/T005).
+**Estado 2026-11-23**: T001 homologada e T002 unificada concluída ([evidência](evidence-t028.md)). Serviços e interface T004 unificada disponíveis ([evidência T029](evidence-t029.md)); T005 incorporada, qualidade final T006 pendente.
 
 1. Fechar decisões da [spec](spec.md), implementar dependências, usar venv e PostgreSQL existentes, sem imprimir segredos.
 2. Após implementação, da raiz:
@@ -30,3 +30,11 @@ SQL/plano das migrações rides 0005 e reviews 0001 revisados e aplicados no Pos
 .\venv\Scripts\python.exe -m pytest tests/test_reviews.py tests/test_booking_flow.py -q --tb=short
 .\venv\Scripts\python.exe -m pytest tests -q --tb=short --cov=accounts --cov=rides --cov=reviews --cov=carona_univille --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature006-t028.json --junitxml=test-results-feature006-t028.xml
 ~~~
+
+## Interface de avaliação — T004 unificada / T029
+
+Pré-condição: oferta com conclusão registrada pelo serviço e reserva CONFIRMADA, sem no-show, ambos usuários ativos; janela inclusiva de 48h ainda aberta. T029 não adiciona botão/rota para concluir a viagem: usar o serviço de conclusão já documentado para preparar o domínio, sem inventar término na partida ou editar histórico por SQL.
+
+Com a sessão da contraparte elegível, abrir /avaliacoes/caronas/<offer_id>/usuarios/<reviewed_id>/nova/. Os IDs são da oferta e contraparte existentes, não do avaliador. Formulário contém nota 1..5 e comentário opcional até 500. GET só consulta e exibe nome abreviado/instantes, sem e-mail/placa. POST com CSRF grava uma única avaliação e redireciona a /accounts/profile/ com mensagem neutra. Repetição, oferta sem conclusão, reserva cancelada/no-show ou janela encerrada retornam 400 genérico; ator/contraparte sem permissão retorna 403. Entrada inválida é reapresentada com escape e sem gravação. GET nunca envia avaliação; PUT/PATCH/DELETE/HEAD/OPTIONS retornam 405 para usuário elegível.
+
+Execução automatizada: `venv/Scripts/python.exe -m pytest tests/test_reviews.py -q --tb=short`. Inclui login real, CSRF e duplicata concorrente por HTTP. Não houve inspeção visual humana nesta rodada; HTML/labels/escape foram verificados por testes Django. Qualidade final T006 permanece aberta.

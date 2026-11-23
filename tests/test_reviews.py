@@ -330,3 +330,265 @@ def test_completion_and_no_show_schema_constraints_preserve_legacy(cancellation_
     assert model()._meta.get_field('comment').max_length == 500
     for field in ('offer', 'reviewer', 'reviewed_user'):
         assert model()._meta.get_field(field).remote_field.on_delete.__name__ == 'PROTECT'
+
+
+# Feature 006/T004 unificada — roadmap T029.
+def review_form(data=None):
+    return import_module('reviews.forms').RideReviewForm(data=data)
+
+
+def review_url(scene, **overrides):
+    from django.urls import reverse
+    args = dict(offer_id=scene.offer.pk, reviewed_id=scene.driver.pk)
+    args.update(overrides)
+    return reverse('reviews:submit_review', kwargs=args)
+
+
+@pytest.fixture
+def web_review_scene(cancellation_scene, monkeypatch):
+    scene = cancellation_scene
+    complete(scene)
+    monkeypatch.setattr('reviews.services.review_service.timezone.now',
+                        lambda: scene.departure+timedelta(hours=2))
+    return scene
+
+
+@pytest.mark.parametrize('rating', [1, 5])
+def test_form_only_rating_and_optional_comment(rating):
+    form = review_form({'rating': rating})
+    assert set(form.fields) == {'rating', 'comment'}
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data == {'rating': rating, 'comment': ''}
+
+
+@pytest.mark.parametrize('rating', ['', 0, 6, '1.5', True, 'abc'])
+def test_form_rejects_invalid_rating(rating):
+    form = review_form({'rating': rating})
+    assert not form.is_valid() and 'rating' in form.errors
+
+
+@pytest.mark.parametrize('length,valid', [(500, True), (501, False)])
+def test_form_comment_limit(length, valid):
+    form = review_form({'rating': 5, 'comment': 'x'*length})
+    assert form.is_valid() is valid
+
+
+@pytest.mark.django_db
+def test_http_review_get_is_authorized_minimal_and_read_only(web_review_scene):
+    from django.test import Client
+    scene = web_review_scene
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(scene.passenger)
+    before = (list(RideOffer.objects.values()), list(RideBooking.objects.values()), list(model().objects.values()))
+    response = client.get(review_url(scene))
+    assert response.status_code == 200
+    assert response.context['form'].is_bound is False
+    assert 'csrfmiddlewaretoken' in response.content.decode()
+    assert scene.driver.full_name not in response.content.decode()
+    assert scene.driver.email not in response.content.decode() and scene.offer.vehicle_plate not in response.content.decode()
+    assert before == (list(RideOffer.objects.values()), list(RideBooking.objects.values()), list(model().objects.values()))
+    assert set(response.context['review_context']) == {'counterpart_name', 'departure_at', 'completed_at'}
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('driver_view', [False, True])
+def test_http_review_submission_real_csrf_identity_and_fixed_redirect(web_review_scene, driver_view):
+    from django.test import Client
+    scene = web_review_scene
+    actor, target = (scene.driver, scene.passenger) if driver_view else (scene.passenger, scene.driver)
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(actor)
+    url = review_url(scene, reviewed_id=target.pk)
+    assert client.get(url).status_code == 200
+    response = client.post(url, dict(
+        csrfmiddlewaretoken=client.cookies['csrftoken'].value, rating=5, comment='Ótima viagem sintética',
+        reviewer=scene.other.pk, reviewed_user=scene.other.pk, offer_id=999999,
+        created_at='1999-01-01T00:00:00Z', next='https://example.invalid/'))
+    assert response.status_code == 302 and response.url == '/accounts/profile/'
+    result = model().objects.get()
+    assert result.reviewer_id == actor.pk and result.reviewed_user_id == target.pk
+    assert result.offer_id == scene.offer.pk and result.created_at == scene.departure+timedelta(hours=2)
+    assert result.rating == 5 and result.comment == 'Ótima viagem sintética'
+    before = list(model().objects.values())
+    repeated = client.post(url, {'csrfmiddlewaretoken': client.cookies['csrftoken'].value, 'rating': 1})
+    assert repeated.status_code == 400 and list(model().objects.values()) == before
+    assert 'Não foi possível' in repeated.content.decode()
+
+
+@pytest.mark.django_db
+def test_http_review_real_login_then_submit(web_review_scene):
+    from django.test import Client
+    scene = web_review_scene
+    scene.passenger.set_password('Ficticia!Rota-2026#')
+    scene.passenger.save(update_fields=['password'])
+    client = Client(enforce_csrf_checks=True)
+    client.get('/accounts/login/')
+    response = client.post('/accounts/login/', {
+        'email': scene.passenger.email, 'password': 'Ficticia!Rota-2026#',
+        'csrfmiddlewaretoken': client.cookies['csrftoken'].value})
+    assert response.status_code == 302 and response.url == '/accounts/profile/'
+    url = review_url(scene)
+    assert client.get(url).status_code == 200
+    response = client.post(url, {'rating': 1, 'csrfmiddlewaretoken': client.cookies['csrftoken'].value})
+    assert response.status_code == 302
+    assert model().objects.get().reviewer_id == scene.passenger.pk
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('token', [None, 'invalid'])
+def test_http_review_csrf_required(web_review_scene, token):
+    from django.test import Client
+    scene = web_review_scene
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(scene.passenger)
+    payload = {'rating': 5}
+    if token:
+        payload['csrfmiddlewaretoken'] = token
+    assert client.post(review_url(scene), payload).status_code == 403
+    assert not model().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('method', ['put', 'patch', 'delete', 'head', 'options'])
+def test_http_review_other_methods_405(web_review_scene, method):
+    from django.test import Client
+    scene = web_review_scene
+    client = Client()
+    client.force_login(scene.passenger)
+    response = getattr(client, method)(review_url(scene))
+    assert response.status_code == 405 and response.headers['Allow'] == 'GET, POST'
+    assert not model().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('identity', ['anonymous', 'pending', 'disabled', 'third_party', 'inactive_target'])
+@pytest.mark.parametrize('method', ['get', 'post'])
+def test_http_review_authorization_no_target_leak(web_review_scene, identity, method):
+    from django.test import Client
+    scene = web_review_scene
+    actor = scene.passenger
+    if identity == 'third_party':
+        actor = scene.other
+    elif identity == 'pending':
+        get_user_model().objects.filter(pk=actor.pk).update(academic_status='PENDENTE')
+    elif identity == 'disabled':
+        get_user_model().objects.filter(pk=actor.pk).update(is_active=False)
+    elif identity == 'inactive_target':
+        get_user_model().objects.filter(pk=scene.driver.pk).update(is_active=False)
+    client = Client()
+    if identity != 'anonymous':
+        client.force_login(actor)
+    response = getattr(client, method)(review_url(scene), {'rating': 5})
+    expected = 302 if identity in ('anonymous', 'pending', 'disabled') else (400 if identity == 'third_party' else 403)
+    assert response.status_code == expected
+    html = response.content.decode()
+    assert scene.driver.full_name not in html and scene.driver.email not in html
+    assert scene.offer.vehicle_plate not in html and not model().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('state', ['legacy', 'cancelled', 'no_show', 'expired', 'before_completion', 'duplicate', 'missing'])
+def test_http_review_get_and_post_revalidate_eligibility(web_review_scene, monkeypatch, state):
+    from django.test import Client
+    scene = web_review_scene
+    url = review_url(scene)
+    if state == 'legacy':
+        RideOffer.objects.filter(pk=scene.offer.pk).update(completed_at=None)
+    elif state == 'cancelled':
+        RideBooking.objects.filter(pk=scene.booking.pk).update(status='CANCELADA')
+    elif state == 'no_show':
+        RideBooking.objects.filter(pk=scene.booking.pk).update(no_show_at=scene.departure)
+    elif state in ('expired', 'before_completion'):
+        at = scene.departure+timedelta(hours=49, seconds=1) if state == 'expired' else scene.departure
+        monkeypatch.setattr('reviews.services.review_service.timezone.now', lambda: at)
+    elif state == 'duplicate':
+        review(scene)
+    else:
+        url = review_url(scene, offer_id=999999)
+    before = list(model().objects.values())
+    client = Client()
+    client.force_login(scene.passenger)
+    for method in ('get', 'post'):
+        response = getattr(client, method)(url, {'rating': 5})
+        assert response.status_code == 400
+        assert '<form' not in response.content.decode()
+        assert scene.driver.full_name not in response.content.decode()
+    assert list(model().objects.values()) == before
+
+
+@pytest.mark.django_db
+def test_http_review_invalid_form_preserves_escaped_input_and_no_write(web_review_scene):
+    from django.test import Client
+    scene = web_review_scene
+    client = Client()
+    client.force_login(scene.passenger)
+    response = client.post(review_url(scene), {'rating': 0, 'comment': '<script>alert(1)</script>'})
+    assert response.status_code == 400
+    html = response.content.decode()
+    assert '<script>alert(1)</script>' not in html
+    assert '&lt;script&gt;alert(1)&lt;/script&gt;' in html
+    assert 'rating' in response.context['form'].errors and not model().objects.exists()
+
+
+@pytest.mark.django_db
+def test_http_review_rechecks_after_get_before_post(web_review_scene):
+    from django.test import Client
+    scene = web_review_scene
+    client = Client()
+    client.force_login(scene.passenger)
+    url = review_url(scene)
+    assert client.get(url).status_code == 200
+    RideBooking.objects.filter(pk=scene.booking.pk).update(status='CANCELADA')
+    assert client.post(url, {'rating': 5}).status_code == 400
+    assert not model().objects.exists()
+
+
+@pytest.mark.django_db(transaction=True)
+def test_http_review_concurrent_duplicate_post(web_review_scene, record_testsuite_property):
+    import json
+    from django.test import Client
+    scene = web_review_scene
+    url = review_url(scene)
+    barrier = Barrier(2, timeout=10)
+    assert connection.vendor == 'postgresql' and not connection.in_atomic_block
+    def worker():
+        close_old_connections()
+        try:
+            client = Client(enforce_csrf_checks=True)
+            client.force_login(get_user_model().objects.get(pk=scene.passenger.pk))
+            assert client.get(url).status_code == 200
+            with transaction.atomic():
+                with connections['default'].cursor() as cursor:
+                    cursor.execute("SET LOCAL lock_timeout = '10s'")
+                    cursor.execute('SELECT pg_backend_pid(), txid_current()')
+                    pid, txid = cursor.fetchone()
+                barrier.wait()
+                response = client.post(url, {'rating': 5, 'csrfmiddlewaretoken': client.cookies['csrftoken'].value})
+                status = response.status_code
+            return status, pid, txid
+        finally:
+            connections['default'].close()
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(worker) for _ in range(2)]
+        outcomes = [future.result(timeout=20) for future in futures]
+    assert sorted(item[0] for item in outcomes) == [302, 400]
+    assert len({item[1] for item in outcomes}) == len({item[2] for item in outcomes}) == 2
+    assert model().objects.count() == 1
+    record_testsuite_property('review_http_duplicate_race', json.dumps(outcomes))
+
+
+@pytest.mark.django_db
+def test_http_review_revalidation_during_post_refuses_changed_booking(web_review_scene, monkeypatch):
+    from django.test import Client
+    scene = web_review_scene
+    original = service().review_context
+    def change_after_check(**kwargs):
+        context = original(**kwargs)
+        RideBooking.objects.filter(pk=scene.booking.pk).update(status='CANCELADA')
+        return context
+    monkeypatch.setattr(service(), 'review_context', change_after_check)
+    client = Client()
+    client.force_login(scene.passenger)
+    response = client.post(review_url(scene), {'rating': 5})
+    assert response.status_code == 400 and not model().objects.exists()
+    assert '<form' not in response.content.decode()

@@ -167,12 +167,12 @@ flowchart TD
 ### Fase 2: Escopo Completo (Extensão — REQ-008 a REQ-011)
 
 #### Feature 006: Avaliação Mútua Pós-Viagem (`REQ-008`)
-*Status*: D006-01/D006-02 homologadas; T028/T002 local concluída, [evidência](../specs/006-avaliacao-mutua/evidence-t028.md). Conclusão explícita e janela inclusiva de 48h; T029/interface pendente.
+*Status*: D006-01/D006-02 homologadas; T028/T002 local concluída, [evidência](../specs/006-avaliacao-mutua/evidence-t028.md). Conclusão explícita e janela inclusiva de 48h; T029/T004 unificada concluída, [evidência](../specs/006-avaliacao-mutua/evidence-t029.md); qualidade local T006 pendente.
 
 - [x] **T028**: Implementar modelo `RideReview` em `reviews/models.py` com restrições de elegibilidade pós-viagem (apenas participantes confirmados, sem auto-avaliação), migrações e testes unitários em `tests/test_reviews.py`.
   - *Requisitos*: REQ-008, REQ-017 | *Dependências*: T020 | *Como verificar*: Testes unitários validam nota de 1 a 5 e rejeição antes do término da viagem.
   - *Fusão*: Agrupa antigas T075, T076 e T077.
-- [ ] **T029**: Implementar formulário `RideReviewForm`, view `SubmitReviewView` em `reviews/views.py`, template `submit_review.html`, rotas e testes de integração em `tests/test_reviews.py`.
+- [x] **T029**: Implementar formulário `RideReviewForm`, view `SubmitReviewView` em `reviews/views.py`, template `submit_review.html`, rotas e testes de integração em `tests/test_reviews.py`.
   - *Requisitos*: REQ-008, REQ-017 | *Dependências*: T028 | *Como verificar*: `pytest tests/test_reviews.py` valida registro de avaliação mútua com sucesso.
   - *Fusão*: Agrupa antigas T078, T079, T080, T081 e T082.
 

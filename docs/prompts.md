@@ -1725,3 +1725,51 @@ TDD: 50 testes executados antes da produção, todos falharam pelo módulo revie
 Migrações SQL/plano revisados: rides 0005 e reviews 0001 aplicadas no PostgreSQL local. Snapshot em memória de todas as colunas antigas de accounts/validações/pontos/ofertas/paradas/reservas/cancelamentos preservado; novos campos NULL e reviews vazia. Nenhum dado pessoal impresso ou snapshot versionado. Testes usam PostgreSQL isolado, incluindo duplicata concorrente com conexões/TxIDs distintos. Venv existente, ponteiro de feature preservado, sem hooks/checklists adicionais. Alterações documentais preexistentes preservadas. Sem staging/commit. Resultados e arquivos em specs/006-avaliacao-mutua/evidence-t028.md.
 
 Resultado final T028/T002: 723 aprovados (55 novos/668 anteriores), 89.13s; reviews 100% linhas/branches, consolidado 98.56870229007633% linhas/96.875% branches. Duplicata concorrente: PIDs 21824/13104, TxIDs 53508/53509, uma criação e uma recusa. Evidência, README, roadmap e checklists sincronizados; T001/T002 concluídas, T003 incorporada, T004–T006 abertas. Sem staging/commit.
+
+## 2026-11-23 — Feature 006/T004 unificada / roadmap T029
+
+Prompt integral original:
+
+~~~text
+Execute somente a tarefa T029 do Carona Univille.
+
+Área da tarefa — Features 006 a 009, Escopo completo.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T029 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md. Diagnóstico sem edição/testes: T029 correspondia a T004 (form/template) e T005 (view/rotas), ambas abertas; recomendada unificação em T004 com preservação histórica da T005 e execução com TDD. Resposta integral:
+
+~~~text
+sim, unifica e já pode executar a implementação delas se for o cenário recomendado
+~~~
+
+Referência anexada: docs/prompts.md. Autorizadas unificação e implementação da T004 unificada/Feature 006, sem renumerar T006 nem iniciar qualidade final/reputação/interface de conclusão. Tasks/plan/contrato atualizados antes do código; dependência T002 concluída e D006-01/D006-02 homologadas. Repositório limpo no início, venv/PostgreSQL existentes, sem hooks/checklist adicional, ponteiro preservado.
+
+TDD: 41 testes novos falharam por reviews.forms/namespace de rotas ausentes antes da produção. Formulário somente rating/comment, template escapado, SubmitReviewView e rotas implementados; validação comum de elegibilidade extraída para ReviewService._review_inputs, reutilizada por review_context (GET mínimo sem gravação) e create_review (revalida com locks). 96 testes de reviews aprovados; caso adicional de alteração entre preparo e gravação recusado corretamente, resultando em 97 aprovados, 42 novos/55 anteriores; pacote reviews 100% linhas/ramificações na execução focada.
+
+Teste HTTP com login real/CSRF, GET sem escrita, autoria/alvo adulterados, prazos/estado/duplicata, escape e dois POSTs concorrentes em transações PostgreSQL independentes. Nenhuma migração necessária; Django check/diagnósticos/makemigrations/migrate --plan sem problemas. Resultados completos e arquivos em specs/006-avaliacao-mutua/evidence-t029.md. Sem staging/commit.
+
+Resultado final T029/T004: 765 aprovados (42 novos/723 anteriores), 87.99s; reviews 100% linhas/branches, consolidado 98.6388384754991% linhas/96.92307692307692% branches. Duplicata HTTP: PIDs 38824/27972, TxIDs 59379/59380, respostas 400/302 e uma avaliação. T004/T029 concluídas; T005 incorporada, T006 aberta. Nenhuma nova migração, staging ou commit.

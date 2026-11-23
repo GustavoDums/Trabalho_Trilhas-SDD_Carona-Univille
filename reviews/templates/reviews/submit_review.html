@@ -1,0 +1,23 @@
+{% extends "accounts/base.html" %}
+{% load tz %}
+{% block title %}Avaliar viagem | Carona Univille{% endblock %}
+{% block content %}
+<h1>Avaliar viagem</h1>
+{% if review_error %}
+<p role="alert">{{ review_error }}</p>
+{% else %}
+{% if form.errors %}<p role="alert">Confira os campos indicados antes de enviar.</p>{% endif %}
+<p>Contraparte: {{ review_context.counterpart_name }}</p>
+{% timezone "America/Sao_Paulo" %}
+<p>Saída da origem: {{ review_context.departure_at|date:"d/m/Y H:i:s" }}.</p>
+<p>Conclusão registrada: {{ review_context.completed_at|date:"d/m/Y H:i:s" }} (America/Sao_Paulo).</p>
+{% endtimezone %}
+<p>Avaliações podem ser enviadas até 48 horas após a conclusão, incluindo o limite. O envio é único e não permite edição.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enviar avaliação</button>
+</form>
+{% endif %}
+<p><a href="{% url 'accounts:profile' %}">Voltar ao perfil</a></p>
+{% endblock %}

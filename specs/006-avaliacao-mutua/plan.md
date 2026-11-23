@@ -35,7 +35,7 @@ Pacote rides/services existente preservado. Novo app reviews e serviço reviews/
 
 ## Implementation Order
 
-Feature 004 para participantes; Feature 005 para estado cancelado. Criar app reviews somente na execução das tarefas; não existe hoje.
+Feature 004 para participantes; Feature 005 para estado cancelado. App reviews já criado e verificado pela T002; interface integrada na T004 unificada.
 
 T001 fecha decisões → testes/modelo → serviço → interface → integração → qualidade, seguindo dependências explícitas em [tasks.md](tasks.md). Bônus 010/011 não são pré-requisitos. T041–T045 são marcos gerais, não concluídos por esta feature.
 
@@ -58,3 +58,7 @@ Usuário aprovou as recomendações e autorizou T001 documental seguida da T002 
 D006-02 CONFIRMADA: janela fechada [completed_at, completed_at+48h], ambos extremos inclusivos; bloquear antes e depois. Somente motorista↔passageiro com reserva CONFIRMADA na mesma oferta, ambos habilitados/com vínculo ativo; excluir cancelados e no-show. Uma avaliação por oferta/avaliador/avaliado, nota inteira 1..5, comentário opcional até 500 caracteres, sem edição. Sem passageiro↔passageiro, autoavaliação, reputação, penalidade ou interface nesta rodada.
 
 Referências a decisões pendentes nas seções anteriores representam o estado histórico e são substituídas por esta homologação. T002 abrange domínio/migrações/serviços/testes; formulários e rotas permanecem T004/T005.
+
+## Interface T029 unificada — 2026-11-23
+
+T004 absorve T005 por autorização do usuário: formulário/template/view/rotas/testes numa entrega. GET e POST devem consultar elegibilidade comum no ReviewService; a gravação revalida com locks/transação. Contexto reduzido a identificação abreviada e instantes da oferta, sem ORM de usuários, e-mail ou placa. A rota é a prevista no contrato; sucesso redireciona ao perfil com mensagem neutra. Sem interface de conclusão ou nova migração. T006 continua independente e aberta.

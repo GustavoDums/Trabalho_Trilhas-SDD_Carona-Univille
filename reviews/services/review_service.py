@@ -67,7 +67,7 @@ class ReviewService:
 
     @staticmethod
     @transaction.atomic
-    def create_review(*, user, offer_id, reviewed_user_id, rating, comment='', clock=None):
+    def _review_inputs(*, user, offer_id, reviewed_user_id, clock=None):
         _authenticated(user)
         _valid_id(reviewed_user_id, 'reviewed_user_id')
         offer = _offer(offer_id)
@@ -93,6 +93,25 @@ class ReviewService:
         now = _instant(clock)
         if not offer.completed_at <= now <= offer.completed_at+timedelta(hours=48):
             raise ValidationError('Avaliação fora da janela de 48 horas.', code='outside_review_window')
+        if RideReview.objects.filter(offer=offer, reviewer=actor, reviewed_user=target).exists():
+            raise ValidationError('Avaliação já registrada.', code='already_reviewed')
+        return offer, actor, target, now
+
+    @staticmethod
+    @transaction.atomic
+    def review_context(*, user, offer_id, reviewed_user_id, clock=None):
+        offer, actor, target, now = ReviewService._review_inputs(
+            user=user, offer_id=offer_id, reviewed_user_id=reviewed_user_id, clock=clock,
+        )
+        return dict(counterpart_name=target.display_name, departure_at=offer.departure_at,
+                    completed_at=offer.completed_at)
+
+    @staticmethod
+    @transaction.atomic
+    def create_review(*, user, offer_id, reviewed_user_id, rating, comment='', clock=None):
+        offer, actor, target, now = ReviewService._review_inputs(
+            user=user, offer_id=offer_id, reviewed_user_id=reviewed_user_id, clock=clock,
+        )
         result = RideReview(offer=offer, reviewer=actor, reviewed_user=target,
                             rating=rating, comment=comment, created_at=now)
         result.save()

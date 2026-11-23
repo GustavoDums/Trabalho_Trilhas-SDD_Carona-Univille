@@ -1,7 +1,7 @@
 # Feature Specification: Avaliação mútua pós-viagem
 
 **Feature**: 006-avaliacao-mutua | **Created**: 2026-11-22
-**Status**: decisões homologadas; T001 documental concluída, T002 unificada concluída ([evidência](evidence-t028.md)). Interface T004/T005 futura.
+**Status**: decisões homologadas; T001 documental concluída, T002 unificada concluída ([evidência](evidence-t028.md)). Interface T004 unificada concluída ([evidência](evidence-t029.md)); T005 incorporada e qualidade T006 futura.
 **Input**: REQ-008 e solicitação de preparação documental.
 
 ## Contexto e rastreabilidade

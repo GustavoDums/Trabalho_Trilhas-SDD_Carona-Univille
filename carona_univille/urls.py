@@ -19,6 +19,7 @@ from django.urls import include, path
 from .views import caronas
 
 urlpatterns = [
+    path('avaliacoes/', include('reviews.urls')),
     path('caronas/', include('rides.urls')),
     path('caronas/', caronas, name='caronas'),
     path('accounts/', include('accounts.urls')),
