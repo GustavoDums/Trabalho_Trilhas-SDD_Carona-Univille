@@ -12,6 +12,9 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, transaction
 from django.db.models.deletion import ProtectedError
 from django.utils import timezone
+from django.urls import reverse
+from django.test import Client
+from django.contrib.messages import get_messages
 
 pytestmark = pytest.mark.django_db
 
@@ -262,3 +265,126 @@ def test_model_waypoint_foreign_key_sql(offer_factory):
 def test_model_waypoint_required_fields():
     with pytest.raises(ValidationError):
         apps.get_model("rides", "Waypoint").objects.create(position=None)
+
+
+@pytest.fixture
+def publication_data():
+    points = apps.get_model("rides", "RoutePoint").objects
+    return {
+        "origin": points.get(code="terminal-central").pk,
+        "destination": points.get(code="campus-univille").pk,
+        "departure_at": timezone.localtime(timezone.now() + timedelta(days=1)).strftime("%Y-%m-%dT%H:%M"),
+        "seats": "3", "vehicle_model": "Veículo Sintético", "vehicle_color": "Azul", "vehicle_plate": "FICTICIO",
+        "waypoints-TOTAL_FORMS": "0", "waypoints-INITIAL_FORMS": "0",
+    }
+
+
+def test_publish_get(client, active_driver):
+    client.force_login(active_driver)
+    response = client.get(reverse("rides:offer-create"))
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert 'name="csrfmiddlewaretoken"' in html
+    assert 'name="waypoints-TOTAL_FORMS"' in html
+    assert "America/Sao_Paulo" in html
+    assert 'type="datetime-local"' in html
+    assert 'name="driver"' not in html
+    assert "Adicionar parada" in html
+
+
+@pytest.mark.parametrize("with_stops", [False, True])
+def test_publish_valid_atomic_offer(client, active_driver, driver_factory, publication_data, with_stops):
+    client.force_login(active_driver)
+    other = driver_factory()
+    data = dict(publication_data, driver=other.pk, user_id=other.pk)
+    if with_stops:
+        points = apps.get_model("rides", "RoutePoint").objects
+        data.update({"waypoints-TOTAL_FORMS": "2",
+                     "waypoints-0-point": points.get(code="terminal-norte").pk,
+                     "waypoints-1-point": points.get(code="bairro-america").pk,
+                     "waypoints-0-position": "99"})
+    response = client.post(reverse("rides:offer-create"), data)
+    assert response.status_code == 302 and response.url == "/caronas/minhas-ofertas/"
+    offer = apps.get_model("rides", "RideOffer").objects.get()
+    assert offer.driver == active_driver and offer.seats == 3
+    assert offer.vehicle_plate == "FICTICIO"
+    assert timezone.is_aware(offer.departure_at)
+    expected = ["terminal-norte", "bairro-america"] if with_stops else []
+    assert list(offer.waypoints.values_list("point__code", flat=True)) == expected
+    assert list(offer.waypoints.values_list("position", flat=True)) == ([1, 2] if with_stops else [])
+    assert [str(m) for m in get_messages(response.wsgi_request)] == ["Oferta de carona publicada com sucesso."]
+
+
+@pytest.mark.parametrize("identity,status,url", [("anonymous", 302, "/accounts/login/"),
+                                                ("pending_driver", 302, "/accounts/activation/"),
+                                                ("active_passenger", 403, "")])
+@pytest.mark.parametrize("method", ["get", "post"])
+def test_publish_permissions(client, request, publication_data, identity, status, url, method):
+    if identity != "anonymous":
+        client.force_login(request.getfixturevalue(identity))
+    response = getattr(client, method)(reverse("rides:offer-create"), publication_data if method == "post" else {})
+    assert response.status_code == status
+    if url:
+        assert response.url.startswith(url)
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+
+
+@pytest.mark.parametrize("field,value", [("seats", "1.5"), ("vehicle_plate", ""),
+                                        ("departure_at", "2000-01-01T12:00")])
+def test_publish_invalid_fields(client, active_driver, publication_data, field, value):
+    client.force_login(active_driver)
+    response = client.post(reverse("rides:offer-create"), dict(publication_data, **{field: value}))
+    assert response.status_code == 200
+    assert field in response.context["form"].errors
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+
+
+def test_publish_repeated_route_rejected(client, active_driver, publication_data):
+    client.force_login(active_driver)
+    data = dict(publication_data)
+    data.update({"waypoints-TOTAL_FORMS": "1", "waypoints-0-point": data["origin"]})
+    response = client.post(reverse("rides:offer-create"), data)
+    assert response.status_code == 200
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+    assert not apps.get_model("rides", "Waypoint").objects.exists()
+
+
+def test_publish_csrf(client, active_driver, publication_data):
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(active_driver)
+    url = reverse("rides:offer-create")
+    assert client.post(url, publication_data).status_code == 403
+    assert client.get(url).status_code == 200
+    publication_data["csrfmiddlewaretoken"] = client.cookies["csrftoken"].value
+    assert client.post(url, publication_data).status_code == 302
+
+
+def test_publish_service_rolls_back_second_stop(active_driver, monkeypatch):
+    from rides.services import publish_offer
+    point = apps.get_model("rides", "RoutePoint").objects
+    waypoint = apps.get_model("rides", "Waypoint")
+    original = waypoint.save
+
+    def failing_save(instance, *args, **kwargs):
+        if instance.position == 2:
+            raise RuntimeError("Falha sintética na segunda parada")
+        return original(instance, *args, **kwargs)
+
+    monkeypatch.setattr(waypoint, "save", failing_save)
+    data = dict(origin=point.get(code="terminal-central"), destination=point.get(code="campus-univille"),
+                departure_at=timezone.now() + timedelta(days=1), seats=2,
+                vehicle_model="Demo", vehicle_color="Azul", vehicle_plate="FICTICIO")
+    with pytest.raises(RuntimeError):
+        publish_offer(driver=active_driver, data=data,
+                      points=[point.get(code="bairro-america"), point.get(code="terminal-norte")])
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+    assert not waypoint.objects.exists()
+
+
+def test_publish_service_rechecks_driver(active_driver):
+    from django.core.exceptions import PermissionDenied
+    from rides.services import publish_offer
+    get_user_model().objects.filter(pk=active_driver.pk).update(academic_status="PENDENTE")
+    with pytest.raises(PermissionDenied):
+        publish_offer(driver=active_driver, data={}, points=[])
+    assert not apps.get_model("rides", "RideOffer").objects.exists()

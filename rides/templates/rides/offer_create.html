@@ -1,0 +1,27 @@
+{% extends "accounts/base.html" %}
+{% load static %}
+{% block title %}Oferecer carona | Carona Univille{% endblock %}
+{% block content %}
+<h1>Oferecer carona</h1>
+<p>Defina a origem, as paradas na ordem da viagem e o destino. Horários no fuso America/Sao_Paulo.</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <fieldset>
+        <legend>Paradas intermediárias</legend>
+        <p>Adicione na ordem de passagem. Sem paradas, a viagem será direta.</p>
+        {{ waypoint_formset.management_form }}
+        {{ waypoint_formset.non_form_errors }}
+        <div id="waypoint-rows">
+        {% for stop in waypoint_formset %}
+            <div class="waypoint-row">{{ stop.as_p }}<button type="button" data-remove-stop>Remover parada</button></div>
+        {% endfor %}
+        </div>
+        <button type="button" id="add-stop">Adicionar parada</button>
+        <template id="empty-stop"><div class="waypoint-row">{{ waypoint_formset.empty_form.as_p }}<button type="button" data-remove-stop>Remover parada</button></div></template>
+        <p id="stop-count" aria-live="polite"></p>
+    </fieldset>
+    <p><button type="submit">Publicar oferta</button></p>
+</form>
+{% endblock %}
+{% block extra_scripts %}<script src="{% static 'rides/offer.js' %}" defer></script>{% endblock %}

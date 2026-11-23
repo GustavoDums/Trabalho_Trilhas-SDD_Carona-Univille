@@ -764,11 +764,11 @@ locais abertas; T013 do roadmap corresponde a Feature 002/T002, precedida por
 T001 de preparação. Roadmap e referências da spec sincronizados.
 Sem modelos, serviços, migrações, testes ou scripts de produto implementados.
 Nenhuma suíte executada nesta rodada documental; sem staging ou commit.
-## P025 — Roadmap T013 / Feature 002 T002 local, com preparação T001
 
-de preferencia, ou podemos deixar específicado o número do roadmap e também do feature, como for melhor. vou mandá-lo novamente
 
-Execute somente a tarefa T013 do Carona Univille.
+## P026 — Roadmap T014 / Feature 002 T003 local
+
+Execute somente a tarefa T014 do Carona Univille.
 
 Área da tarefa — Feature 002, Oferta de caronas com paradas.
 
@@ -776,7 +776,7 @@ Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
 tasks da feature antes de editar. Confirme o requisito, as dependências e os
 critérios de conclusão da tarefa selecionada.
 
-Localize T013 em docs/roadmap-implementacao.md para identificar a feature e
+Localize T014 em docs/roadmap-implementacao.md para identificar a feature e
 o objetivo exato. Faça a correspondência por objetivo e requisito com o
 tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
 houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
@@ -796,11 +796,19 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
+Referência anexada: snapshot somente leitura de `file_prompts.md`.
+
+### Escolha do recorte
+
+Após informar que T014 corresponde a T003 e T004 locais e recomendar executar
+somente T003 nesta rodada, o usuário respondeu:
+
+sim
+
 Referência anexada: `docs/prompts.md`.
 
-Correspondência principal única: roadmap T013 = Feature 002/T002 local.
-Preparação mínima T001 executada antes, conforme dependência explícita de tasks.md,
-e informada ao usuário no início. Escopo restrito a app, modelos, migrações e testes.
-Artefatos: rides, settings, tests/test_rides_offer.py, relatórios separados da
-Feature 002, README, tasks e roadmap. Sem formulário, serviço ou interface de oferta.
+Escopo aprovado: T003 local, publicação atômica. T004 permanece aberta.
+Artefatos: forms/services/views/urls de rides, template, JavaScript local,
+integração de rotas, testes de publicação, relatórios Feature 002, README e tasks.
+Sem listagem de ofertas, reutilização de veículo ou encerramento integral da T014.
 Alterações preexistentes preservadas; sem staging ou commit.
