@@ -1416,3 +1416,51 @@ TDD: 34 falhas de prazos + 8 de fluxo por serviço/modelo/campos ausentes, antes
 Nova política e CancellationService cancelam reserva atomicamente com auditoria/idempotência, sem contador. BookingService/MatchingService passam a considerar status de oferta, preparado por T002. Motorista tem política de 4h testada; cancel_offer/HTTP/penalidade numérica não foram implementados. Testes PostgreSQL com conexões/TxIDs distintos cobrem cancelar/reservar e cancelar/cancelar.
 
 Resultados e arquivos em specs/005-cancelamento-liberacao-vaga/evidence-t024.md. Sem staging ou commit; alterações existentes preservadas.
+
+## 2026-11-23 — Feature 005 / T004 local / roadmap T025
+
+Prompt integral do usuário:
+
+~~~text
+Execute somente a tarefa T025 do Carona Univille.
+
+Área da tarefa — Feature 005, Cancelamento e liberação de vaga.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T025 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Antes de editar: T025 corresponde a T003 concluída e T004 aberta. Apontada divergência da tabela histórica “com notificação”; recomendado executar só T004, sem notificações, que pertencem a T037–T038. Resposta integral do usuário:
+
+~~~text
+pode executar apenas a T004 então
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Decisão: T004 local autorizada, parcela restante da T025; sem interface, notificações ou penalidades. Skills speckit-implement (restrita à tarefa autorizada) e python-fact-grounded-coding. Venv existente, PostgreSQL, ponteiro de feature preservado. Pré-requisitos executados com ExecutionPolicy Bypass apenas no processo após bloqueio da política local; nenhum hook/checklist adicional.
+
+TDD: 23 testes novos falharam por cancel_offer ausente, 8 anteriores passaram; implementação seguida de 66 testes de cancelamento aprovados. Serviço transacional bloqueia oferta → usuários → reservas; um evento de oferta representa o lote. Relógio controlado, bordas de 4h, idempotência, histórico, privacidade, rollback e três corridas PostgreSQL cobertos. Resultado completo e arquivos em [evidence-t025.md](../specs/005-cancelamento-liberacao-vaga/evidence-t025.md). Sem staging ou commit.

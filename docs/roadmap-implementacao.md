@@ -144,7 +144,7 @@ flowchart TD
 ---
 
 #### Feature 005: Cancelamento de Reserva e Oferta com Prazo Mínimo (`REQ-007`)
-*Status*: **T024/T002 e parcela de reserva T003 da T025 concluídas; oferta/interface pendentes**. D005-01/D005-02 confirmadas: 2h/4h, saída da origem, borda inclusiva; tardio antes da partida aceito/auditado sem dedução; partida ou depois recusado. [Evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t024.md).
+*Status*: **T024/T002 e T025/T003–T004 locais concluídas; interface pendente**. D005-01/D005-02 confirmadas: 2h/4h, saída da origem, borda inclusiva; tardio antes da partida aceito/auditado sem dedução; partida ou depois recusado. [Evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t024.md).
 
 - [x] **T024**: **[TESTE ESPECÍFICO DE INSTANTES DE CANCELAMENTO (BORDA)]**: Implementar serviço `CancellationService` em `rides/services/cancellation_service.py` e testes unitários em `tests/test_cancellation_deadlines.py` validando os 3 instantes de cancelamento:
   - (1) *Antes do prazo* ($\Delta t = 120\text{min } 01\text{s}$): tempestivo, livre de penalidade e vaga devolvida.
@@ -152,7 +152,7 @@ flowchart TD
   - (3) *Depois do prazo* ($\Delta t = 119\text{min } 59\text{s}$): tardio aceito antes da partida, com evento auditável; dedução numérica fica na Feature 008. Na partida ou depois, recusar preservando o estado.
   - *Requisitos*: REQ-007, REQ-017 | *Dependências*: T020 | *Como verificar*: `pytest tests/test_cancellation_deadlines.py` valida os 3 instantes com precisão de segundos.
   - *Fusão*: Agrupa antigas T065 e T066.
-- [ ] **T025**: Implementar liberação atômica por disponibilidade derivada de CONFIRMADA (T003 local concluída, sem alterar capacidade) e cancelamento de oferta pelo motorista (T004 local pendente, prazo 4h) cancelando reservas atreladas.
+- [x] **T025**: Liberação atômica por disponibilidade derivada de CONFIRMADA (T003 local concluída, sem alterar capacidade) e cancelamento de oferta pelo motorista (T004 local concluída, prazo 4h) cancelando reservas atreladas. [Evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t025.md).
   - *Requisitos*: REQ-006, REQ-007 | *Dependências*: T024 | *Como verificar*: Cancelamento tempestivo incrementa vagas disponíveis na busca imediatamente.
   - *Fusão*: Agrupa antigas T067 e T068.
 - [ ] **T026**: Implementar views `CancelBookingView` e `CancelOfferView` em `rides/views.py`, modais de confirmação nos templates, rotas e testes integrados de cancelamento em `tests/test_cancellation_flow.py`.
@@ -300,7 +300,7 @@ flowchart TD
 | **T022** | View de reserva, template e liberação de contatos/placa (LGPD) | `T060`, `T061`, `T062` |
 | **T023** | Rotas e testes integrados do fluxo completo de reserva | `T063`, `T064` |
 | **T024** | Serviço de cancelamento e testes dos 3 instantes de prazo (borda) | `T065`, `T066` |
-| **T025** | Devolução atômica de vagas e cancelamento de oferta com notificação | `T067`, `T068` |
+| **T025** | Devolução atômica de vagas e cancelamento de oferta (notificações em T037–T038) | `T067`, `T068` |
 | **T026** | Views e modais de cancelamento, rotas e testes integrados | `T069`, `T070`, `T071`, `T072`, `T073` |
 | **T027** | Auditoria e fechamento do MVP com testes e relatório de cobertura | `T074` |
 | **T028** | Modelo `RideReview` com restrições temporais e testes unitários | `T075`, `T076`, `T077` |

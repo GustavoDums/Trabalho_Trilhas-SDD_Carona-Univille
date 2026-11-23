@@ -1,6 +1,6 @@
 # Data Model: Cancelamento e liberação de vaga
 
-**Status**: D005-01/D005-02 confirmadas pelo usuário em 2026-11-22; T002/T003 implementadas e verificadas em 2026-11-23 ([evidência](evidence-t024.md)). Sem cancelamento de oferta/HTTP nesta rodada.
+**Status**: D005-01/D005-02 confirmadas pelo usuário em 2026-11-22; T002/T003 implementadas e verificadas em 2026-11-23 ([evidência](evidence-t024.md)). T004 implementada em 2026-11-23 ([evidência](evidence-t025.md)); HTTP pendente.
 
 ## Campos e restrições canônicas
 

@@ -2,7 +2,7 @@
 
 ## Fontes e estado observado
 
-[constitution](../../.specify/memory/constitution.md), [levantamento](../../docs/levantamento.md), [roadmap](../../docs/roadmap-implementacao.md) e [registro de preparação](../../docs/preparacao-features-004-009.md). Aplicação atual contém accounts/rides e reservas/busca da Feature 004; pacote de serviços existe. Cancelamento de reserva implementado nas T002/T003; cancelamento de oferta e HTTP ainda futuros. Qualidade final das features anteriores permanece em suas tarefas próprias.
+[constitution](../../.specify/memory/constitution.md), [levantamento](../../docs/levantamento.md), [roadmap](../../docs/roadmap-implementacao.md) e [registro de preparação](../../docs/preparacao-features-004-009.md). Aplicação atual contém accounts/rides e reservas/busca da Feature 004; pacote de serviços existe. Cancelamento de reserva implementado nas T002/T003; cancelamento de oferta implementado na T004 ([evidência](evidence-t025.md)); HTTP futuro. Qualidade final das features anteriores permanece em suas tarefas próprias.
 
 ## Decisões técnicas propostas
 

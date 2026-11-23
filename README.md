@@ -1,5 +1,14 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-005-t025-quality:start -->
+Feature 005 / T004 local / roadmap T025 — **621 testes aprovados**, 0 ignorados: 23 novos e 598 de regressão anterior. TDD: 23 falhas esperadas antes da implementação, depois verde.
+Cobertura de `rides/`: **99.33862433862434%** combinada; linhas 591/592 (**99.83108108108108%**); ramificações 160/164 (**97.5609756097561%**). Serviço de cancelamento: 98.75% linhas e 96.875% ramificações. Meta: 80%.
+Relatórios: [JSON](coverage-feature005-t025.json), [JUnit](test-results-feature005-t025.xml), [evidência](specs/005-cancelamento-liberacao-vaga/evidence-t025.md). Medição: 2026-11-23.
+Reproduzir: `venv/Scripts/python.exe -m pytest tests -q --tb=short --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature005-t025.json --junitxml=test-results-feature005-t025.xml`.
+Cancelamento de oferta atômico, histórico, privacidade, rollback e três corridas PostgreSQL verificados. Sem nova migração; interface e auditoria MVP permanecem pendentes.
+<!-- feature-005-t025-quality:end -->
+
+
 <!-- feature-005-t024-quality:start -->
 Feature 005 / T002–T003 locais / T024 e parcela de reserva da T025 — **598 testes aprovados**, 0 ignorados.
 **43 testes novos**, 555 de regressão anterior. TDD inicial: 42 falhas por funcionalidades ausentes, depois verde; 1 verificação adicional de esquema.
