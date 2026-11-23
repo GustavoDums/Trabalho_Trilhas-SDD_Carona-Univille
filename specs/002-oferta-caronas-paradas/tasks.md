@@ -2,7 +2,7 @@
 
 **Feature**: 002-oferta-caronas-paradas. IDs abaixo são locais à Feature 002.
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contratos](contracts/web-routes.md), [quickstart.md](quickstart.md).
-**Prerequisites**: Feature 001 concluída; identidade e middleware disponíveis; PostgreSQL e venv existentes. Rodada de implementação autorizada: roadmap T013 corresponde a T002 local; preparação T001 e fundação T002 concluídas. T003 e T004 concluídas nos recortes da T014; T005 concluída em rodada T015; T006 concluída em rodada T016; T007 permanece aberta.
+**Prerequisites**: Feature 001 concluída; identidade e middleware disponíveis; PostgreSQL e venv existentes. Rodada de implementação autorizada: roadmap T013 corresponde a T002 local; preparação T001 e fundação T002 concluídas. T003 e T004 concluídas nos recortes da T014; T005 concluída em rodada T015; T006 concluída em rodada T016; T007 concluída por aceite final do usuário; ver [evidência](evidence-t007.md).
 **Tests**: obrigatórios pela constitution, com dados sintéticos e TDD dentro de cada tarefa: escrever/rodar testes, registrar falha esperada, implementar, rodar novamente. Não aceitar erro de configuração como prova de comportamento.
 
 ## Phase 1: Setup
@@ -39,7 +39,7 @@
 ## Phase 6: Polish & Cross-Cutting Concerns
 
 - [x] T006 Completar aceitação ponta a ponta em `tests/test_rides_offer.py` com cadastro/login manual/ativação da Feature 001 → oferta → consulta própria, trajeto direto e com paradas, dois autores, falhas sem publicação parcial e ausência de exposição de placa/e-mail; executar regressão dos seis arquivos existentes da Feature 001, sem enfraquecer seus testes. REQ-004, REQ-002, REQ-003, REQ-017; SC-001–SC-004; dependência T005; conclusão: cenários integrados e regressão aprovados no PostgreSQL.
-- [ ] T007 Criar `scripts/check-feature002-quality.ps1` para executar `tests/test_rides_offer.py`, medir `rides` com pytest-cov/branch e meta 80% combinada e separada em linhas/ramificações, gerar `coverage-feature002.json` e `test-results-feature002.xml`, atualizar bloco Feature 002 próprio em `README.md`, registrar execução e validação de [quickstart.md](quickstart.md) sem misturar ou sobrescrever indicadores da Feature 001. Validar visualmente o formset e medir/registrar demo com duas paradas até 2 minutos, distinguindo resultado humano de duração de suíte; não concluir se critério falhar. REQ-018, REQ-019, REQ-004; SC-001–SC-005; dependência T006; conclusão: relatórios reais, regressão aprovada, roteiro validado e métricas >=80% versionáveis, sem staging/commit automático.
+- [x] T007 Criar `scripts/check-feature002-quality.ps1` para executar `tests/test_rides_offer.py`, medir `rides` com pytest-cov/branch e meta 80% combinada e separada em linhas/ramificações, gerar `coverage-feature002.json` e `test-results-feature002.xml`, atualizar bloco Feature 002 próprio em `README.md`, registrar execução e validação de [quickstart.md](quickstart.md) sem misturar ou sobrescrever indicadores da Feature 001. Validar visualmente o formset e medir/registrar demo com duas paradas até 2 minutos, distinguindo resultado humano de duração de suíte; não concluir se critério falhar. REQ-018, REQ-019, REQ-004; SC-001–SC-005; dependência T006; conclusão: relatórios reais, regressão aprovada, roteiro validado e métricas >=80% versionáveis, sem staging/commit automático.
 
 ## Dependencies & Execution Order
 
@@ -67,7 +67,7 @@ Nenhuma tarefa marcada [P]: os passos compartilham `models.py`, `forms.py`, `vie
 
 ## Implementation Strategy
 
-Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de execução são marcados; T007 permanece aberta. Respeitar limites de validação do modelo de dados e nunca alegar garantias SQL de regras que dependem de serviço. Não alterar a constitution, as pendências de matching/cancelamento nem os comportamentos da Feature 001.
+Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de execução são marcados; T007 concluída por aceite final do usuário; ver [evidência](evidence-t007.md). Respeitar limites de validação do modelo de dados e nunca alegar garantias SQL de regras que dependem de serviço. Não alterar a constitution, as pendências de matching/cancelamento nem os comportamentos da Feature 001.
 
 ## Evidência — roadmap T013 / Feature 002 T002 local, preparação T001 (2026-11-22)
 
@@ -127,3 +127,9 @@ Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de ex
 ## Evidência parcial — T007 (2026-11-23)
 
 [Registro](evidence-t007.md): script de qualidade executado, 115 testes de oferta + 546 de regressão aprovados; relatórios e bloco próprio do README atualizados. Pacote técnico rides medido com regressão, >=80% em linhas e ramificações. Interação do formset verificada no preview; inspeção visual e demo humana <=2 minutos continuam pendentes. T007 permanece aberta; não encerrar com base em tempo de pytest. Nenhuma task de Feature 003/005 executada.
+
+## Aceite final do usuário — 2026-11-23
+
+Após esclarecer a ausência de cronometragem exata e confirmação visual, o usuário determinou: “pode encerrar na verdade, está tudo de acordo”. Essa aprovação encerra a inspeção visual e aceita, para esta rodada, o relato humano de aproximadamente dois minutos sem exigir nova execução cronometrada. T007 concluída por aceite explícito, com ressalva documental: não existe medição exata que demonstre <=120s. Não converter estimativa em duração exata ou duração de teste automatizado.
+
+Os registros parciais anteriores são históricos e substituídos por este aceite quanto ao estado da tarefa. Resultado técnico: 661 testes aprovados (115 oferta/546 regressão), linhas 99.83844911147011%, ramificações 97.5609756097561%. Encerramento documental, sem rerodar testes, staging ou commit. Feature 003/T005 e Feature 005/T007 não iniciadas.

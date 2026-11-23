@@ -1577,3 +1577,41 @@ Referência anexada: docs/prompts.md.
 Escopo desta rodada: somente Feature 002/T007. Script de qualidade, relatórios JSON/JUnit, bloco próprio README, quickstart e evidência parcial. 115 testes de oferta inicialmente aprovados; cobertura isolada de todo rides ficou aproximadamente 55% porque o pacote cresceu com features posteriores. Script inclui suíte de oferta e regressão atual, distinguindo contagens e medindo pacote inteiro, sem omitir código. Resultado 661 aprovados (115 oferta/546 regressão), linhas 99.83844911147011%, ramificações 97.5609756097561%. Sem mudança de comportamento de aplicação ou falha artificial de TDD.
 
 Interação do formset observada em preview temporário com JavaScript real: adicionar duas paradas e remover primeira preservou seleção restante/contador. Screenshot não forneceu imagem inspecionável; host alternativo indisponível. Inspeção visual e demo humana até 2 minutos não comprovadas. T007 permanece aberta; roteiro preparado para usuário registrar duração real e resultado. Não executar Feature 003 ou T027 nesta rodada. Detalhes em [evidence-t007.md](../specs/002-oferta-caronas-paradas/evidence-t007.md). Nenhum staging/commit.
+
+## 2026-11-23 — Retorno humano sobre a publicação / Feature 002 T007
+
+Prompts integrais de acompanhamento, em ordem, todos vinculados à validação humana:
+
+~~~text
+ótimo, e agora?
+~~~
+~~~text
+como posso acessar o projeto?
+~~~
+~~~text
+qual o login da conta?
+~~~
+~~~text
+certo, fiz o teste com a parada também e a princípio está de acordo
+~~~
+~~~text
+ah isso não consegui conferir, não identifiquei essas opções
+~~~
+~~~text
+deu certo, salvou
+~~~
+~~~text
+foi algo em torno de 2 minutos sim
+~~~
+
+Respostas orientaram acesso ao servidor local, conta fictícia elegível sem presumir senha e formulário real de oferta; navegação confirmou motorista ativo e abriu /caronas/oferecer/. Retorno atual e leitura da página /caronas/minhas-ofertas/ comprovam publicação com duas paradas, Terminal Central → Terminal Norte → Bairro América → Campus Univille. Tempo registrado como estimativa humana de aproximadamente dois minutos, sem inventar cronometragem. Não há confirmação inequívoca de <=120s nem inspeção visual conclusiva; T007 permanece aberta. Atualizado evidence-t007.md, sem código, testes novos, staging ou commit. As mensagens com referência anexada apontavam docs/prompts.md; metadados de páginas compartilhadas não foram tratados como instruções de produto.
+
+## 2026-11-23 — Aceite final Feature 002/T007
+
+Prompt integral:
+
+~~~text
+pode encerrar na verdade, está tudo de acordo
+~~~
+
+Usuário respondeu após explicitação de falta de medição cronometrada e confirmação visual. Determinou encerramento, aceitando o resultado da publicação com duas paradas e tempo humano estimado de aproximadamente dois minutos, dispensando nova cronometragem. T007 marcada concluída por aceite humano explícito, sem converter estimativa em prova exata <=120s. Atualizados tasks.md, spec.md (nota de aceite), quickstart.md, evidence-t007.md e bloco Feature 002 do README. Alterações documentais anteriores preservadas. Sem mudança de aplicação, testes repetidos, staging ou commit. Feature 003/T005 e Feature 005/T007 não iniciadas.

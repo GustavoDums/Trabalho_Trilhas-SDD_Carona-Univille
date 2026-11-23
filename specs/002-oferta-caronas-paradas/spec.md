@@ -122,3 +122,8 @@ Como motorista ativo, quero rever minhas ofertas e a sequência das paradas, sem
 - Retenção, edição e cancelamento não ganham novos fluxos nesta rodada. Não há coleta de telefone, avaliações, penalidades, recorrência, notificações ou lista de espera.
 - As pendências constitucionais de validação simulada e domínios institucionais continuam abertas. A escolha de pontos discretos nesta feature não resolve a janela de matching nem prazos de cancelamento.
 - A especificação foi produzida antes do planejamento. Plano, modelo de dados técnico, contratos e tarefas locais estão agora documentados nesta pasta, sem implementação da T013 do roadmap.
+## Aceite final do usuário — 2026-11-23
+
+Após esclarecer a ausência de cronometragem exata e confirmação visual, o usuário determinou: “pode encerrar na verdade, está tudo de acordo”. Essa aprovação encerra a inspeção visual e aceita, para esta rodada, o relato humano de aproximadamente dois minutos sem exigir nova execução cronometrada. T007 concluída por aceite explícito, com ressalva documental: não existe medição exata que demonstre <=120s. Não converter estimativa em duração exata ou duração de teste automatizado.
+
+Os registros parciais anteriores são históricos e substituídos por este aceite quanto ao estado da tarefa. Resultado técnico: 661 testes aprovados (115 oferta/546 regressão), linhas 99.83844911147011%, ramificações 97.5609756097561%. Encerramento documental, sem rerodar testes, staging ou commit. Feature 003/T005 e Feature 005/T007 não iniciadas.

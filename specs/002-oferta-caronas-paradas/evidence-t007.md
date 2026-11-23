@@ -1,4 +1,4 @@
-# Evidência parcial — Feature 002 / T007 local
+# Evidência — Feature 002 / T007 local (concluída por aceite final)
 
 Data: 2026-11-23. Requisitos REQ-004, REQ-018, REQ-019; SC-001–SC-005. Dependência T006 concluída. Escopo autorizado após diagnóstico de T027: executar somente Feature 002/T007, antes de Feature 003/T005 e Feature 005/T007. Nenhuma mudança de produto, staging ou commit.
 
@@ -32,3 +32,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-feature002-qua
 Arquivos alterados/criados: script citado, JSON/JUnit, [README](../../README.md), [tasks](tasks.md), [quickstart](quickstart.md), [prompts](../../docs/prompts.md) e esta evidência. Nenhum código de aplicação alterado.
 
 Commit sugerido para a parte técnica: chore(002/T007): automatizar métricas de oferta e regressão — REQ-004, REQ-018, REQ-019
+
+## Atualização de validação humana — 2026-11-23
+
+Usuário acessou aplicação Django local com conta motorista ativa, publicou uma oferta e relatou: “deu certo, salvou”; depois informou “foi algo em torno de 2 minutos sim”. Esse tempo é estimativa humana, não medição cronometrada nem duração de teste automatizado. Não foi convertido em 120 segundos exatos ou prova inequívoca de <=120s.
+
+Leitura da página real /caronas/minhas-ofertas/ confirmou mensagem “Oferta de carona publicada com sucesso.” e itinerário persistido com duas paradas: Terminal Central (origem) → Terminal Norte → Bairro América → Campus Univille (destino). A sequência é a escolhida pelo usuário, distinta do exemplo do roteiro, e usa quatro pontos distintos válidos. O usuário havia relatado que “a princípio está de acordo”; isso é avaliação preliminar, sem detalhamento visual conclusivo.
+
+Publicação humana e presença de duas paradas estão comprovadas. Permanecem sem comprovação estrita a duração <=120s (estimativa no limite) e inspeção visual final. T007 continua aberta; nenhuma mudança de requisito ou dispensa de critério foi presumida. Nenhum teste repetido por atualização exclusivamente documental.
+
+## Aceite final do usuário — 2026-11-23
+
+Após esclarecer a ausência de cronometragem exata e confirmação visual, o usuário determinou: “pode encerrar na verdade, está tudo de acordo”. Essa aprovação encerra a inspeção visual e aceita, para esta rodada, o relato humano de aproximadamente dois minutos sem exigir nova execução cronometrada. T007 concluída por aceite explícito, com ressalva documental: não existe medição exata que demonstre <=120s. Não converter estimativa em duração exata ou duração de teste automatizado.
+
+Os registros parciais anteriores são históricos e substituídos por este aceite quanto ao estado da tarefa. Resultado técnico: 661 testes aprovados (115 oferta/546 regressão), linhas 99.83844911147011%, ramificações 97.5609756097561%. Encerramento documental, sem rerodar testes, staging ou commit. Feature 003/T005 e Feature 005/T007 não iniciadas.

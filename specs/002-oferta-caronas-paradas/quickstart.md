@@ -52,3 +52,9 @@ Testes executados e resultado real; relatórios de qualidade; verificação de m
 ### Registro humano pendente — SC-005
 
 Preparar uma conta MOTORISTA/ATIVA sintética já autenticada e os dados antes do cronômetro. Em Oferecer carona: origem Terminal Central, paradas Bairro América → Campus Univille, destino Terminal Norte, saída futura, 3 vagas e veículo fictício (modelo Modelo Demo, cor Azul, placa DEMO123). Iniciar a contagem ao começar a preencher, publicar e conferir em Minhas ofertas a ordem Terminal Central → Bairro América → Campus Univille → Terminal Norte. Parar após a conferência. Critério: até 120 segundos, sem usar duração de suíte. Confirmar também que os campos, mensagens e botões aparecem legíveis, adicionar/remover paradas funciona e não há sobreposição visual. Informar duração real, navegador, resultado e qualquer erro. Sem esse registro, T007 permanece aberta.
+
+## Aceite final do usuário — 2026-11-23
+
+Após esclarecer a ausência de cronometragem exata e confirmação visual, o usuário determinou: “pode encerrar na verdade, está tudo de acordo”. Essa aprovação encerra a inspeção visual e aceita, para esta rodada, o relato humano de aproximadamente dois minutos sem exigir nova execução cronometrada. T007 concluída por aceite explícito, com ressalva documental: não existe medição exata que demonstre <=120s. Não converter estimativa em duração exata ou duração de teste automatizado.
+
+Os registros parciais anteriores são históricos e substituídos por este aceite quanto ao estado da tarefa. Resultado técnico: 661 testes aprovados (115 oferta/546 regressão), linhas 99.83844911147011%, ramificações 97.5609756097561%. Encerramento documental, sem rerodar testes, staging ou commit. Feature 003/T005 e Feature 005/T007 não iniciadas.
