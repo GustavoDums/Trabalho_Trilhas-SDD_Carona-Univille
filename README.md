@@ -1,4 +1,4 @@
-# Trabalho_Trilhas-SDD_Carona-Univille
+# Carona Univille
 
 <!-- t043-quality:start -->
 Entrega geral / T043 — **992 testes aprovados**, 0 ignorados. Meta: **80%**.
@@ -8,6 +8,112 @@ Escopo de 11 features. Meta atingida globalmente e nos 37 módulos críticos.
 Relatórios: [coverage.json](coverage.json) e [test-results-t043.xml](test-results-t043.xml). Medição: 2026-11-23.
 Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1 -Consolidado`.
 <!-- t043-quality:end -->
+
+## Sobre o projeto
+
+O **Carona Univille** é uma prova de conceito web de mobilidade para a comunidade acadêmica da Univille, desenvolvida na Trilha 2 de **Spec-Driven Development (SDD)**. Motoristas oferecem lugares em trajetos que já percorrem, e passageiros encontram caronas compatíveis com seu trecho e horário. O sistema protege a última vaga mesmo quando duas pessoas tentam reservá-la ao mesmo tempo.
+
+O ambiente de demonstração usa contas fictícias. A validação de vínculo acadêmico é simulada com um catálogo local de homologação.
+
+## Funcionalidades
+
+| Área | O que está disponível |
+| --- | --- |
+| Cadastro acadêmico | Cadastro como motorista ou passageiro, login e ativação de vínculo por conta elegível no catálogo fictício. |
+| Ofertas | Publicação de caronas com origem, destino, paradas ordenadas, saída, vagas e dados do veículo. |
+| Busca | Busca por embarque, desembarque e horário. O trecho deve seguir a ordem do itinerário, e a janela de ±30 minutos é calculada a partir da saída da origem. |
+| Reservas | Confirmação imediata, painel próprio e controle de concorrência no PostgreSQL para impedir reservas acima da capacidade. |
+| Cancelamentos | Cancelamento de reserva pelo passageiro e de oferta pelo motorista, com histórico. O prazo para cancelamento tempestivo é de 2 h para passageiros e 4 h para motoristas. Cancelamentos tardios são registrados antes da partida. A partir da partida, a ação é recusada. |
+| Avaliações | Avaliação mútua após a conclusão registrada da viagem, com nota de 1 a 5, comentário opcional e janela de 48 h. |
+| Reputação | Pontuação recalculada após avaliações ou infrações, exibida no perfil próprio e nos resultados da busca. |
+| Conduta | Registro de cancelamentos tardios e faltas, penalidades, suspensão temporária conforme as regras de conduta e extrato privado. |
+| Caronas recorrentes | Regras semanais com geração de ocorrências futuras em uma janela de 16 dias corridos. Cada ocorrência tem suas próprias reservas e pode ser cancelada separadamente. |
+| Notificações | Avisos internos de confirmação e cancelamento, contador de não lidas e marcação como lida. A política de lembretes de partida segue pendente na especificação. |
+| Fila de espera | Ingresso em carona lotada, posição visível ao titular e repasse imediato ao primeiro passageiro elegível após cancelamento de uma reserva. |
+
+Na busca, o motorista aparece com nome abreviado. A consulta privada da reserva confirmada disponibiliza os dados necessários às contrapartes. O e-mail institucional não é exibido na busca nem na consulta de reservas. As regras detalhadas e os critérios de aceite estão no [levantamento](docs/levantamento.md) e nas [especificações das features](specs/).
+
+## Stack e organização
+
+O projeto usa **Python 3.12+**, **Django 5.x** com templates renderizados no servidor e **PostgreSQL** com psycopg. Os testes usam **pytest**, **pytest-django** e **pytest-cov**.
+
+| Diretório | Responsabilidade |
+| --- | --- |
+| `accounts/` | Cadastro, autenticação, vínculo acadêmico, perfis e acesso à plataforma. |
+| `rides/` | Ofertas, itinerários, busca, reservas, cancelamentos, recorrência e fila de espera. |
+| `reviews/` | Avaliações, reputação e penalidades de conduta. |
+| `notifications/` | Avisos operacionais e estado de leitura. |
+| `carona_univille/` | Configuração do Django e rotas principais. |
+| `tests/` e `scripts/` | Testes automatizados, medição de qualidade e ensaio da demonstração. |
+| `specs/`, `docs/` e `.specify/` | Especificações, evidências da entrega e configuração do Spec Kit. |
+
+## Instalação local
+
+Os comandos abaixo usam PowerShell. Tenha Git, Python 3.12+ e um servidor PostgreSQL em execução.
+
+```powershell
+git clone https://github.com/GustavoDums/Trabalho_Trilhas-SDD_Carona-Univille.git
+cd Trabalho_Trilhas-SDD_Carona-Univille
+python -m venv venv
+.\venv\Scripts\python.exe -m pip install -r requirements.txt
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+```
+
+Crie uma base PostgreSQL vazia para o aplicativo, se ela ainda não existir. Por exemplo, **se o usuário local for `postgres`**:
+
+```powershell
+createdb -U postgres carona_univille_db
+```
+
+Ajuste `DB_NAME`, `DB_HOST`, `DB_PORT`, `DB_USER` e `DB_PASSWORD` no `.env` para a sua instalação. Use um `DB_TEST_NAME` separado para a suíte. O usuário configurado para executar os testes precisa poder criar a base de testes. Mantenha o `.env` local e use apenas dados fictícios.
+
+```powershell
+.\venv\Scripts\python.exe manage.py migrate
+.\venv\Scripts\python.exe manage.py check
+.\venv\Scripts\python.exe manage.py runserver
+```
+
+Abra o [cadastro local](http://127.0.0.1:8000/accounts/register/), use um e-mail elegível no [catálogo fictício](accounts/fixtures/academic_whitelist.json), faça login e valide o vínculo. As migrações incluem o catálogo inicial de pontos das caronas.
+
+## Uso da aplicação
+
+| Tela | Caminho | Uso |
+| --- | --- | --- |
+| Cadastro e login | `/accounts/register/` e `/accounts/login/` | Criar conta e iniciar sessão. |
+| Ativação e perfil | `/accounts/activation/` e `/accounts/profile/` | Validar o vínculo e consultar o próprio perfil. |
+| Oferecer carona e gerenciar ofertas | `/caronas/oferecer/` e `/caronas/minhas-ofertas/` | Publicar, consultar e cancelar ofertas como motorista. |
+| Buscar caronas | `/caronas/buscar/` | Encontrar ofertas compatíveis e entrar na fila de ofertas lotadas como passageiro. |
+| Minhas reservas | `/caronas/minhas-reservas/` | Consultar reservas, cancelar uma reserva própria e acompanhar posições na fila. |
+| Caronas recorrentes | `/caronas/recorrentes/` | Configurar recorrência como motorista. |
+| Notificações e conduta | `/notificacoes/` e `/conta/conduta/` | Acessar avisos ou consultar o extrato próprio. |
+
+Para reproduzir a disputa pela última vaga via requisições autenticadas, siga o [roteiro da demonstração](docs/roteiro-live-demo.md). A geração de ocorrências recorrentes pode ser acionada com `manage.py generate_recurring_rides --all`. O [guia da Feature 009](specs/009-caronas-recorrentes/quickstart.md) descreve como agendar esse comando.
+
+## Testes e cobertura
+
+A medição no topo deste README corresponde à execução consolidada da **T043** em PostgreSQL 16.15. A suíte inclui cenários de cadastro e ativação, busca por trecho, disputa da última vaga, cancelamento, reputação, notificações e fila. Os detalhes por arquivo, incluindo os inicializadores ASGI e WSGI com 0% de linhas cobertas, estão na [evidência da T043](docs/evidencia-t043.md).
+
+```powershell
+# Executar a suíte
+.\venv\Scripts\python.exe -m pytest tests -q
+
+# Gerar os relatórios consolidados e atualizar o bloco do topo
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1 -Consolidado
+```
+
+Leia o [relatório de cobertura](coverage.json) para os percentuais exatos e o [JUnit](test-results-t043.xml) para o resultado de cada teste. O script consolidado mede linhas e ramificações do código Python de produção.
+
+## Documentação e entrega
+
+- [Constitution](.specify/memory/constitution.md), [levantamento de requisitos](docs/levantamento.md) e [roadmap](docs/roadmap-implementacao.md).
+- [Artefatos Spec Kit](specs/) com `spec.md`, `plan.md` e `tasks.md` por feature, além das evidências de implementação.
+- [Auditoria de rastreabilidade](docs/auditoria-t041.md) e [histórico de prompts](docs/prompts.md). A conferência integral da T042 aguarda os registros originais do Antigravity.
+- [Slides do pitch](docs/pitch-carona-univille.pptx) e [roteiro com ensaio cronometrado](docs/roteiro-live-demo.md).
+
+## Histórico de medições
+
+<details>
+<summary>Relatórios por feature e rodada</summary>
 
 <!-- feature-007-t005-quality:start -->
 Feature 007 / T005 local / roadmap T031 — **992 testes aprovados**, 0 ignorados, com 2 novos e 990 de regressão.
@@ -239,8 +345,10 @@ Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-q
 <!-- feature-001-quality:end -->
 
 <!-- feature-002-quality:start -->
-Feature 002 / T007 â€” **115 testes de oferta aprovados**, 546 de regressÃ£o; total 661 aprovados, 0 ignorados. MediÃ§Ã£o: 2026-11-23.
-Cobertura do pacote tÃ©cnico atual `rides/` com regressÃ£o: **99.36143039591316%** combinada; linhas 618/619 (99.838449111470112%); ramificaÃ§Ãµes 160/164 (97.5609756097561%). Meta: 80% em cada medida. Estes percentuais incluem as features posteriores de rides.
-RelatÃ³rios: [coverage-feature002.json](coverage-feature002.json), [test-results-feature002.xml](test-results-feature002.xml). Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-feature002-quality.ps1`.
-DemonstraÃ§Ã£o humana SC-005 e inspeÃ§Ã£o visual sÃ£o evidÃªncias separadas; este script nÃ£o as aprova nem conclui T007 automaticamente. [EvidÃªncia](specs/002-oferta-caronas-paradas/evidence-t007.md).
+Feature 002 / T007 — **115 testes de oferta aprovados** e 546 de regressão, com total de 661 aprovados e 0 ignorados. Medição em 2026-11-23.
+Cobertura de `rides/` com regressão de **99.36143039591316%** combinada, 618/619 linhas (99.838449111470112%) e 160/164 ramificações (97.5609756097561%). Meta de 80% em cada medida. A medição inclui as features posteriores de `rides/`.
+Consulte [coverage-feature002.json](coverage-feature002.json) e [test-results-feature002.xml](test-results-feature002.xml). Para reproduzir, use `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-feature002-quality.ps1`.
+A demonstração humana do SC-005 e a inspeção visual têm [evidência própria](specs/002-oferta-caronas-paradas/evidence-t007.md).
 <!-- feature-002-quality:end -->
+
+</details>

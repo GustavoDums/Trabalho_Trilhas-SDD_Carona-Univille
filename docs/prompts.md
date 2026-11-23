@@ -2693,3 +2693,11 @@ commit para minha revisão e encerre a rodada.
 ~~~
 
 O [roteiro e o resultado cronometrado](roteiro-live-demo.md) registram a execução da demonstração com contas fictícias em PostgreSQL.
+
+## Atualização do README — 2026-11-23
+
+~~~text
+Agora quero que voce gere um README.md completo sobre o projeto, precisa conter tambem o numero de testes e a porcentagem que eles cobrem
+~~~
+
+O [README](../README.md) descreve o produto, a instalação, as rotas e a reprodução dos testes. As métricas no topo vêm dos relatórios consolidados da T043.
