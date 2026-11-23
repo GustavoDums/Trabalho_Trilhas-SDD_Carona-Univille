@@ -1,5 +1,11 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-008-t034-quality:start -->
+Feature 008 / T005 e T006 locais / roadmap T034 — **905 testes aprovados**, 0 ignorados, com 10 novos e 895 de regressão.
+Cobertura de accounts/rides/reviews/carona_univille — **98.94957983193277% em linhas** (1413/1428) e **96.7065868263473% em ramificações** (323/334). Middleware e serviço de suspensão atingiram 100% de linhas e ramificações. A view do extrato atingiu 100% de linhas.
+Medição em 2026-11-23 no PostgreSQL 16.15. [Cobertura JSON](coverage-feature008-t034.json) · [JUnit](test-results-feature008-t034.xml) · [Evidência e reprodução](specs/008-penalidades-conduta/evidence-t034.md).
+<!-- feature-008-t034-quality:end -->
+
 <!-- feature-008-t004-quality:start -->
 Feature 008 / T004 local / roadmap T033 — **895 testes aprovados**, 0 ignorados, com 26 novos e 869 de regressão.
 Cobertura de accounts/rides/reviews/carona_univille — **98.91461649782923% em linhas** (1367/1382) e **96.64634146341463% em ramificações** (317/328). PenaltyService atingiu 100% em linhas e 93,75% em ramificações.

@@ -1998,3 +1998,17 @@ Autorizo
 ~~~
 
 A [spec](../specs/008-penalidades-conduta/spec.md) e o [contrato](../specs/008-penalidades-conduta/contracts/web-routes.md) registram a exceção aprovada. [Implementação e verificações da T004](../specs/008-penalidades-conduta/evidence-t004.md).
+
+## T034 do roadmap / T005 e T006 da Feature 008 — 2026-11-23
+
+~~~text
+A T034 foi executada?
+~~~
+
+A T004 havia concluído a T033 e liberado a T034. O checklist indicava T005 (restrições) seguida de T006 (extrato).
+
+~~~text
+Então faça a T034
+~~~
+
+A execução seguiu a ordem T005 → T006. [Implementação e verificações da T034](../specs/008-penalidades-conduta/evidence-t034.md).

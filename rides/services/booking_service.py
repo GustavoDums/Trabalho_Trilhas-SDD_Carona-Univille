@@ -4,6 +4,8 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 
+from reviews.services.conduct_service import require_unsuspended
+
 from ..models import RideBooking, RideOffer
 
 
@@ -53,6 +55,7 @@ class BookingService:
             raise PermissionDenied("Somente passageiros com vínculo ativo podem reservar.")
         driver = accounts[offer.driver_id]
         now = timezone.now()
+        require_unsuspended(current_passenger.pk, at=now)
         if not (driver.is_active and driver.role == "MOTORISTA" and driver.is_activated
                 and offer.status == RideOffer.Status.ABERTA and offer.departure_at > now):
             raise ValidationError({"offer_id": "Esta oferta não está disponível para reserva."})

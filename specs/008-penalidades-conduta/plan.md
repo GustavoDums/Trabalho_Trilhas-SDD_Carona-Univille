@@ -29,6 +29,8 @@ PenaltyService em reviews/services/penalty_service.py consome CancellationRecord
 
 A T002 cobre o modelo, as restrições, a dedução decimal e a projeção de suspensão. Na T003, CancellationService delega ao PenaltyService, que vincula o cancelamento tardio à penalidade e reconstrói a nota pelo ReputationService na mesma transação. Na T004, o motorista titular registra a conclusão em Minhas ofertas, e a contraparte confirmada declara ausência em Minhas reservas. A transação mantém o relato e a projeção disciplinar consistentes com a reputação.
 
+A T005 consulta o prazo disciplinar para as ações de publicar e reservar. Os serviços verificam o prazo após bloquear a conta do autor. A T006 apresenta o próprio extrato a partir da sessão e consulta o histórico do titular.
+
 ## Data & Interfaces
 
 [data-model.md](data-model.md) define entidades e restrições, e os [contratos](contracts/web-routes.md) definem interfaces e autorização. A migração reviews.0003 foi validada na [T002](evidence-t032.md). A T003 usa esse esquema.

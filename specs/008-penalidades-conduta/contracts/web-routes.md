@@ -1,6 +1,6 @@
 # Contratos: Penalidades por cancelamento tardio e no-show
 
-**Status**: conclusão e denúncia homologadas na [spec](../spec.md) e executadas na [T004](../evidence-t004.md). O extrato pertence à T006.
+**Status**: conclusão e denúncia homologadas na [spec](../spec.md) e executadas na [T004](../evidence-t004.md). As restrições e o extrato foram entregues na [T034](../evidence-t034.md).
 
 GET /conta/conduta/ retorna o extrato próprio. POST de no-show exige sessão, CSRF, contraparte confirmada e declaração vinculada à reserva com horário registrado. O prazo é de até 2 horas após a conclusão registrada, depois dos 10 minutos de tolerância a partir do horário previsto de embarque. A denúncia fica indisponível enquanto a parada não tiver horário previsto. Contestação segue revisão administrativa. Durante a suspensão, ficam disponíveis a conta, o extrato e o cancelamento de compromissos existentes. Novas ofertas e reservas ficam bloqueadas.
 
@@ -11,6 +11,12 @@ GET /conta/conduta/ retorna o extrato próprio. POST de no-show exige sessão, C
 ## Regras comuns
 
 Identidade vem da sessão, não de campo oculto. Ação mutante exige POST/CSRF, salvo CLI administrativo documentado. Views delegam aos serviços, que também autorizam. Negativas não divulgam dados de terceiros. Escapar texto; sem e-mail/placa em atributos ou JSON públicos. Conflitos de domínio não retornam sucesso fictício nem stacktrace. Sem notificações externas nesta feature.
+
+## Suspensão e extrato privado
+
+- A suspensão do autor bloqueia a publicação (`GET/HEAD/POST /caronas/oferecer/`) e a criação de reserva (`POST /caronas/<offer_id>/reservar/`) com HTTP 403. Os serviços revalidam a suspensão em transação. Ações são liberadas no instante da expiração. Consultas, conta, conclusão de carona e cancelamento de compromissos existentes seguem seus contratos.
+- `GET /conta/conduta/` usa exclusivamente a sessão. Exibe tipo, instante e dedução das ocorrências do titular e indica motivo, prazo e estado da suspensão. A resposta privada não é armazenada em cache.
+- `POST /accounts/logout/` encerra a sessão com CSRF, inclusive para usuários suspensos e com vínculo pendente.
 
 ## Integração interna da T003
 

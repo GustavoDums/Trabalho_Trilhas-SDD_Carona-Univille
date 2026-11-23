@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+
+from accounts.urls import conduct_urlpatterns
 from .views import caronas
 
 urlpatterns = [
@@ -23,5 +25,6 @@ urlpatterns = [
     path('caronas/', include('rides.urls')),
     path('caronas/', caronas, name='caronas'),
     path('accounts/', include('accounts.urls')),
+    path('conta/', include((conduct_urlpatterns, 'conduct'))),
     path('admin/', admin.site.urls),
 ]

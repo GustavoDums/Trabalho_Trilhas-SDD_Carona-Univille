@@ -2,7 +2,7 @@
 
 **Feature**: 008-penalidades-conduta; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001 homologada, T002, T003 e T004 concluídas. [Evidência T002/T032](evidence-t032.md) · [Evidência T003/T033](evidence-t003.md) · [Evidência T004/T033](evidence-t004.md).
+**Status**: T001 homologada e T002–T006 concluídas. [Evidência T002/T032](evidence-t032.md) · [Evidência T003/T033](evidence-t003.md) · [Evidência T004/T033](evidence-t004.md) · [Evidência T005/T006/T034](evidence-t034.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -30,9 +30,9 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 **Objetivo**: Conta mantém identidade/vínculo e consulta extrato, com ações disciplinarmente restringidas até expiração.
 **Teste independente**: SC-004: suspenso continua autenticável e lê próprio extrato, mas ações bloqueadas falham em view e serviço; expiração libera automaticamente sem mudar vínculo; terceiros não veem extrato.
 
-- [ ] T005 [US2] Integrar suspensão separada em accounts/middleware.py e checagens dos serviços de domínio; tests/test_penalties_flow.py cobre matriz de ações, início/expiração e preservação de academic_status/is_active. **Requisitos**: REQ-010, REQ-003, REQ-017; FR-003/FR-004; SC-004. **Depende**: T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T034.
+- [x] T005 [US2] Integrar suspensão separada em accounts/middleware.py e checagens dos serviços de domínio; tests/test_penalties_flow.py cobre matriz de ações, início/expiração e preservação de academic_status/is_active. **Requisitos**: REQ-002, REQ-010, REQ-003, REQ-017; FR-003/FR-004; SC-004. **Depende**: T004. **Conclusão**: casos HTTP e de serviço e regressão aprovados na [evidência](evidence-t034.md). **Roadmap**: T034.
 
-- [ ] T006 [US2] Adicionar extrato próprio em accounts/views.py, accounts/urls.py e accounts/templates/accounts/penalties_history.html; tests/test_penalties_flow.py cobre acesso do suspenso, terceiros, dados privados e apresentação de motivo/prazo. **Requisitos**: REQ-010, REQ-003, REQ-017; FR-004; SC-004. **Depende**: T005. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T034.
+- [x] T006 [US2] Adicionar extrato próprio em accounts/views.py, accounts/urls.py e accounts/templates/accounts/penalties_history.html; tests/test_penalties_flow.py cobre acesso do suspenso, terceiros, dados privados e apresentação de motivo/prazo. **Requisitos**: REQ-002, REQ-010, REQ-003, REQ-017; FR-004; SC-004. **Depende**: T005. **Conclusão**: extrato autenticado, privacidade e regressão aprovados na [evidência](evidence-t034.md). **Roadmap**: T034.
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 

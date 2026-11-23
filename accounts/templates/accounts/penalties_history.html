@@ -1,0 +1,43 @@
+{% extends "accounts/base.html" %}
+{% load tz %}
+{% block title %}Meu extrato de conduta | Carona Univille{% endblock %}
+{% block content %}
+<h1>Meu extrato de conduta</h1>
+<p>Horários de Brasília.</p>
+{% timezone "America/Sao_Paulo" %}
+<section aria-labelledby="suspension-title">
+    <h2 id="suspension-title">Suspensão</h2>
+    {% if suspended_until %}
+    <p>
+        {% if suspension_active %}Suspensão disciplinar em vigor até{% else %}Última suspensão encerrada em{% endif %}
+        <time datetime="{{ suspended_until|date:'c' }}">{{ suspended_until|date:"d/m/Y H:i:s" }}</time>.
+    </p>
+    <p>Motivo da suspensão: três ocorrências de não comparecimento em 30 dias.</p>
+    {% else %}
+    <p>Sem suspensão registrada.</p>
+    {% endif %}
+</section>
+<section aria-labelledby="penalties-title">
+    <h2 id="penalties-title">Ocorrências</h2>
+    {% if penalties %}
+    <table aria-labelledby="penalties-title">
+        <thead>
+            <tr><th scope="col">Data e hora</th><th scope="col">Motivo</th><th scope="col">Ajuste na nota</th></tr>
+        </thead>
+        <tbody>
+            {% for penalty in penalties %}
+            <tr>
+                <td><time datetime="{{ penalty.occurred_at|date:'c' }}">{{ penalty.occurred_at|date:"d/m/Y H:i:s" }}</time></td>
+                <td>{{ penalty.get_kind_display }}</td>
+                <td>{{ penalty.delta }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Nenhuma ocorrência registrada.</p>
+    {% endif %}
+</section>
+{% endtimezone %}
+<p><a href="{% url 'accounts:profile' %}">Voltar ao meu perfil</a></p>
+{% endblock %}

@@ -13,4 +13,9 @@
     <p>Seu e-mail institucional é confidencial e não é exibido a outros usuários.
     Seu nome completo será compartilhado com a contraparte apenas após uma reserva confirmada.</p>
 </section>
+<p><a href="{% url 'conduct:history' %}">Consultar meu extrato de conduta</a></p>
+<form method="post" action="{% url 'accounts:logout' %}">
+    {% csrf_token %}
+    <button type="submit">Sair</button>
+</form>
 {% endblock %}

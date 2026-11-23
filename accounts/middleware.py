@@ -5,12 +5,20 @@ from urllib.parse import urlsplit
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.views import redirect_to_login
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
+from django.utils import timezone
+from django.utils.cache import add_never_cache_headers
+
+from reviews.services.conduct_service import active_suspension_until
 
 
 class AcademicStatusMiddleware:
     public_paths = {"/accounts/login/", "/accounts/register/"}
     pending_paths = {"/accounts/activation/", "/accounts/logout/"}
+    suspension_actions = {
+        "rides:offer-create": {"GET", "HEAD", "POST"},
+        "rides:book": {"POST"},
+    }
 
     def __init__(self, get_response):
         self.get_response = get_response
@@ -30,3 +38,14 @@ class AcademicStatusMiddleware:
             return redirect("/accounts/activation/")
 
         return self.get_response(request)
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        methods = self.suspension_actions.get(request.resolver_match.view_name, ())
+        if request.method not in methods:
+            return None
+        until = active_suspension_until(request.user.pk, at=timezone.now())
+        if until is None:
+            return None
+        response = render(request, "accounts/suspended_action.html", {"suspended_until": until}, status=403)
+        add_never_cache_headers(response)
+        return response

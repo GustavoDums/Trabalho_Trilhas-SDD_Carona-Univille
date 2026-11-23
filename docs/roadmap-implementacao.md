@@ -195,7 +195,7 @@ flowchart TD
 ---
 
 #### Feature 008: Penalidades por Cancelamento Tardio e No-Show (`REQ-010`)
-*Status*: D008-01 e D008-02 homologadas. [T032 concluída](../specs/008-penalidades-conduta/evidence-t032.md). T033 concluída com [cancelamentos na T003 local](../specs/008-penalidades-conduta/evidence-t003.md) e [denúncia de no-show na T004 local](../specs/008-penalidades-conduta/evidence-t004.md). A T034 começa pela T005 local.
+*Status*: D008-01 e D008-02 homologadas. [T032 concluída](../specs/008-penalidades-conduta/evidence-t032.md). T033 concluída com [cancelamentos na T003 local](../specs/008-penalidades-conduta/evidence-t003.md) e [denúncia de no-show na T004 local](../specs/008-penalidades-conduta/evidence-t004.md). [T034 concluída](../specs/008-penalidades-conduta/evidence-t034.md) com restrições e extrato privado.
 
 - [x] **T032**: **[TESTE ESPECÍFICO DE DEDUÇÃO NUMÉRICA DE PENALIDADES]**: Implementar os modelos `PenaltyRecord` e `ConductProfile` em `reviews/models.py` e testes em `tests/test_penalties.py` cobrindo:
   - (1) *Cancelamento Tardio*: dedução fixa de $-0.20$ pontos na reputação (ex.: `4.80★` $\rightarrow$ `4.60★`).
@@ -206,8 +206,8 @@ flowchart TD
 - [x] **T033**: Implementar serviço `PenaltyService` em `reviews/services/penalty_service.py`, integração com cancelamentos tardios de `CancellationService` e fluxo de registro de No-Show (após 10 min de tolerância).
   - *Requisitos*: REQ-007, REQ-010 | *Dependências*: T024, T032 | *Como verificar*: Cancelamento tardio ou registro de no-show grava penalidade e reduz nota no banco.
   - *Fusão*: Agrupa antigas T093, T094 e T095.
-- [ ] **T034**: Implementar verificação de suspensão no `AcademicStatusMiddleware`, tela de extrato de conduta `accounts/templates/accounts/penalties_history.html` e testes integrados em `tests/test_penalties_flow.py`.
-  - *Requisitos*: REQ-010, REQ-017 | *Dependências*: T009, T033 | *Como verificar*: `pytest tests/test_penalties_flow.py` comprova bloqueio a usuários suspensos.
+- [x] **T034**: Implementar verificação de suspensão no `AcademicStatusMiddleware`, tela de extrato de conduta `accounts/templates/accounts/penalties_history.html` e testes integrados em `tests/test_penalties_flow.py`.
+  - *Requisitos*: REQ-002, REQ-003, REQ-010, REQ-017 | *Dependências*: T009, T033 | *Como verificar*: `pytest tests/test_penalties_flow.py` comprova bloqueio, expiração, ações permitidas e privacidade do extrato. [Evidência](../specs/008-penalidades-conduta/evidence-t034.md).
   - *Fusão*: Agrupa antigas T096, T097 e T098.
 
 ---

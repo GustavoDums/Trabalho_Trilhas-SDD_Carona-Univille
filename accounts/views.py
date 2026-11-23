@@ -5,9 +5,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, transaction
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 from django.views.generic.edit import CreateView
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
+
+from reviews.models import ConductProfile, PenaltyRecord
 
 from .forms import AcademicAuthenticationForm, AcademicRegistrationForm
 from .services import AcademicValidationService
@@ -110,3 +115,21 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "accounts/profile.html"
     login_url = "/accounts/login/"
     http_method_names = ["get", "head", "options"]
+
+
+@method_decorator(never_cache, name="dispatch")
+class PenaltiesHistoryView(LoginRequiredMixin, TemplateView):
+    template_name = "accounts/penalties_history.html"
+    login_url = "/accounts/login/"
+    http_method_names = ["get", "head", "options"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_id = self.request.user.pk
+        profile = ConductProfile.objects.filter(user_id=user_id).only("suspended_until").first()
+        context["suspended_until"] = profile.suspended_until if profile else None
+        context["suspension_active"] = profile is not None and profile.is_suspended_at(at=timezone.now())
+        context["penalties"] = PenaltyRecord.objects.filter(subject_id=user_id).only(
+            "kind", "occurred_at", "delta",
+        ).order_by("-occurred_at", "-pk")
+        return context

@@ -3,6 +3,9 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
+from django.utils import timezone
+
+from reviews.services.conduct_service import require_unsuspended
 
 from ..models import RideOffer, RoutePoint, Waypoint
 
@@ -12,6 +15,7 @@ def publish_offer(*, driver, data, points):
     author = get_user_model().objects.select_for_update().get(pk=driver.pk)
     if not (author.is_active and author.role == "MOTORISTA" and author.is_activated):
         raise PermissionDenied("Somente motoristas com vínculo ativo podem publicar.")
+    require_unsuspended(author.pk, at=timezone.now())
     fields = ("origin", "destination", "departure_at", "seats", "vehicle_model", "vehicle_color", "vehicle_plate")
     values = {field: data[field] for field in fields}
     offer = RideOffer(driver=author, **values)
