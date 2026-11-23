@@ -90,7 +90,7 @@ placeholder de `carona_univille/views.py`. Não representa cobertura de features
 
 A execução gera dois relatórios versionáveis:
 
-- `coverage.json`: linhas, ramificações e percentual combinado do pytest-cov.
+- `coverage-feature001-t012.json`: linhas, ramificações e percentual combinado do pytest-cov. O modo consolidado da T043 gera `coverage.json`.
 - `test-results.xml`: resultado JUnit da execução real, usado para contar aprovados
   e ignorados, sem estimar a contagem por `--collect-only`.
 

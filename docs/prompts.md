@@ -2598,3 +2598,38 @@ Foram examinadas as 51 versões de `docs/prompts.md` no histórico Git. O bloco 
 O arquivo consolidado contém a sequência P001–P032 e os registros disponíveis das rodadas seguintes. Foram conferidos 33 links relativos, os delimitadores Markdown e a correspondência literal de P025 com a versão recuperada. `git diff --check` passou.
 
 A validação de completude literal da etapa anterior, feita no Antigravity, depende dos registros originais das sessões. A busca no workspace e nos diretórios locais de conversas e artefatos do Antigravity não encontrou uma transcrição do projeto. O Git e os artefatos identificam os textos preservados e os resultados produzidos. A T042 permanece aberta até que seja possível conferir a transcrição com a fonte original.
+
+## T043 — Medição consolidada da entrega — 2026-11-23
+
+~~~text
+Execute somente a tarefa T043 do Carona Univille.\
+\
+Área da tarefa — Entrega geral, Entrega e governança.\
+\
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e\
+tasks da feature antes de editar. Confirme o requisito, as dependências e os\
+critérios de conclusão da tarefa selecionada.\
+\
+Use a entrada T043 da seção de entrega de docs/roadmap-implementacao.md e\
+consulte os artefatos que ela referencia. Execute o trabalho de\
+documentação, auditoria ou verificação definido para esse item.\
+\
+Reutilize o ferramental da T012 e execute a suíte consolidada do escopo\
+entregue. Gere o relatório versionável, verifique a meta de 80% e sincronize\
+o início do README com a contagem real de testes e o percentual do\
+relatório. Informe qualquer falha ou métrica abaixo da meta.\
+\
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.\
+Se houver divergência entre os artefatos ou uma decisão pendente que afete\
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já\
+existentes no repositório.\
+\
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações\
+pertinentes. Registre sua conclusão no checklist somente se os critérios\
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,\
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem\
+de commit com a referência feature / task / requisito. Deixe o staging e o\
+commit para minha revisão e encerre a rodada.
+~~~
+
+A medição usa o script da T012 em modo consolidado e o escopo entregue pelas 11 features. Os comandos e a delimitação de cobertura estão registrados na [evidência da T043](evidencia-t043.md).

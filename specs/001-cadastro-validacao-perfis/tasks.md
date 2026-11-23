@@ -219,6 +219,8 @@
 
 ## Evidência de conclusão — T012 (2026-11-22)
 
+A T043 preservou esta medição em [coverage-feature001-t012.json](../../coverage-feature001-t012.json), com o [JUnit original](../../test-results.xml). O resultado consolidado usa `coverage.json`.
+
 - Dependências T001–T011 concluídas. REQ-018 e REQ-019, Princípio III: medição reproduzível da Feature 001, relatório versionável e indicadores reais no início do README. Nenhuma mudança de comportamento da aplicação.
 - Criado `scripts/check-quality-metrics.ps1`, compatível com PowerShell 5.1, usando exclusivamente o Python do venv do projeto. Executa explicitamente os seis arquivos da Feature 001, mede `accounts/` e a view placeholder e gera `coverage.json` e `test-results.xml`.
 - Aplica `--cov-branch --cov-fail-under=80` e exige adicionalmente no mínimo 80% separadamente em linhas e ramificações. Falha de execução ou meta impede atualização do README. Contagem vem dos casos efetivamente aprovados no JUnit, sem usar coleta como resultado de execução. Atualização limitada ao bloco marcado de métricas.

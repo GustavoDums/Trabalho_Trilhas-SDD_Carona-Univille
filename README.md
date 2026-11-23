@@ -1,5 +1,14 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- t043-quality:start -->
+Entrega geral / T043 — **992 testes aprovados**, 0 ignorados. Meta: **80%**.
+Cobertura combinada de accounts, rides, reviews, notifications, carona_univille — **98.49023090586145%**.
+Linhas: 1815/1834 (**98.96401308615049%**). Ramificações: 403/418 (**96.41148325358851%**).
+Escopo de 11 features. Meta atingida globalmente e nos 37 módulos críticos.
+Relatórios: [coverage.json](coverage.json) e [test-results-t043.xml](test-results-t043.xml). Medição: 2026-11-23.
+Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1 -Consolidado`.
+<!-- t043-quality:end -->
+
 <!-- feature-007-t005-quality:start -->
 Feature 007 / T005 local / roadmap T031 — **992 testes aprovados**, 0 ignorados, com 2 novos e 990 de regressão.
 Cobertura de accounts/rides/reviews/notifications/carona_univille — **98.96401308615049% em linhas** (1815/1834) e **96.41148325358851% em ramificações** (403/418).
@@ -224,7 +233,7 @@ View/rota T004 local (T019) e qualidade/demo final T005 continuam pendentes; est
 Feature 001 / T012 — 152 testes aprovados; 0 ignorados. Meta: **80%**.
 Cobertura combinada de `accounts/` e `carona_univille/views.py`: **96.845425867507885%**.
 Linhas: 259/265 (97.735849056603769%); ramificações: 48/52 (92.3076923076923%).
-Relatórios: [coverage.json](coverage.json) e [test-results.xml](test-results.xml). Medição: 2026-11-22.
+Relatórios: [cobertura da T012](coverage-feature001-t012.json) e [test-results.xml](test-results.xml). Medição: 2026-11-22.
 
 Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-quality-metrics.ps1`.
 <!-- feature-001-quality:end -->
