@@ -1,4 +1,4 @@
-"""Feature 005/T002–T004 — política temporal e cancelamentos atômicos."""
+"""Política temporal e cancelamentos atômicos."""
 from datetime import datetime, timedelta, timezone as dt_timezone
 
 from django.contrib.auth import get_user_model
@@ -6,6 +6,7 @@ from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.utils import timezone
 
+from reviews.services.penalty_service import PenaltyService
 from ..models import CancellationRecord, RideBooking, RideOffer
 
 
@@ -46,9 +47,10 @@ class CancellationService:
         reference = RideBooking.objects.filter(pk=booking_id).values("offer_id").first()
         if reference is None:
             raise ValidationError({"booking_id": "Selecione uma reserva existente."})
-        offer = RideOffer.objects.select_for_update().get(pk=reference["offer_id"])
+        # Serializa alterações sem impedir a validação das FKs de avaliações concorrentes.
+        offer = RideOffer.objects.select_for_update(no_key=True).get(pk=reference["offer_id"])
         accounts = {
-            actor.pk: actor for actor in get_user_model().objects.select_for_update().filter(
+            actor.pk: actor for actor in get_user_model().objects.select_for_update(no_key=True).filter(
                 pk__in=(user.pk, offer.driver_id),
             ).order_by("pk")
         }
@@ -71,10 +73,11 @@ class CancellationService:
         booking.status = RideBooking.Status.CANCELADA
         booking.cancelled_at = now
         booking.save(update_fields=["status", "cancelled_at", "updated_at"])
-        CancellationRecord.objects.create(
+        event = CancellationRecord.objects.create(
             actor=actor, offer=offer, booking=booking,
             occurred_at=now, classification=classification,
         )
+        PenaltyService.apply_cancellation(cancellation_id=event.pk)
         return booking
 
     @staticmethod
@@ -85,11 +88,11 @@ class CancellationService:
             raise PermissionDenied("Somente o motorista titular ativo pode cancelar.")
         if isinstance(offer_id, bool) or not isinstance(offer_id, int) or offer_id <= 0:
             raise ValidationError({"offer_id": "Selecione uma oferta válida."})
-        offer = RideOffer.objects.select_for_update().filter(pk=offer_id).first()
+        offer = RideOffer.objects.select_for_update(no_key=True).filter(pk=offer_id).first()
         if offer is None:
             raise ValidationError({"offer_id": "Selecione uma oferta existente."})
         accounts = {
-            actor.pk: actor for actor in get_user_model().objects.select_for_update().filter(
+            actor.pk: actor for actor in get_user_model().objects.select_for_update(no_key=True).filter(
                 pk__in=(user.pk, offer.driver_id),
             ).order_by("pk")
         }
@@ -114,8 +117,9 @@ class CancellationService:
             booking.cancelled_at = now
             booking.save(update_fields=["status", "cancelled_at", "updated_at"])
         # Um evento de oferta representa o lote; não atribuir cancelamentos ao passageiro.
-        CancellationRecord.objects.create(
+        event = CancellationRecord.objects.create(
             actor=actor, offer=offer, booking=None,
             occurred_at=now, classification=classification,
         )
+        PenaltyService.apply_cancellation(cancellation_id=event.pk)
         return offer

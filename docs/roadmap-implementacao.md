@@ -195,7 +195,7 @@ flowchart TD
 ---
 
 #### Feature 008: Penalidades por Cancelamento Tardio e No-Show (`REQ-010`)
-*Status*: D008-01 e D008-02 homologadas. [Modelos e testes da T032 aprovados](../specs/008-penalidades-conduta/evidence-t032.md).
+*Status*: D008-01 e D008-02 homologadas. [T032 concluída](../specs/008-penalidades-conduta/evidence-t032.md). A [T003 local](../specs/008-penalidades-conduta/evidence-t003.md) concluiu a integração de cancelamentos da T033. O fluxo de denúncia corresponde à T004 local.
 
 - [x] **T032**: **[TESTE ESPECÍFICO DE DEDUÇÃO NUMÉRICA DE PENALIDADES]**: Implementar os modelos `PenaltyRecord` e `ConductProfile` em `reviews/models.py` e testes em `tests/test_penalties.py` cobrindo:
   - (1) *Cancelamento Tardio*: dedução fixa de $-0.20$ pontos na reputação (ex.: `4.80★` $\rightarrow$ `4.60★`).

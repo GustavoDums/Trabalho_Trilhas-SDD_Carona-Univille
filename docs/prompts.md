@@ -1912,3 +1912,43 @@ Sim confirmo
 ~~~
 
 As decisões aprovadas constam na [spec da Feature 008](../specs/008-penalidades-conduta/spec.md). A T032 foi executada como T002 local. [Implementação e verificações](../specs/008-penalidades-conduta/evidence-t032.md).
+
+## T033 do roadmap / T003 da Feature 008 — 2026-11-23
+
+~~~text
+Execute somente a tarefa T033 do Carona Univille.\
+\
+Área da tarefa — Features 006 a 009, Escopo completo.\
+\
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e\
+tasks da feature antes de editar. Confirme o requisito, as dependências e os\
+critérios de conclusão da tarefa selecionada.\
+\
+Localize T033 em docs/roadmap-implementacao.md para identificar a feature e\
+o objetivo exato. Faça a correspondência por objetivo e requisito com o\
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se\
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para\
+implementação, se o item ainda estiver apenas no roadmap, informe quais\
+artefatos da feature faltam e aguarde. Se o próprio item for de\
+planejamento, gere apenas os artefatos previstos para ele.\
+\
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.\
+Se houver divergência entre os artefatos ou uma decisão pendente que afete\
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já\
+existentes no repositório.\
+\
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações\
+pertinentes. Registre sua conclusão no checklist somente se os critérios\
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,\
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem\
+de commit com a referência feature / task / requisito. Deixe o staging e o\
+commit para minha revisão e encerre a rodada.
+~~~
+
+O checklist mapeia a T033 do roadmap para a T003 local (cancelamentos e reputação) e a T004 local (registro de no-show). A execução aguardou a escolha.
+
+~~~text
+execute a T003
+~~~
+
+O usuário selecionou a T003 local. [Implementação e verificações](../specs/008-penalidades-conduta/evidence-t003.md).

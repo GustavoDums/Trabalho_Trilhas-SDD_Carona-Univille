@@ -7,3 +7,7 @@ GET /conta/conduta/ retorna o extrato próprio. POST de no-show exige sessão, C
 ## Regras comuns
 
 Identidade vem da sessão, não de campo oculto. Ação mutante exige POST/CSRF, salvo CLI administrativo documentado. Views delegam aos serviços, que também autorizam. Negativas não divulgam dados de terceiros. Escapar texto; sem e-mail/placa em atributos ou JSON públicos. Conflitos de domínio não retornam sucesso fictício nem stacktrace. Sem notificações externas nesta feature.
+
+## Integração interna da T003
+
+`PenaltyService.apply_cancellation(cancellation_id=...)` consome um evento persistido. Cancelamento tempestivo retorna sem efeito. Cancelamento tardio cria ou recupera a penalidade do titular e recalcula sua reputação. A chamada também permite reprocessar um evento legado conhecido. O serviço fica atrás das rotas existentes de cancelamento.

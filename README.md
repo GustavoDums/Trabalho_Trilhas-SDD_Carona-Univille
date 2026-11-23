@@ -1,5 +1,11 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-008-t003-quality:start -->
+Feature 008 / T003 local / roadmap T033 — **869 testes aprovados**, 0 ignorados, com 13 novos e 856 de regressão.
+Cobertura de accounts/rides/reviews/carona_univille — **98.82720875684129% em linhas** (1264/1279) e **96.95945945945945% em ramificações** (287/296). Os serviços de penalidade e reputação atingiram 100% em ambas as medidas.
+Medição em 2026-11-23 no PostgreSQL 16.15. [Cobertura JSON](coverage-feature008-t003.json) · [JUnit](test-results-feature008-t003.xml) · [Evidência e reprodução](specs/008-penalidades-conduta/evidence-t003.md).
+<!-- feature-008-t003-quality:end -->
+
 <!-- feature-008-t032-quality:start -->
 Feature 008 / T002 local / roadmap T032 — **856 testes aprovados**, 0 ignorados, com 27 novos e 829 de regressão.
 Cobertura de accounts/rides/reviews/carona_univille — **98.79711307137129% em linhas** (1232/1247) e **96.93877551020408% em ramificações** (285/294). PenaltyRecord e ConductProfile atingiram 100% em ambas as medidas.

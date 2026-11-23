@@ -2,7 +2,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from decimal import Decimal, localcontext
-from threading import Barrier
+from threading import Barrier, Event
 
 import pytest
 from django.apps import apps
@@ -10,8 +10,11 @@ from django.core.exceptions import ValidationError
 from django.db import IntegrityError, connection, connections, transaction
 from django.db.models.deletion import ProtectedError
 
-from reviews.services.reputation_service import calculate_score
+from reviews.models import ConductProfile, PenaltyRecord, ReputationProfile, RideReview
+from reviews.services.penalty_service import PenaltyService
+from reviews.services.reputation_service import ReputationService, calculate_score
 from rides.models import CancellationRecord, RideBooking, RideOffer
+from rides.services import cancellation_service
 from rides.services.cancellation_service import CancellationService
 
 
@@ -24,16 +27,12 @@ def conduct_model():
 
 
 def cancellation_data(scene, *, cancel_offer):
-    if cancel_offer:
-        CancellationService.cancel_offer(
-            user=scene.driver, offer_id=scene.offer.pk, clock=lambda: scene.departure-timedelta(hours=1),
-        )
-    else:
-        CancellationService.cancel_booking(
-            user=scene.passenger, booking_id=scene.booking.pk,
-            clock=lambda: scene.departure-timedelta(hours=1),
-        )
-    event = CancellationRecord.objects.get()
+    event = CancellationRecord.objects.create(
+        actor=scene.driver if cancel_offer else scene.passenger,
+        offer=scene.offer, booking=None if cancel_offer else scene.booking,
+        occurred_at=scene.departure-timedelta(hours=1),
+        classification=CancellationRecord.Classification.TARDIO,
+    )
     return dict(subject=event.actor, offer=event.offer, booking=event.booking, cancellation=event,
                 kind='CANCELAMENTO_TARDIO', source_key=f'cancellation:{event.pk}',
                 occurred_at=event.occurred_at, delta=Decimal('-0.20'))
@@ -117,7 +116,8 @@ def test_rejects_inconsistent_no_show(cancellation_scene, field):
 @pytest.mark.django_db
 def test_no_show_requires_confirmed_booking(cancellation_scene):
     scene = cancellation_scene
-    cancellation_data(scene, cancel_offer=False)
+    CancellationService.cancel_booking(user=scene.passenger, booking_id=scene.booking.pk,
+                                       clock=lambda: scene.departure-timedelta(hours=1))
     with pytest.raises(ValidationError, match='reserva confirmada'):
         penalty_model().objects.create(**no_show_data(scene))
 
@@ -249,3 +249,222 @@ def test_rollback_preserves_existing_reputation_and_conduct(cancellation_scene):
     conduct.refresh_from_db()
     assert profile.score == Decimal('5.00') and conduct.suspended_until is None
     assert not penalty_model().objects.exists()
+
+
+def cancel(scene, *, at, cancel_offer=False, booking=None):
+    if cancel_offer:
+        return CancellationService.cancel_offer(user=scene.driver, offer_id=scene.offer.pk, clock=lambda: at)
+    booking = scene.booking if booking is None else booking
+    return CancellationService.cancel_booking(user=scene.passenger, booking_id=booking.pk, clock=lambda: at)
+
+
+def add_rating(scene, *, at, rating):
+    booking = additional_booking(scene)
+    return RideReview.objects.create(offer=booking.offer, reviewer=scene.driver,
+                                     reviewed_user=scene.passenger, created_at=at, rating=rating)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('cancel_offer', [False, True])
+def test_real_late_cancellation_penalizes_only_the_actor_once(cancellation_scene, cancel_offer):
+    scene = cancellation_scene
+    at = scene.departure-timedelta(hours=1)
+    actor = scene.driver if cancel_offer else scene.passenger
+    other = scene.passenger if cancel_offer else scene.driver
+
+    for _ in range(2):
+        cancel(scene, at=at, cancel_offer=cancel_offer)
+
+    event = CancellationRecord.objects.get(actor=actor)
+    penalty = PenaltyRecord.objects.get(cancellation=event)
+    assert penalty.subject == actor and penalty.delta == Decimal('-0.20') and penalty.actor is None
+    assert penalty.occurred_at == at and penalty.booking_id == event.booking_id
+    assert ReputationProfile.objects.get(user=actor).score == Decimal('4.80')
+    assert not ReputationProfile.objects.filter(user=other).exists()
+    assert not ConductProfile.objects.exists()
+    scene.booking.refresh_from_db()
+    assert scene.booking.status == RideBooking.Status.CANCELADA
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('cancel_offer', [False, True])
+def test_cancellation_at_deadline_and_explicit_replay_have_no_penalty(cancellation_scene, cancel_offer):
+    scene = cancellation_scene
+    at = scene.departure-timedelta(hours=4 if cancel_offer else 2)
+    cancel(scene, at=at, cancel_offer=cancel_offer)
+
+    event = CancellationRecord.objects.get()
+    assert event.classification == CancellationRecord.Classification.TEMPESTIVO
+    assert PenaltyService.apply_cancellation(cancellation_id=event.pk) is None
+    assert not PenaltyRecord.objects.exists() and not ReputationProfile.objects.exists()
+
+
+@pytest.mark.django_db
+def test_legacy_late_cancellation_can_be_replayed_without_duplication_or_historical_rewind(
+    cancellation_scene, monkeypatch,
+):
+    scene = cancellation_scene
+    event = cancellation_data(scene, cancel_offer=False)['cancellation']
+    at = event.occurred_at+timedelta(seconds=1)
+    monkeypatch.setattr('django.utils.timezone.now', lambda: at)
+    add_rating(scene, at=at, rating=4)
+
+    first = PenaltyService.apply_cancellation(cancellation_id=event.pk)
+    ReputationProfile.objects.filter(user=scene.passenger).delete()
+    second = PenaltyService.apply_cancellation(cancellation_id=event.pk)
+
+    assert first.pk == second.pk and PenaltyRecord.objects.count() == 1
+    assert ReputationProfile.objects.get(user=scene.passenger).score == Decimal('3.80')
+    assert ReputationService.rebuild(user_id=scene.passenger.pk, at=event.occurred_at).score == Decimal('4.80')
+    assert ReputationService.rebuild(
+        user_id=scene.passenger.pk, at=event.occurred_at-timedelta(microseconds=1),
+    ).score == Decimal('5.00')
+
+
+@pytest.mark.django_db
+def test_received_review_signal_rebuilds_score_without_losing_late_cancellation_deduction(
+    cancellation_scene, monkeypatch,
+):
+    scene = cancellation_scene
+    at = scene.departure-timedelta(hours=1)
+    for rating in [5, 5, 5, 5, 4]:
+        add_rating(scene, at=at-timedelta(minutes=1), rating=rating)
+    cancel(scene, at=at)
+    assert ReputationProfile.objects.get(user=scene.passenger).score == Decimal('4.60')
+
+    next_rating_at = at+timedelta(minutes=1)
+    monkeypatch.setattr('django.utils.timezone.now', lambda: next_rating_at)
+    add_rating(scene, at=next_rating_at, rating=3)
+
+    assert ReputationProfile.objects.get(user=scene.passenger).score == Decimal('4.30')
+    assert RideReview.objects.count() == 6 and PenaltyRecord.objects.count() == 1
+
+
+@pytest.mark.django_db
+def test_rebuild_includes_existing_no_show_once_in_rating_window_and_in_deductions(cancellation_scene):
+    scene = cancellation_scene
+    at = scene.departure
+    for _ in range(20):
+        add_rating(scene, at=at-timedelta(seconds=1), rating=5)
+    PenaltyRecord.objects.create(**no_show_data(scene))
+    rebuild = ReputationService.rebuild
+
+    assert rebuild(user_id=scene.passenger.pk, at=at-timedelta(microseconds=1)).score == Decimal('5.00')
+    assert rebuild(user_id=scene.passenger.pk, at=at).score == Decimal('4.30')
+    add_rating(scene, at=at+timedelta(seconds=1), rating=5)
+    assert rebuild(user_id=scene.passenger.pk, at=at+timedelta(seconds=1)).score == Decimal('4.30')
+    add_rating(scene, at=at, rating=5)
+    assert rebuild(user_id=scene.passenger.pk, at=at).score == Decimal('4.30')
+    assert RideReview.objects.count() == 22 and not ConductProfile.objects.exists()
+
+
+@pytest.mark.django_db
+def test_mutual_rating_wins_the_last_slot_on_timestamp_tie_but_no_show_delta_still_applies(cancellation_scene):
+    scene = cancellation_scene
+    at = scene.departure
+    for _ in range(20):
+        add_rating(scene, at=at, rating=5)
+    PenaltyRecord.objects.create(**no_show_data(scene))
+    assert ReputationService.rebuild(user_id=scene.passenger.pk, at=at).score == Decimal('4.50')
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize('cancel_offer', [False, True])
+def test_rebuild_failure_rolls_back_real_cancellation_event_and_penalty(cancellation_scene, monkeypatch, cancel_offer):
+    scene = cancellation_scene
+    at = scene.departure-timedelta(hours=1)
+    actor = scene.driver if cancel_offer else scene.passenger
+    profile = ReputationProfile.objects.create(user=actor)
+    profile_save = ReputationProfile.save
+
+    def fail_after_save(instance, *args, **kwargs):
+        profile_save(instance, *args, **kwargs)
+        raise RuntimeError('falha sintética no recálculo')
+
+    monkeypatch.setattr(ReputationProfile, 'save', fail_after_save)
+    with pytest.raises(RuntimeError, match='falha sintética no recálculo'):
+        cancel(scene, at=at, cancel_offer=cancel_offer)
+
+    scene.booking.refresh_from_db()
+    scene.offer.refresh_from_db()
+    profile.refresh_from_db()
+    assert scene.booking.status == RideBooking.Status.CONFIRMADA and scene.booking.cancelled_at is None
+    assert scene.offer.status == RideOffer.Status.ABERTA and scene.offer.cancelled_at is None
+    assert profile.score == Decimal('5.00')
+    assert not CancellationRecord.objects.exists() and not PenaltyRecord.objects.exists()
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize('same_event', [True, False])
+def test_cancellation_workers_commit_exactly_one_effect_per_late_event(cancellation_scene, same_event):
+    assert connection.vendor == 'postgresql'
+    scene = cancellation_scene
+    at = scene.departure-timedelta(hours=1)
+    first = scene.booking
+    second = first if same_event else additional_booking(scene)
+    barrier = Barrier(2, timeout=10)
+
+    def worker(booking):
+        db = connections['default']
+        try:
+            with transaction.atomic(), db.cursor() as cursor:
+                cursor.execute("SET LOCAL lock_timeout = '10s'")
+                cursor.execute('SELECT pg_backend_pid()')
+                pid = cursor.fetchone()[0]
+                barrier.wait()
+                cancel(scene, at=at, booking=booking)
+                return pid
+        finally:
+            db.close()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        assert len(set(pool.map(worker, [first, second]))) == 2
+
+    expected_count = 1 if same_event else 2
+    assert CancellationRecord.objects.count() == PenaltyRecord.objects.count() == expected_count
+    expected_score = Decimal('4.80' if same_event else '4.60')
+    assert ReputationProfile.objects.get(user=scene.passenger).score == expected_score
+
+
+@pytest.mark.django_db(transaction=True)
+def test_late_cancellation_and_direct_review_rebuild_without_blocking_fk_validation(cancellation_scene, monkeypatch):
+    scene = cancellation_scene
+    at = scene.departure-timedelta(hours=1)
+    monkeypatch.setattr('django.utils.timezone.now', lambda: at)
+    review_has_user_lock = Event()
+    cancellation_has_offer_lock = Event()
+    get_user_model = cancellation_service.get_user_model
+
+    def get_cancellation_accounts():
+        cancellation_has_offer_lock.set()
+        return get_user_model()
+
+    monkeypatch.setattr(cancellation_service, 'get_user_model', get_cancellation_accounts)
+
+    def save_review():
+        try:
+            with transaction.atomic():
+                RideReview.objects.create(
+                    offer=scene.offer, reviewer=scene.driver,
+                    reviewed_user=scene.passenger, rating=4, created_at=at,
+                )
+                review_has_user_lock.set()
+                assert cancellation_has_offer_lock.wait(timeout=10)
+        finally:
+            connections['default'].close()
+
+    def cancel_booking():
+        try:
+            assert review_has_user_lock.wait(timeout=10)
+            cancel(scene, at=at)
+        finally:
+            connections['default'].close()
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        direct = pool.submit(save_review)
+        cancellation = pool.submit(cancel_booking)
+        direct.result(timeout=20)
+        cancellation.result(timeout=20)
+
+    assert RideReview.objects.count() == PenaltyRecord.objects.count() == 1
+    assert ReputationProfile.objects.get(user=scene.passenger).score == Decimal('3.80')

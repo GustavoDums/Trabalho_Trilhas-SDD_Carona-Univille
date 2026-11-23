@@ -27,11 +27,11 @@ Python 3.12+, Django 5.1.x, PostgreSQL 15+, pytest/pytest-django/pytest-cov, tem
 
 PenaltyService em reviews/services/penalty_service.py consome CancellationRecord idempotentemente e fluxo autorizado de no-show. Bloquear oferta antes de usuário, ordem compartilhada pelos serviços; transação grava ocorrência e reconstrói projeções. Signal de reputação não cria segunda punição. Middleware acadêmico mantém responsabilidade de vínculo e delega restrição disciplinar separada; serviços também verificam suspensão para impedir bypass. Integrar extrato em accounts sem divulgar histórico a terceiros. Sem processo externo, sensor de presença ou notificação bônus.
 
-A T002 cobre o modelo, as restrições, a dedução decimal e a projeção de suspensão. A composição com ReputationService e a gravação automática dos efeitos pertencem à T003, e a denúncia à T004.
+A T002 cobre o modelo, as restrições, a dedução decimal e a projeção de suspensão. Na T003, CancellationService delega ao PenaltyService, que vincula o cancelamento tardio à penalidade e reconstrói a nota pelo ReputationService dentro da mesma transação. O registro autorizado de no-show e a aplicação da sua projeção disciplinar pertencem à T004.
 
 ## Data & Interfaces
 
-[data-model.md](data-model.md) é fonte canônica do desenho proposto; [contratos](contracts/web-routes.md) define interfaces e autorização. Nenhuma migração gerada nesta rodada. Na implementação: revisar dados legados e plano, aplicar migração e verificar no PostgreSQL local sem reset.
+[data-model.md](data-model.md) define entidades e restrições, e os [contratos](contracts/web-routes.md) definem interfaces e autorização. A migração reviews.0003 foi validada na [T002](evidence-t032.md). A T003 usa esse esquema.
 
 ## Implementation Order
 

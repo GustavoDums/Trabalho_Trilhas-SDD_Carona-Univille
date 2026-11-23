@@ -1,13 +1,15 @@
-"""Feature 007/T002 unificada — média simples das últimas 20 avaliações."""
+"""Reputação reconstruída a partir das avaliações e penalidades registradas."""
 from datetime import datetime, timezone as dt_timezone
 from decimal import Context, Decimal, ROUND_HALF_UP, localcontext
+from heapq import merge
+from itertools import islice
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 
-from ..models import ReputationProfile, RideReview
+from ..models import PenaltyRecord, ReputationProfile, RideReview
 
 WINDOW_SIZE = 20
 
@@ -28,6 +30,22 @@ def calculate_score(ratings):
         return (Decimal(sum(values))/Decimal(len(values))).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
 
+def _score_at(user_id, instant):
+    reviews = RideReview.objects.filter(reviewed_user_id=user_id, created_at__lte=instant).order_by(
+        '-created_at', '-pk',
+    ).values_list('created_at', 'pk', 'rating')[:WINDOW_SIZE]
+    penalties = list(PenaltyRecord.objects.filter(subject_id=user_id, occurred_at__lte=instant)
+                     .only('kind', 'source_key', 'occurred_at', 'delta').order_by('-occurred_at', '-pk'))
+
+    # Em empate entre origens, avaliações mútuas vêm primeiro e cada origem usa seu próprio PK.
+    peer_ratings = ((created_at, 1, pk, rating) for created_at, pk, rating in reviews)
+    automatic_ratings = ((record.occurred_at, 0, record.pk, record.automatic_rating)
+                         for record in penalties if record.kind == PenaltyRecord.Kind.NO_SHOW)
+    window = islice(merge(peer_ratings, automatic_ratings, reverse=True), WINDOW_SIZE)
+    base_score = calculate_score(rating for _, _, _, rating in window)
+    return PenaltyRecord.apply_deductions(base_score, penalties)
+
+
 class ReputationService:
     @staticmethod
     @transaction.atomic
@@ -42,10 +60,7 @@ class ReputationService:
         if not isinstance(instant, datetime) or timezone.is_naive(instant):
             raise ValidationError('Informe um instante com fuso definido.', code='invalid_time')
         instant = instant.astimezone(dt_timezone.utc)
-        ratings = list(RideReview.objects.filter(
-            reviewed_user_id=user.pk, created_at__lte=instant,
-        ).order_by('-created_at', '-id').values_list('rating', flat=True)[:WINDOW_SIZE])
-        score = calculate_score(ratings)
+        score = _score_at(user.pk, instant)
         profile = ReputationProfile.objects.select_for_update().filter(user_id=user.pk).first()
         if profile is None:
             profile = ReputationProfile(user=user)
