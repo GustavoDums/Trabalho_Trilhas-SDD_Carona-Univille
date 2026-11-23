@@ -1,5 +1,13 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-003-quality:start -->
+Feature 003 / T005 â€” **142 testes de busca/matching aprovados**, 526 de regressÃ£o; total 668 aprovados, 0 ignorados. MediÃ§Ã£o: 2026-11-23.
+Cobertura do pacote tÃ©cnico atual `rides/` com regressÃ£o: **99.36143039591316%** combinada; linhas 618/619 (99.838449111470112%); ramificaÃ§Ãµes 160/164 (97.5609756097561%). Meta: 80% em cada medida. Estes percentuais incluem as features posteriores de rides.
+Matching separado: 100% linhas e 100% ramificaÃ§Ãµes. Novos nesta tarefa: 7; regressÃ£o anterior: 661 (grupos no JUnit).
+RelatÃ³rios: [coverage-feature003.json](coverage-feature003.json), [test-results-feature003.xml](test-results-feature003.xml). Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-feature003-quality.ps1`.
+DemonstraÃ§Ã£o humana SC-005 (atÃ© 1 minuto) e inspeÃ§Ã£o visual sÃ£o evidÃªncias separadas; este script nÃ£o as aprova nem conclui T005 automaticamente. [EvidÃªncia](specs/003-busca-rota-horario/evidence-t005.md).
+<!-- feature-003-quality:end -->
+
 <!-- feature-005-t006-quality:start -->
 Feature 005 / T006 local / fechamento da T026 — **661 testes aprovados**, 0 ignorados: 20 novos e 641 de regressão anterior. TDD inicial: 17 falhas esperadas, 3 casos de controle de acesso existentes aprovados; depois verde.
 Cobertura de `rides/`: **99.36143039591316%** combinada; linhas 618/619 (**99.83844911147011%**); ramificações 160/164 (**97.5609756097561%**). Views: 100% de linhas e ramificações. Meta: 80%.

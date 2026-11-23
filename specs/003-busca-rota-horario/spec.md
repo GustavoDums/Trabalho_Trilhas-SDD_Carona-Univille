@@ -131,3 +131,8 @@ Como passageiro ativo, quero ver as informações necessárias para comparar ofe
 - A decisão de estrutura de serviço e sua integração com a publicação existente pertence ao planejamento técnico, preservando o comportamento da Feature 002.
 - As duas confirmações temporais foram registradas; em 2026-11-22, T001–T003 locais foram implementadas com autorização das dependências. T017–T019 do roadmap concluídas; qualidade/demo final T005 local pendente. Em 2026-11-22, o usuário confirmou executar T019/T004 sem paginação, conforme plano.
 - Pendências constitucionais de homologação acadêmica simulada, domínios e cancelamento não são resolvidas por esta feature. As regras de matching desta spec foram confirmadas e alinhadas ao levantamento/roadmap. O texto da constitution não é emendado nesta rodada; seu marcador histórico deve ser considerado junto desta decisão documentada.
+## Aceite humano final — 2026-11-23
+
+Após relato de que o teste funcionou, foi perguntado explicitamente se o usuário também realizou a busca, encontrou a oferta em até um minuto e conferiu a legibilidade da tela, em vez de apenas ativar o perfil. Resposta: “sim”. SC-005 e inspeção visual aprovados por confirmação humana, sem atribuir tempo exato em segundos ou usar duração de pytest. T005 concluída; registros parciais anteriores são históricos e substituídos por este aceite quanto às pendências.
+
+Resultado técnico permanece 668 testes aprovados (7 novos/661 de regressão anterior), rides 99.83844911147011% linhas e 97.5609756097561% ramificações; matching 100% em ambas. Somente documentação atualizada nesta confirmação, sem repetir testes, staging ou commit. Feature 005/T007, correspondente à T027 do roadmap, ainda não executada.

@@ -651,3 +651,68 @@ def test_availability_has_no_n_plus_one_or_double_count_with_stops_and_history(
     assert len(large) == 6 and len({dto.offer_id for dto in large}) == 6
     assert all(dto.available_seats == 2 for dto in large if dto.offer_id in added_ids)
     assert connection.vendor == "postgresql"
+
+
+# Feature 003/T005 — aceitação com cadastro/login/ativação/publicação reais.
+def search_journey_account(email, role):
+    from django.contrib.auth import get_user_model
+    from django.test import Client
+    client = Client(enforce_csrf_checks=True)
+
+    def post(url, data):
+        assert client.get(url).status_code == 200
+        return client.post(url, dict(data, csrfmiddlewaretoken=client.cookies['csrftoken'].value), follow=True)
+
+    response = post('/accounts/register/', dict(
+        email=email, full_name='Pessoa Sintética Busca', role=role,
+        password='Ficticia!Rota-2026#', password_confirm='Ficticia!Rota-2026#'))
+    assert response.redirect_chain == [('/accounts/login/', 302)]
+    response = post('/accounts/login/', dict(email=email, password='Ficticia!Rota-2026#'))
+    assert response.redirect_chain == [('/accounts/activation/', 302)]
+    response = post('/accounts/activation/', {})
+    user = get_user_model().objects.get(email=email)
+    assert client.session['_auth_user_id'] == str(user.pk)
+    return client, user, post, response
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('delta,expected', [(-1801, False), (-1800, True), (0, True), (1800, True), (1801, False)])
+def test_acceptance_search_real_accounts_activation_and_published_offer(delta, expected):
+    from datetime import timedelta
+    from rides.models import RideOffer, RideBooking, Waypoint, RoutePoint
+    driver_client, driver, publish, _ = search_journey_account('mariana.motorista@univille.br', 'MOTORISTA')
+    passenger_client, passenger, _, _ = search_journey_account('lucas.aluno@univille.br', 'PASSAGEIRO')
+    assert driver.is_activated and passenger.is_activated
+    points = [RoutePoint.objects.get(code=code) for code in (
+        'terminal-central', 'bairro-america', 'terminal-norte', 'campus-univille')]
+    response = publish('/caronas/oferecer/', {
+        'origin': points[0].pk, 'destination': points[-1].pk,
+        'departure_at': '2030-01-04T09:00', 'seats': '3',
+        'vehicle_model': 'Veículo Sintético Busca', 'vehicle_color': 'Azul', 'vehicle_plate': 'PRIVADABUSCA',
+        'waypoints-TOTAL_FORMS': '2', 'waypoints-INITIAL_FORMS': '0',
+        'waypoints-0-point': points[1].pk, 'waypoints-1-point': points[2].pk,
+    })
+    assert response.redirect_chain == [('/caronas/minhas-ofertas/', 302)]
+    offer = RideOffer.objects.get(driver=driver)
+    before = tuple(list(model.objects.values()) for model in (RideOffer, Waypoint, RideBooking))
+    response = passenger_client.get('/caronas/buscar/', {
+        'boarding_id': points[1].pk, 'alighting_id': points[2].pk,
+        'desired_at': (offer.departure_at+timedelta(seconds=delta)).isoformat(),
+    })
+    assert response.status_code == 200 and response.context['form'].is_valid()
+    assert [result.offer_id for result in response.context['results']] == ([offer.pk] if expected else [])
+    html = response.content.decode()
+    assert driver.full_name not in html and driver.email not in html and offer.vehicle_plate not in html
+    assert 'origem' in html and '30' in html
+    assert tuple(list(model.objects.values()) for model in (RideOffer, Waypoint, RideBooking)) == before
+    assert driver_client.get('/caronas/buscar/').status_code == 403
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('email', ['bloqueado@univille.br', 'busca.ausente@univille.br'])
+def test_acceptance_search_real_refused_activation_stays_blocked(email):
+    client, passenger, _, activation = search_journey_account(email, 'PASSAGEIRO')
+    assert passenger.is_pending
+    assert activation.status_code == 200
+    response = client.get('/caronas/buscar/')
+    assert response.status_code == 302 and response.url == '/accounts/activation/'

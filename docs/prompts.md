@@ -1615,3 +1615,39 @@ pode encerrar na verdade, está tudo de acordo
 ~~~
 
 Usuário respondeu após explicitação de falta de medição cronometrada e confirmação visual. Determinou encerramento, aceitando o resultado da publicação com duas paradas e tempo humano estimado de aproximadamente dois minutos, dispensando nova cronometragem. T007 marcada concluída por aceite humano explícito, sem converter estimativa em prova exata <=120s. Atualizados tasks.md, spec.md (nota de aceite), quickstart.md, evidence-t007.md e bloco Feature 002 do README. Alterações documentais anteriores preservadas. Sem mudança de aplicação, testes repetidos, staging ou commit. Feature 003/T005 e Feature 005/T007 não iniciadas.
+
+## 2026-11-23 — Feature 003/T005, aceitação e qualidade da busca
+
+Prompt integral:
+
+~~~text
+feito, pode executar a T005
+~~~
+
+Referência anexada: docs/prompts.md. Contexto explícito anterior: Feature 002/T007 encerrada por aceite final, próxima tarefa Feature 003/T005. Autorização interpretada somente para essa tarefa local, sem iniciar T027.
+
+Leitura de spec/plan/tasks/contratos/quickstart e pré-requisitos; checklist documental 16/16, sem hooks. Venv existente e PostgreSQL, git limpo no início, sem nova migração. Sete testes adicionados em tests/test_ride_search.py: cadastro/login/ativação HTTP reais com CSRF, publicação real pelo motorista, busca por passageiro nas bordas inclusivas e um segundo fora, privacidade/ausência de escrita e recusa de ativação. Primeira execução detectou NameError de import de Client ausente no helper; corrigido somente no teste, depois sete aprovados. Não é falha comportamental de produto nem evidência artificial de TDD; produção não alterada.
+
+Script check-feature003-quality.ps1 baseado no padrão existente, relatórios próprios, regressão completa, pacote rides e matching medidos separadamente >=80%, grupos novos/regressão no JUnit e bloco próprio do README. Inspeção/demo humana <=1 minuto continua sendo critério separado, sem inferir por duração de suíte. Evidência e resultados em specs/003-busca-rota-horario/evidence-t005.md. Sem staging/commit.
+
+## 2026-11-23 — Confirmação humana final / Feature 003 T005
+
+Prompts integrais de acompanhamento, em ordem:
+
+~~~text
+não sei onde desloga do perfil, como faço?
+~~~
+~~~text
+não consegui validar meu perfil
+~~~
+~~~text
+deu certo, já está testado e de acordo
+~~~
+
+Orientado usar sessão privada separada e conta fictícia elegível da whitelist no papel PASSAGEIRO; imagem de perfil não elegível analisada sem copiar dados pessoais para documentação. Depois perguntado explicitamente: “Você testou também a busca de carona, encontrou a oferta em até um minuto e conferiu que a tela ficou legível, ou está se referindo apenas à ativação do perfil?” Resposta integral:
+
+~~~text
+sim
+~~~
+
+Referência anexada: docs/prompts.md. Confirmação aceita como validação humana da busca <=1 minuto e da legibilidade, sem inventar duração exata. T005 local/Feature 003 concluída; atualizados tasks/spec/plan/quickstart/evidence e README. Alterações da rodada técnica preservadas. Nenhum código adicional, teste repetido, staging ou commit. T027 não executada nesta confirmação.

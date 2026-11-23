@@ -55,3 +55,19 @@ Confirmar formulário vazio sem resultados automáticos, erros dos três campos,
 T005 local criará script e relatórios próprios, sem sobrescrever métricas das Features 001/002. Medir conjunto técnico `rides` executando regressão de ofertas e novos testes, verificando também o módulo de matching separadamente (linhas/ramificações >=80%). JUnit identifica quantos testes são novos da Feature 003 e quantos são regressão; não rotular toda a contagem combinada como testes exclusivos desta feature.
 
 Relatórios previstos: `coverage-feature003.json`, `test-results-feature003.xml`. Atualizar bloco Feature 003 do README apenas após testes e metas passarem. Templates requerem testes do HTML e inspeção visual; coverage.py não mede HTML. Não alegar feature entregue enquanto checklist de implementação estiver aberto.
+
+## Qualidade executada — 2026-11-23
+
+Script disponível: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-feature003-quality.ps1`. 668 testes aprovados, 7 novos/661 anteriores; rides >=80% linhas/ramificações, matching 100%. [Evidência](evidence-t005.md). Relatórios das outras features preservados. Inspeção visual e demo humana continuam pendentes.
+
+### Próximo passo humano — SC-005
+
+Usar sessão separada (outro perfil/janela privada) para não perder o login de motorista. Cadastrar uma conta fictícia PASSAGEIRO com e-mail elegível, por exemplo lucas.aluno@univille.br se ainda não usado com outro papel; definir senha, fazer login e acionar validação de vínculo. Não há senha padrão. Papel fixo: conta motorista não pode buscar.
+
+Abrir http://127.0.0.1:8000/caronas/buscar/. Com dados preparados de uma oferta ainda futura, iniciar cronômetro, selecionar embarque anterior ao desembarque e horário desejado igual à saída da origem (não ao horário suposto da parada), buscar e identificar o resultado. Parar a contagem na identificação. Limite <=60 segundos. Conferir rota, nome abreviado, ausência de placa/e-mail e aviso de ±30 minutos pela saída da origem. Depois inverter pontos para verificar vazio. Informar tempo real e se campos, mensagens e resultados estão legíveis, sem problemas visuais. Não confundir com demonstração de publicação já aceita na Feature 002. Caso a oferta tenha passado, preparar outra oferta sintética futura antes do cronômetro.
+
+## Aceite humano final — 2026-11-23
+
+Após relato de que o teste funcionou, foi perguntado explicitamente se o usuário também realizou a busca, encontrou a oferta em até um minuto e conferiu a legibilidade da tela, em vez de apenas ativar o perfil. Resposta: “sim”. SC-005 e inspeção visual aprovados por confirmação humana, sem atribuir tempo exato em segundos ou usar duração de pytest. T005 concluída; registros parciais anteriores são históricos e substituídos por este aceite quanto às pendências.
+
+Resultado técnico permanece 668 testes aprovados (7 novos/661 de regressão anterior), rides 99.83844911147011% linhas e 97.5609756097561% ramificações; matching 100% em ambas. Somente documentação atualizada nesta confirmação, sem repetir testes, staging ou commit. Feature 005/T007, correspondente à T027 do roadmap, ainda não executada.

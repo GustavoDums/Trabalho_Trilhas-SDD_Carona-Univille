@@ -80,3 +80,13 @@ Sem violações ou exceções. Transformação do módulo em pacote é preparaç
 MatchingService mantém os predicados anteriores, incluindo seats > 0 como capacidade original. Count das bookings CONFIRMADA, com filter e distinct por oferta no SQL, fornece confirmed_bookings transitório. DTO recebe available_seats=max(0, seats-confirmed_bookings), mantendo seats como capacidade original. Não adicionar tabela/contador nem consultar reservas separadamente para cada resultado. Prefetch das paradas permanece separado para não multiplicar contagem.
 
 Cartão usa available_seats; zero permanece visível com Vagas esgotadas. Nenhum filtro novo por saldo, nenhum botão de reserva. Alteração executada pela T006 da Feature 004, preservando IDs/checkboxes históricos da Feature 003. O serviço transacional continua revalidando a capacidade na confirmação.
+
+## Atualização de qualidade — 2026-11-23
+
+Parte técnica da T005 executada, sem mudanças de aplicação/schema. Testes de jornadas reais e script de métricas disponíveis; [evidência](evidence-t005.md). Qualidade automatizada aprovada, demo humana e inspeção visual pendentes; não concluir T005 automaticamente.
+
+## Aceite humano final — 2026-11-23
+
+Após relato de que o teste funcionou, foi perguntado explicitamente se o usuário também realizou a busca, encontrou a oferta em até um minuto e conferiu a legibilidade da tela, em vez de apenas ativar o perfil. Resposta: “sim”. SC-005 e inspeção visual aprovados por confirmação humana, sem atribuir tempo exato em segundos ou usar duração de pytest. T005 concluída; registros parciais anteriores são históricos e substituídos por este aceite quanto às pendências.
+
+Resultado técnico permanece 668 testes aprovados (7 novos/661 de regressão anterior), rides 99.83844911147011% linhas e 97.5609756097561% ramificações; matching 100% em ambas. Somente documentação atualizada nesta confirmação, sem repetir testes, staging ou commit. Feature 005/T007, correspondente à T027 do roadmap, ainda não executada.

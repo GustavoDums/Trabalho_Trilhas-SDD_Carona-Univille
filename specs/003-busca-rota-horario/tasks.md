@@ -2,8 +2,8 @@
 
 **Feature**: 003-busca-rota-horario. IDs abaixo são oficiais locais, independentes dos IDs do roadmap e de outras features.
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contratos](contracts/web-routes.md), [quickstart.md](quickstart.md).
-**Prerequisites**: identidade/middleware da Feature 001 e ofertas/catálogo da Feature 002 disponíveis. T007 de qualidade final da Feature 002 continua pendente; não é requisito funcional da busca nem deve ser marcada nesta rodada.
-**Tests**: exigidos pela constitution e REQ-017. Em cada tarefa de implementação: escrever/rodar testes antes, demonstrar falha esperada de comportamento, implementar e repetir. Refatoração preserva comportamento e comprova regressão sem fabricar falha de produto. Dados sintéticos, venv e PostgreSQL existentes. Atualização 2026-11-22: T001–T004 implementadas e verificadas; T005 pendente. Evidências em [evidence-t018.md](evidence-t018.md) e [evidence-t019.md](evidence-t019.md).
+**Prerequisites**: identidade/middleware da Feature 001 e ofertas/catálogo da Feature 002 disponíveis. T007 de qualidade final da Feature 002 encerrada em 2026-11-23 por aceite final; ver [evidência](../002-oferta-caronas-paradas/evidence-t007.md).
+**Tests**: exigidos pela constitution e REQ-017. Em cada tarefa de implementação: escrever/rodar testes antes, demonstrar falha esperada de comportamento, implementar e repetir. Refatoração preserva comportamento e comprova regressão sem fabricar falha de produto. Dados sintéticos, venv e PostgreSQL existentes. Atualização 2026-11-22: T001–T005 implementadas e verificadas; T005 encerrada em 2026-11-23 ([evidência](evidence-t005.md)). Evidências em [evidence-t018.md](evidence-t018.md) e [evidence-t019.md](evidence-t019.md).
 
 ## Phase 1: Setup
 
@@ -36,7 +36,7 @@ Não há novo app, dependência ou migração. Confirmar ambiente existente ao e
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T005 Completar aceitação da busca em `tests/test_ride_search.py`, incluindo login/ativação reais e ofertas sintéticas publicadas pelas funcionalidades existentes, e criar `scripts/check-feature003-quality.ps1` para executar testes novos e regressão de `tests/test_rides_offer.py`, gerar `coverage-feature003.json` e `test-results-feature003.xml` e atualizar somente bloco Feature 003 do `README.md`. Medir conjunto técnico rides e módulo matching separadamente com meta >=80% em linhas e ramificações, identificando a contagem de testes novos versus regressão no JUnit. Executar também os seis módulos de accounts sem sobrescrever métricas anteriores. Validar [quickstart.md](quickstart.md), HTML e inspeção visual; registrar demo humana <=1 minuto, sem usar duração de suíte como comprovação. REQ-017, REQ-018, REQ-019, REQ-005, REQ-003; SC-001–SC-005; dependência T004; conclusão: cenários e regressões aprovados, relatórios reais e roteiro verificado. Não concluir se meta ou demo falhar; sem staging/commit automático.
+- [x] T005 Completar aceitação da busca em `tests/test_ride_search.py`, incluindo login/ativação reais e ofertas sintéticas publicadas pelas funcionalidades existentes, e criar `scripts/check-feature003-quality.ps1` para executar testes novos e regressão de `tests/test_rides_offer.py`, gerar `coverage-feature003.json` e `test-results-feature003.xml` e atualizar somente bloco Feature 003 do `README.md`. Medir conjunto técnico rides e módulo matching separadamente com meta >=80% em linhas e ramificações, identificando a contagem de testes novos versus regressão no JUnit. Executar também os seis módulos de accounts sem sobrescrever métricas anteriores. Validar [quickstart.md](quickstart.md), HTML e inspeção visual; registrar demo humana <=1 minuto, sem usar duração de suíte como comprovação. REQ-017, REQ-018, REQ-019, REQ-005, REQ-003; SC-001–SC-005; dependência T004; conclusão: cenários e regressões aprovados, relatórios reais e roteiro verificado. Não concluir se meta ou demo falhar; sem staging/commit automático.
 
 ## Dependencies & Execution Order
 
@@ -55,7 +55,7 @@ Não há novo app, dependência ou migração. Confirmar ambiente existente ao e
 | T019 / REQ-005, REQ-017 | View e fluxo integrado | **T004** |
 | Governança da entrega | Aceitação final e métricas | **T005** |
 
-Sempre reportar os dois IDs para evitar confusão com features anteriores. T017 corresponde à T002 local e teve a preparação T001 como dependência já atendida. T001–T004 concluídas; T005 permanece aberta. Ver [evidence-t018.md](evidence-t018.md) e [evidence-t019.md](evidence-t019.md).
+Sempre reportar os dois IDs para evitar confusão com features anteriores. T017 corresponde à T002 local e teve a preparação T001 como dependência já atendida. T001–T005 concluídas; ver [aceite final](evidence-t005.md). Ver [evidence-t018.md](evidence-t018.md) e [evidence-t019.md](evidence-t019.md).
 
 ## Parallel Opportunities & Examples
 
@@ -64,3 +64,13 @@ Sem [P] no fluxo: T001 altera fronteira de import, T002 fornece DTOs, T003 compa
 ## Implementation Strategy
 
 Uma tarefa por rodada revisável. Testes antes das mudanças de comportamento, com falha real e evidência vermelho/verde; preparação/refatoração usa baseline e regressão comparáveis. Não criar reservas, reputação, horários por parada, tolerância ajustável ou novas migrações por conveniência. Manter os checkboxes abertos até execução e validação efetivas.
+
+## Evidência parcial — T005 (2026-11-23)
+
+[Registro](evidence-t005.md): sete testes de aceitação HTTP reais adicionados e aprovados, 668 testes aprovados na regressão (7 novos/661 anteriores), script e relatórios próprios gerados. rides: 99.83844911147011% linhas / 97.5609756097561% ramificações; matching 100% de ambas. Critério humano de busca <=1 minuto e inspeção visual ainda pendentes; T005 permanece aberta. Nenhuma aplicação de regra nova nem execução de T027.
+
+## Aceite humano final — 2026-11-23
+
+Após relato de que o teste funcionou, foi perguntado explicitamente se o usuário também realizou a busca, encontrou a oferta em até um minuto e conferiu a legibilidade da tela, em vez de apenas ativar o perfil. Resposta: “sim”. SC-005 e inspeção visual aprovados por confirmação humana, sem atribuir tempo exato em segundos ou usar duração de pytest. T005 concluída; registros parciais anteriores são históricos e substituídos por este aceite quanto às pendências.
+
+Resultado técnico permanece 668 testes aprovados (7 novos/661 de regressão anterior), rides 99.83844911147011% linhas e 97.5609756097561% ramificações; matching 100% em ambas. Somente documentação atualizada nesta confirmação, sem repetir testes, staging ou commit. Feature 005/T007, correspondente à T027 do roadmap, ainda não executada.
