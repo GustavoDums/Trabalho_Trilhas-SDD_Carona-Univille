@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 
-from .models import RideOffer, RoutePoint, Waypoint
+from ..models import RideOffer, RoutePoint, Waypoint
 
 
 @transaction.atomic

@@ -43,3 +43,32 @@ class RequiredWaypointFormSet(BaseFormSet):
 
 
 WaypointFormSet = formset_factory(WaypointForm, formset=RequiredWaypointFormSet, extra=0)
+
+
+class SearchDateTimeField(forms.DateTimeField):
+    """Entrada local de Joinville, independente do fuso ativo do request."""
+
+    def to_python(self, value):
+        from django.utils import timezone
+
+        with timezone.override("America/Sao_Paulo"):
+            return super().to_python(value)
+
+
+class RideSearchForm(forms.Form):
+    boarding_id = PointChoiceField(queryset=RoutePoint.objects.all(), label="Embarque")
+    alighting_id = PointChoiceField(queryset=RoutePoint.objects.all(), label="Desembarque")
+    desired_at = SearchDateTimeField(
+        label="Data e horário desejado (America/Sao_Paulo)",
+        widget=forms.DateTimeInput(
+            format="%Y-%m-%dT%H:%M:%S", attrs={"type": "datetime-local", "step": "1"}),
+        help_text="Janela fixa de ±30 minutos em relação à saída da origem.",
+    )
+
+    def clean(self):
+        cleaned = super().clean()
+        boarding = cleaned.get("boarding_id")
+        alighting = cleaned.get("alighting_id")
+        if boarding is not None and alighting is not None and boarding.pk == alighting.pk:
+            self.add_error("alighting_id", "Embarque e desembarque devem ser distintos.")
+        return cleaned

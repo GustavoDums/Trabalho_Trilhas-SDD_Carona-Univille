@@ -1,0 +1,27 @@
+{% extends "accounts/base.html" %}
+{% block title %}Buscar carona | Carona Univille{% endblock %}
+{% block content %}
+<h1>Buscar carona</h1>
+<p>Horários no fuso America/Sao_Paulo.</p>
+<p id="search-window">Janela fixa de ±30 minutos em relação à saída da origem. Não representa previsão de passagem nas paradas.</p>
+<form method="get" aria-describedby="search-window">
+    {{ form.as_p }}
+    <button type="submit">Buscar caronas</button>
+</form>
+{% if searched %}
+    {% if form.errors %}
+    <p role="alert">Corrija os campos indicados para buscar caronas.</p>
+    {% else %}
+    <section aria-label="Resultados da busca">
+        {% for result in results %}
+            {% include "rides/_search_result.html" with result=result only %}
+        {% empty %}
+            <p>Nenhuma oferta compatível com os filtros informados.</p>
+        {% endfor %}
+    </section>
+    {% endif %}
+{% else %}
+    <p>Informe os filtros para buscar ofertas compatíveis.</p>
+{% endif %}
+{% endblock %}
+

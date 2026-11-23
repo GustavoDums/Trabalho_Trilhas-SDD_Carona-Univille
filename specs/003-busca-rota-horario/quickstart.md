@@ -1,6 +1,6 @@
 # Quickstart previsto — Feature 003
 
-Roteiro para depois da implementação. Nesta rodada não há matching, formulário ou rota de busca executados.
+Atualização 2026-11-22: matching e formulário/cartões implementados e testados, conforme [evidência](evidence-t018.md). View/rota T004 local e demo/qualidade final T005 ainda pendentes; roteiro HTTP abaixo somente após essas tarefas.
 
 ## Pré-requisitos
 
@@ -25,6 +25,10 @@ Após T002 local, correspondente à T017:
 Não são previstas migrações. Testar todas as combinações de pontos na rota origem → parada1 → parada2 → destino; IDs deliberadamente fora da ordem do trajeto. Verificar inversão, ponto igual/ausente e rota direta.
 
 Usar relógio controlado e horário desejado suficientemente futuro: referências −30min/0/+30min passam; −30min−1s/+30min+1s falham. Adicionar meia-noite, offsets equivalentes e partida exatamente now. A janela aprovada usa saída da origem, não passagem no embarque.
+
+## Formulário isolado (T003 local)
+
+Executado: `venv/Scripts/python.exe -m pytest tests/test_ride_search.py` — 27 testes aprovados com RequestFactory, sem endpoint.
 
 ## Formulário e HTTP
 

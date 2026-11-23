@@ -724,3 +724,13 @@ def test_acceptance_refused_activation_never_publishes(academic_journey, publica
     response = client.post(reverse("rides:offer-create"), data)
     assert response.status_code == 302 and response.url == "/accounts/activation/"
     assert not apps.get_model("rides", "RideOffer").objects.exists()
+
+
+def test_publication_import_contract():
+    import inspect
+
+    service = import_module("rides.services")
+    assert callable(service.publish_offer)
+    assert list(inspect.signature(service.publish_offer).parameters) == ["driver", "data", "points"]
+    assert all(parameter.kind is inspect.Parameter.KEYWORD_ONLY
+               for parameter in inspect.signature(service.publish_offer).parameters.values())

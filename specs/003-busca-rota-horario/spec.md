@@ -2,7 +2,7 @@
 
 **Feature Branch**: `003-busca-rota-horario` (identificador; nenhuma branch criada)
 **Created**: 2026-11-22
-**Status**: Draft — regras temporais confirmadas, pronta para planejamento
+**Status**: implementação parcial T001–T003 locais verificada; view/rota e qualidade final pendentes ([evidência](evidence-t018.md))
 **Input**: “com base neste projeto até o momento, crie a feature 3 com as informações presentes no projeto”.
 
 ## Contexto e rastreabilidade
@@ -129,5 +129,5 @@ Como passageiro ativo, quero ver as informações necessárias para comparar ofe
 - Uma consulta válida sem resultados retorna estado vazio; não relaxa filtros automaticamente. Não exigir horário desejado futuro como nova restrição: a elegibilidade temporal dos resultados já exclui partidas não futuras.
 - Reputação, vagas reservadas e liberação de contato dependem de features posteriores. Não implementar nem prometer esses comportamentos nesta especificação.
 - A decisão de estrutura de serviço e sua integração com a publicação existente pertence ao planejamento técnico, preservando o comportamento da Feature 002.
-- Esta rodada entrega apenas spec e checklist. As duas confirmações foram registradas; plano, contratos técnicos, modelo de dados da consulta e tasks estão documentados nesta pasta, sem implementação. T017–T019 do roadmap permanecem abertas.
+- As duas confirmações temporais foram registradas; em 2026-11-22, T001–T003 locais foram implementadas com autorização das dependências. T017/T018 do roadmap concluídas; T019 e qualidade/demo final continuam pendentes.
 - Pendências constitucionais de homologação acadêmica simulada, domínios e cancelamento não são resolvidas por esta feature. As regras de matching desta spec foram confirmadas e alinhadas ao levantamento/roadmap. O texto da constitution não é emendado nesta rodada; seu marcador histórico deve ser considerado junto desta decisão documentada.

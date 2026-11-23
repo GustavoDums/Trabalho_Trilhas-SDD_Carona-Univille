@@ -108,14 +108,14 @@ flowchart TD
 ---
 
 #### Feature 003: Busca por Rota e Janela de Horário (`REQ-005`)
-*Status*: **Especificação, plano e tarefas locais preparados; implementação não iniciada**. [Plano](../specs/003-busca-rota-horario/plan.md) e [tarefas](../specs/003-busca-rota-horario/tasks.md). T017 → T002 local (preparação T001); T018 → T003; T019 → T004. [Spec da Feature 003](../specs/003-busca-rota-horario/spec.md). Confirmado em 2026-11-22: ±30 minutos fixos, bordas inclusivas, comparando a saída da origem, inclusive para embarque intermediário, com aviso explícito de ausência de previsão por parada. Sem tolerância customizável ou reputação inventada. Plano/tasks documentados; T017–T019 e todas as tarefas locais continuam abertas.
+*Status*: **Implementação parcial: T017/T018 concluídas; T019 pendente**. [Plano](../specs/003-busca-rota-horario/plan.md) e [tarefas](../specs/003-busca-rota-horario/tasks.md). T017 → T002 local (preparação T001); T018 → T003; T019 → T004. [Spec da Feature 003](../specs/003-busca-rota-horario/spec.md). Confirmado em 2026-11-22: ±30 minutos fixos, bordas inclusivas, comparando a saída da origem, inclusive para embarque intermediário, com aviso explícito de ausência de previsão por parada. Sem tolerância customizável ou reputação inventada. T001–T003 locais verificadas em [evidence-t018.md](../specs/003-busca-rota-horario/evidence-t018.md); T004/T005 locais abertas. Em 2026-11-22, o usuário autorizou implementar as dependências e manter a T018 sem nota conforme a spec.
 
-- [ ] **T017**: **[TESTE ESPECÍFICO DE ORDEM DE PARADAS E JANELA DE BUSCA]**: Implementar algoritmo determinístico `MatchingService` em `rides/services/matching_service.py` com testes unitários em `tests/test_matching.py` validando:
+- [x] **T017**: **[TESTE ESPECÍFICO DE ORDEM DE PARADAS E JANELA DE BUSCA]**: Implementar algoritmo determinístico `MatchingService` em `rides/services/matching_service.py` com testes unitários em `tests/test_matching.py` validando:
   - (1) **Ordem de paradas**: embarque em $P_i$ e desembarque em $P_j$ só é compatível se $i < j$ (ordem crescente).
-  - (2) **Limites da janela**: tolerância de $\pm 30$ minutos em relação ao horário de partida/passagem nos limites exatos de borda.
+  - (2) **Limites da janela**: tolerância de $\pm 30$ minutos em relação à saída da origem, nos limites exatos de borda, sem estimativa de passagem.
   - *Requisitos*: REQ-005, REQ-017 | *Dependências*: T013 | *Como verificar*: `pytest tests/test_matching.py` valida matching por rota e horário.
   - *Fusão*: Agrupa antigas T045, T046 e T047.
-- [ ] **T018**: Implementar formulário de busca `RideSearchForm`, template `rides/templates/rides/search.html` e regras de minimização LGPD (nome abreviado `display_name`, nota e veículo; placa e e-mail ocultos).
+- [x] **T018**: Implementar formulário de busca `RideSearchForm`, template `rides/templates/rides/search.html` e regras de minimização LGPD (nome abreviado `display_name`, trajeto, saída, vagas e modelo/cor; sem nome completo, nota, placa ou e-mail).
   - *Requisitos*: REQ-003, REQ-005 | *Dependências*: T017 | *Como verificar*: Renderização do cartão de busca não expõe e-mail nem placa do motorista.
   - *Fusão*: Agrupa antigas T048, T050 e T051.
 - [ ] **T019**: Implementar view `RideSearchView` em `rides/views.py` com ordenação cronológica e testes de integração em `tests/test_ride_search.py` para o fluxo de busca de caronas por passageiro ativo.

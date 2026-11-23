@@ -1013,3 +1013,58 @@ Instrução enviada ao agente de pesquisa (integral):
 
 Nenhum código, migração, staging ou commit nesta rodada. Validação documental,
 sem executar suíte futura nem alterar métricas existentes.
+
+
+---
+
+## 2026-11-22 — Feature 003 / roadmap T018 / T003 local e dependências autorizadas
+
+Prompt integral:
+
+~~~text
+Execute somente a tarefa T018 do Carona Univille.
+
+Área da tarefa — Feature 003, Busca por rota e horário.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T018 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Após análise, foi informado: T018 → T003 local; T001/T002 locais ainda ausentes e divergência sobre nota. Proposta: executar primeiro T001 e T002 (roadmap T017), depois T003 (T018), mantendo nota ausente conforme spec. View/rota T004 (T019) fora do escopo.
+
+Resposta integral do usuário:
+
+~~~text
+autorizo
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Skills aplicadas: speckit-implement (restrita às três tarefas autorizadas) e python-fact-grounded-coding. Checklist documental 16/16 aprovado; sem hooks configurados. Venv do projeto Python 3.12.10, Django 5.1.15 e PostgreSQL existentes.
+
+T001: regressão 114; contrato de import 115 antes/depois da refatoração, sem mudança de comportamento. T002: fixture inicialmente corrigida para criar conta PENDENTE; vermelho válido 65 falhas por serviço ausente, depois 65 aprovados. T003: 27 falhas por formulário ausente, depois 27 aprovados. Regressão final 359 aprovados, sem falhas/erros/ignorados; reports coverage-feature003-t018.json e test-results-feature003-t018.xml, detalhes em specs/003-busca-rota-horario/evidence-t018.md.
+
+Sem nova migração, view/rota de busca, nota, reserva, staging ou commit. Checklists locais T001–T003 e roadmap T017/T018 concluídos somente após evidência; T004/T005 locais permanecem pendentes. Alteração prévia em docs/prompts.md preservada.
