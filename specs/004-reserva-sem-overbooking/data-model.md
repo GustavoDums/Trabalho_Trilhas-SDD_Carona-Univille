@@ -17,14 +17,14 @@
 
 UniqueConstraint parcial em (offer, passenger) quando status=CONFIRMADA: no máximo uma reserva ativa do mesmo passageiro por oferta, independentemente do trecho. Registros CANCELADA preservam histórico e não impedem nova CONFIRMADA. CheckConstraint adicional boarding_point != alighting_point.
 
-Itinerário = origem + Waypoint por position + destino. Recusar pontos ausentes, invertidos, iguais ou itinerário ambíguo com repetições. Esta verificação entre tabelas e a proibição de autorreserva são validações do modelo; não podem ser representadas por CHECK SQL com join. O serviço T003 repetirá validações no estado corrente e sob lock. save usa full_clean conforme padrão ValidatedModel do projeto; bulk_create/update/SQL podem contornar regras Python e não são API de reserva.
+Itinerário = origem + Waypoint por position + destino. Recusar pontos ausentes, invertidos, iguais ou itinerário ambíguo com repetições. Esta verificação entre tabelas e a proibição de autorreserva são validações do modelo; não podem ser representadas por CHECK SQL com join. O serviço T003 repete validações no estado corrente e sob lock, conforme [evidência](evidence-t021.md). save usa full_clean conforme padrão ValidatedModel do projeto; bulk_create/update/SQL podem contornar regras Python e não são API de reserva.
 
 A elegibilidade do passageiro na criação não impede manutenção do histórico quando seu vínculo mudar posteriormente. Revalidação de motorista/partida/capacidade e serialização da operação suportada de reserva pertencem à T003, não a um contador ou lock parcial nesta modelagem.
 
 ## Capacidade e estados
 
 RideOffer.seats continua capacidade original, inteiro positivo já existente; não adicionar contador nem incrementar capacidade ao cancelar. Uma reserva CONFIRMADA ocupa uma vaga durante toda a oferta; não reutilizar vaga entre trechos.
-Disponibilidade futura = seats - quantidade de CONFIRMADA. Limite agregado entre linhas depende do BookingService transacional da T003; esta migração não comprova zero overbooking sozinha.
+Disponibilidade = seats - quantidade de CONFIRMADA. BookingService transacional da T003 protege o limite agregado; integração na busca T006 ainda pendente. A migração sozinha não substitui o serviço/locks.
 
 Estados persistidos: CONFIRMADA e CANCELADA. Não há espera por aceite do motorista. Sem fluxo de cancelamento, reconfirmação ou HTTP implementado pela T002; esses estados permitem evolução sem apagar histórico.
 

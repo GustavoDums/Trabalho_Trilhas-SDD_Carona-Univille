@@ -1,9 +1,23 @@
 # Contratos: Reserva de vagas sem overbooking
 
-**Status**: decisões D004-01/D004-02 homologadas em 2026-11-22; endpoints futuros, não implementados por T020/T002. [Spec](../spec.md).
+**Status**: decisões D004-01/D004-02 homologadas em 2026-11-22; serviço T003 implementado/verificado; endpoints continuam futuros. [Spec](../spec.md).
 
 POST /caronas/<offer_id>/reservar/ (rides:book), CSRF, passageiro ativo; GET /caronas/minhas-reservas/ (rides:my_bookings), somente próprias. Sucesso usa redirect-after-POST; falha de capacidade retorna mensagem de esgotamento sem dados privados. GET na ação retorna 405; IDs de terceiros não concedem acesso. Reserva instantânea CONFIRMADA, sem aceite; requisição futura informa boarding_point/alighting_point do catálogo e serviço valida ordem da rota. Sem reutilização por trecho. Na consulta privada, somente nome completo e placa da contraparte confirmada, nunca e-mail. WhatsApp adiado, sem campo de telefone.
 
 ## Regras comuns
 
 Identidade vem da sessão, não de campo oculto. Ação mutante exige POST/CSRF, salvo CLI administrativo documentado. Views delegam aos serviços, que também autorizam. Negativas não divulgam dados de terceiros. Escapar texto; sem e-mail/placa em atributos ou JSON públicos. Conflitos de domínio não retornam sucesso fictício nem stacktrace. Nomes propostos serão fixados na tarefa de decisão. Sem notificações externas nesta feature.
+
+## Serviço transacional — T003 local / núcleo da T021
+
+Assinatura implementada: BookingService.create_booking(*, passenger, offer_id, boarding_point_id, alighting_point_id) em rides/services/booking_service.py. passenger é o usuário da sessão passado pelo chamador confiável, não um campo controlado pelo navegador. IDs devem ser inteiros positivos; o serviço reconsulta os registros atuais.
+
+Retorna RideBooking CONFIRMADA após commit da própria transação (se chamado dentro de transação externa, o commit final pertence ao chamador). Embarque/desembarque devem satisfazer data-model.md; uma reserva ocupa a oferta inteira.
+
+Ordem de bloqueio: oferta → contas de passageiro/motorista por PK crescente. Revalidar papel/vínculo/is_active de ambos; saída deve ser estritamente futura no instante capturado após obter locks. Não confiar nos objetos passados ou em saldo calculado anteriormente. Não há estado de cancelamento de oferta no esquema atual; sua futura inclusão e verificação ficam na Feature 005, sem campo fictício aqui.
+
+Sob lock da oferta: recusar duplicidade CONFIRMADA por passageiro; contar todas as CONFIRMADA da oferta, independentemente do trecho, e criar somente se a contagem for menor que seats. Não alterar seats, não criar contador, não tocar matching/cartão (T006).
+
+Erros: PermissionDenied para usuário não autenticado/inelegível ou autorreserva; ValidationError por ID/trecho/oferta inválida ou duplicidade (code already_booked); NoSeatsAvailable, subclasse de ValidationError com code no_seats, para esgotamento. Erro SQL de unicidade ativa é traduzido somente após rollback do savepoint; demais IntegrityError são propagados com rollback. Erros não incluem e-mail/placa/nome completo.
+
+Todos os escritores de reservas/cancelamentos futuros devem respeitar o mesmo lock/ordem. Criação direta por modelo/bulk/SQL não é API de reserva; constraints locais não substituem limite agregado. Sem HTTP ou notificações nesta tarefa.

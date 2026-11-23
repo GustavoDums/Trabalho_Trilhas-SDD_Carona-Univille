@@ -2,7 +2,7 @@
 
 **Feature**: 004-reserva-sem-overbooking; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001 documental e T002 de modelo concluídas; T003–T007 abertas. [Evidência](evidence-t020.md).
+**Status**: T001–T003 concluídas; T004–T007 abertas. T006 autorizada pelo usuário para a próxima rodada, não executada aqui. [Modelo](evidence-t020.md) e [serviço/concorrência](evidence-t021.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -21,7 +21,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 - [x] T002 [US1] Escrever testes do modelo em tests/test_booking_flow.py e adicionar RideBooking em rides/models.py e migração em rides/migrations/, conforme data-model.md (RideBooking e RideOffer.seats); testar autorreserva, passageiro elegível na criação, trecho ordenado/distinto e unicidade ativa, incluindo restrições de status/pontos/unicidade no PostgreSQL. Escopo de modelo de FR-006/SC-005; serviço de capacidade/concorrência permanece T003. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-001/FR-002; SC-002. **Depende**: T001; Features 001/002. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T020. Fonte canônica de campos em [data-model.md](data-model.md): `RideBooking.id`, `RideBooking.offer`, `RideBooking.passenger`, `RideBooking.boarding_point`, `RideBooking.alighting_point`, `RideBooking.status`, `RideBooking.created_at`, `RideBooking.updated_at`, `RideOffer.seats`. D004-01/D004-02 homologadas; não adicionar telefone, contador de vagas ou serviço de reserva nesta tarefa.
 
-- [ ] T003 [US1] Implementar BookingService.create_booking em rides/services/booking_service.py após testes em tests/test_concurrency_booking.py com TransactionTestCase ou pytest transaction=True, duas conexões/threads e barreira antes da disputa (nunca após obter lock); conclusão: uma confirmação, uma rejeição, rollback e capacidade preservados no PostgreSQL. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-001/FR-002/FR-005; SC-001/SC-002. **Depende**: T002; Feature 003/T001. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T021.
+- [x] T003 [US1] Implementar BookingService.create_booking em rides/services/booking_service.py após testes em tests/test_concurrency_booking.py com TransactionTestCase ou pytest transaction=True, duas conexões/threads e barreira antes da disputa (nunca após obter lock); conclusão: uma confirmação, uma rejeição, rollback e capacidade preservados no PostgreSQL. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-001/FR-002/FR-005; SC-001/SC-002. **Depende**: T002; Feature 003/T001. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T021.
 
 - [ ] T006 [US1] Integrar disponibilidade calculada em rides/services/matching_service.py e cartão de busca em rides/templates/rides/_search_result.html; testes em tests/test_ride_search.py comprovam vagas ocupadas e esgotamento sem alterar filtros nem expor segredos. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-004; SC-004. **Depende**: T003; Feature 003/T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T021/T023.
 
@@ -47,7 +47,7 @@ Dependências explícitas de cada tarefa são obrigatórias; número não permit
 | Roadmap | Requisito / objetivo detalhado na tarefa | IDs locais |
 | --- | --- | --- |
 | T020 | REQ-006 | T002 |
-| T021 | REQ-006 | T003, T006 |
+| T021 | REQ-006; núcleo de serviço/concorrência concluído | T003; T006 é integração em rodada própria |
 | T022 | REQ-006 | T004 |
 | T023 | REQ-006 | T005, T006 |
 | Preparação/qualidade | Decisões e evidência | T001, T007 |

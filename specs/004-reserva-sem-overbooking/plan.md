@@ -2,7 +2,7 @@
 
 **Feature**: 004-reserva-sem-overbooking | **Date**: 2026-11-22 | **Spec**: [spec.md](spec.md)
 **Branch**: nenhuma criada/alterada; ponteiro da Feature 003 preservado.
-**Status**: D004-01/D004-02 homologadas; T020/T002 de modelo/migração concluída. Serviço/HTTP pendentes. [Evidência](evidence-t020.md).
+**Status**: modelo T002/T020 e serviço/concorrência T003/T021 concluídos; integração T006 e HTTP pendentes. [Evidência transacional](evidence-t021.md).
 
 ## Summary
 
@@ -25,13 +25,13 @@ Python 3.12+, Django 5.1.x, PostgreSQL 15+, pytest/pytest-django/pytest-cov, tem
 
 [Spec](spec.md), [pesquisa](research.md), [dados](data-model.md), [contratos](contracts/web-routes.md), [validação](quickstart.md) e [tarefas](tasks.md).
 
-BookingService.create_booking em rides/services/booking_service.py: transaction.atomic, bloquear RideOffer com select_for_update, revalidar contas e oferta, contar CONFIRMADA e criar reserva. Todos os escritores futuros usam o mesmo lock da oferta. Constraint parcial cobre duplicidade, mas limite agregado depende do serviço transacional. Usar ordem estável de locks e tratar IntegrityError fora do bloco quebrado. DTOs de leitura filtram dados por participante. Integrar MatchingService com disponibilidade sem mudar matching de rota/tempo.
+BookingService.create_booking em rides/services/booking_service.py: transaction.atomic, bloquear RideOffer com select_for_update e depois as contas por PK crescente, revalidar contas e oferta, contar CONFIRMADA e criar reserva. Todos os escritores futuros usam o mesmo lock da oferta. Constraint parcial cobre duplicidade, mas limite agregado depende do serviço transacional. Usar ordem estável de locks e tratar IntegrityError fora do bloco quebrado. DTOs de leitura filtram dados por participante. Integrar MatchingService com disponibilidade sem mudar matching de rota/tempo.
 
 Caminhos novos são planejados. Pacote rides/services já disponível pela Feature 003/T001; preservar import público publish_offer.
 
 ## Data & Interfaces
 
-[data-model.md](data-model.md) é fonte canônica do desenho proposto; [contratos](contracts/web-routes.md) define interfaces e autorização. T002 adicionou RideBooking, boarding_point/alighting_point, enum de status e unicidade ativa conforme desenho canônico; sem contador de vagas. Modelo valida autorreserva, passageiro elegível na criação e ordem de pontos. Limite agregado/concorrência permanece na T003. Na implementação: revisar dados legados e plano, aplicar migração e verificar no PostgreSQL local sem reset.
+[data-model.md](data-model.md) é fonte canônica do desenho proposto; [contratos](contracts/web-routes.md) define interfaces e autorização. T002 adicionou RideBooking, boarding_point/alighting_point, enum de status e unicidade ativa conforme desenho canônico; sem contador de vagas. Modelo valida autorreserva, passageiro elegível na criação e ordem de pontos. Limite agregado/concorrência implementado na T003; assinatura e erros em contracts/web-routes.md. T006 mantém separada a integração da disponibilidade exibida. Na implementação: revisar dados legados e plano, aplicar migração e verificar no PostgreSQL local sem reset.
 
 ## Implementation Order
 

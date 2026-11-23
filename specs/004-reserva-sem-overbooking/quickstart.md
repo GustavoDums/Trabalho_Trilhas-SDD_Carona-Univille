@@ -1,9 +1,9 @@
 # Quickstart de validação: Feature 004
 
-**Estado em 2026-11-22**: modelo/migração T002 local (T020) implementado, 49 testes de modelo aprovados e migração 0003 aplicada no PostgreSQL local. [Evidência](evidence-t020.md). Serviço, concorrência, HTTP e qualidade final continuam futuros.
+**Estado em 2026-11-22**: modelo/migração T002 local (T020) implementado, 49 testes de modelo aprovados e migração 0003 aplicada no PostgreSQL local. [Evidência](evidence-t020.md). Serviço/concorrência T003 também concluído: 33 testes aprovados e prova da última vaga em [evidence-t021.md](evidence-t021.md). HTTP, disponibilidade exibida T006 e qualidade final continuam pendentes.
 
 1. D004-01/D004-02 da [spec](spec.md) homologadas. Usar venv e PostgreSQL existentes, sem imprimir segredos. Para repetir a verificação do modelo: `venv/Scripts/python.exe -m pytest tests/test_booking_flow.py`.
-2. Após implementar as tarefas seguintes, roteiro completo da raiz (tests/test_concurrency_booking.py ainda não existe e não deve ser exigido para T020):
+2. Modelo e serviço disponíveis para repetir verificações abaixo. A regressão de busca ainda mostra vagas ofertadas até T006; o roteiro HTTP de reserva aguarda T004/T005:
 
 ~~~powershell
 .\venv\Scripts\python.exe manage.py check

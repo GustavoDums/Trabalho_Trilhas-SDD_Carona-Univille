@@ -1177,3 +1177,62 @@ Skills: speckit-implement restrita a T001 documental e T002 de modelo, python-fa
 TDD: 49 falhas por modelo RideBooking ausente (LookupError), antes de editar produção; 49 aprovados após modelo/migração. Migração 0003_ridebooking planejada, SQL revisado e aplicada no PostgreSQL local; snapshots de contas/ofertas/pontos/paradas idênticos antes/depois, nova tabela vazia, 4 FKs e 3 restrições verificadas. Relatórios e resultados finais em specs/004-reserva-sem-overbooking/evidence-t020.md.
 
 Sem serviço de reserva/concorrência, interface, rotas, telefone, staging ou commit. Alteração prévia em docs/prompts.md preservada.
+
+---
+
+## 2026-11-22 — Feature 004 / T003 local / núcleo do roadmap T021
+
+Prompt integral:
+
+~~~text
+Execute somente a tarefa T021 do Carona Univille.
+
+Área da tarefa — Feature 004, Reserva sem overbooking.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T021 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Implemente a proteção transacional prevista no plan. Teste dois passageiros
+elegíveis tentando reservar simultaneamente a última vaga, com transações
+independentes no PostgreSQL. Verifique que existe exatamente uma reserva
+confirmada e que o saldo final é zero.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Antes de editar, identificadas T003 local (serviço/concorrência) e T006 local (disponibilidade na busca), ambas vinculadas à T021 na tabela. Recomendado executar somente T003 nesta rodada e deixar T006 para outra rodada.
+
+Resposta integral do usuário:
+
+~~~text
+sim, logo após pode rodar a T006 na próxima rodada
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Escopo desta rodada: somente T003; autorização da T006 fica registrada para a próxima rodada, sem executá-la aqui. Skills aplicadas: speckit-implement restrita ao recorte autorizado e python-fact-grounded-coding. Sem hooks/checklist adicional; ponteiro ativo preservado com SPECIFY_FEATURE_NO_PERSIST.
+
+Contrato interno da função documentado antes do código. TDD: 33 falhas por booking_service ausente, depois 33 aprovações. Testes transacionais usam duas conexões com pg_backend_pid e txid_current distintos, barreira antes dos locks, uma confirmação e uma recusa, saldo zero; caso adicional cobre duplicidade concorrente do mesmo passageiro. JUnit final inclui propriedades com IDs técnicos, resultados e saldo. Demais testes cobrem contas atuais, IDs/trechos, passado/now, esgotamento, histórico CANCELADA e rollback de falhas reais SQL após insert/savepoint.
+
+Resultados finais e arquivos em specs/004-reserva-sem-overbooking/evidence-t021.md. Sem mudanças em matching/cartões, modelos/migrações, views/rotas; sem staging ou commit.
