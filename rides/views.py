@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
 from .forms import RideOfferForm, WaypointFormSet
+from .models import RideOffer
 from .services import publish_offer
 
 
@@ -22,7 +23,11 @@ class RideCreateView(ActiveDriverRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.setdefault("form", RideOfferForm())
+        if "form" not in context:
+            vehicle = RideOffer.objects.filter(driver=self.request.user).order_by("-created_at", "-id").values(
+                "vehicle_model", "vehicle_color", "vehicle_plate",
+            ).first()
+            context["form"] = RideOfferForm(initial=vehicle or {})
         context.setdefault("waypoint_formset", WaypointFormSet(prefix="waypoints"))
         return context
 
@@ -39,4 +44,8 @@ class RideCreateView(ActiveDriverRequiredMixin, TemplateView):
             else:
                 messages.success(request, "Oferta de carona publicada com sucesso.")
                 return redirect("/caronas/minhas-ofertas/")
+        # Mantém os demais dados para correção, sem reexibir a placa enviada.
+        safe_data = form.data.copy()
+        safe_data["vehicle_plate"] = ""
+        form.data = safe_data
         return self.render_to_response(self.get_context_data(form=form, waypoint_formset=stops))

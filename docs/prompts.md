@@ -796,19 +796,50 @@ os arquivos alterados e os resultados das verificações. Sugira uma mensagem
 de commit com a referência feature / task / requisito. Deixe o staging e o
 commit para minha revisão e encerre a rodada.
 
-Referência anexada: snapshot somente leitura de `file_prompts.md`.
 
-### Escolha do recorte
+## P027 — Dependência da T015: concluir roadmap T014 / Feature 002 T004 local
 
-Após informar que T014 corresponde a T003 e T004 locais e recomendar executar
-somente T003 nesta rodada, o usuário respondeu:
+Execute somente a tarefa T015 do Carona Univille.
 
-sim
+Área da tarefa — Feature 002, Oferta de caronas com paradas.
+
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e
+tasks da feature antes de editar. Confirme o requisito, as dependências e os
+critérios de conclusão da tarefa selecionada.
+
+Localize T015 em docs/roadmap-implementacao.md para identificar a feature e
+o objetivo exato. Faça a correspondência por objetivo e requisito com o
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para
+implementação, se o item ainda estiver apenas no roadmap, informe quais
+artefatos da feature faltam e aguarde. Se o próprio item for de
+planejamento, gere apenas os artefatos previstos para ele.
+
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.
+Se houver divergência entre os artefatos ou uma decisão pendente que afete
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já
+existentes no repositório.
+
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações
+pertinentes. Registre sua conclusão no checklist somente se os critérios
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem
+de commit com a referência feature / task / requisito. Deixe o staging e o
+commit para minha revisão e encerre a rodada.
 
 Referência anexada: `docs/prompts.md`.
 
-Escopo aprovado: T003 local, publicação atômica. T004 permanece aberta.
-Artefatos: forms/services/views/urls de rides, template, JavaScript local,
-integração de rotas, testes de publicação, relatórios Feature 002, README e tasks.
-Sem listagem de ofertas, reutilização de veículo ou encerramento integral da T014.
-Alterações preexistentes preservadas; sem staging ou commit.
+### Autorização para concluir a dependência
+
+O agente identificou T004 local pendente e recomendou executá-la antes da
+T015 (T005 local). Resposta do usuário:
+
+o que achar mais recomendado, desde que funcione posteriormente
+
+Referência anexada: `docs/prompts.md`.
+
+Recorte adotado e informado antes da edição: somente T004 local, encerrando o
+restante da T014 do roadmap. T015/T005 local não implementada nesta rodada.
+Artefatos: forms, views, template de oferta, testes complementares, relatórios
+Feature 002, README, tasks e roadmap. Alterações preexistentes preservadas;
+sem staging ou commit.

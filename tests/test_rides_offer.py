@@ -388,3 +388,140 @@ def test_publish_service_rechecks_driver(active_driver):
     with pytest.raises(PermissionDenied):
         publish_offer(driver=active_driver, data={}, points=[])
     assert not apps.get_model("rides", "RideOffer").objects.exists()
+
+
+def test_vehicle_prefill_only_latest_own_offer(client, active_driver, driver_factory, offer_factory):
+    offer_factory(vehicle_model="Antigo Demo")
+    latest = offer_factory(vehicle_model="Último Demo", vehicle_color="Verde", vehicle_plate="ultima")
+    offer_factory(driver=driver_factory(), vehicle_model="Alheio Demo", vehicle_plate="ALHEIA")
+    client.force_login(active_driver)
+    response = client.get(reverse("rides:offer-create"), {"driver": "999999"})
+    initial = response.context["form"].initial
+    assert initial == {"vehicle_model": latest.vehicle_model, "vehicle_color": "Verde", "vehicle_plate": "ULTIMA"}
+    assert "ALHEIA" not in response.content.decode()
+
+
+def test_vehicle_first_offer_does_not_prefill_other_author(client, active_driver, driver_factory, offer_factory):
+    offer_factory(driver=driver_factory(), vehicle_plate="SEGREDOALHEIO")
+    client.force_login(active_driver)
+    response = client.get(reverse("rides:offer-create"))
+    assert not response.context["form"].initial
+    assert "SEGREDOALHEIO" not in response.content.decode()
+
+
+def test_vehicle_reuse_submission_preserves_previous_snapshot(client, active_driver, offer_factory, publication_data):
+    first = offer_factory(vehicle_model="Primeiro Demo", vehicle_color="Azul", vehicle_plate="PRIMEIRA")
+    before = type(first).objects.values().get(pk=first.pk)
+    client.force_login(active_driver)
+    data = dict(publication_data, vehicle_model="Novo Demo", vehicle_color="Verde", vehicle_plate=" nova ")
+    assert client.post(reverse("rides:offer-create"), data).status_code == 302
+    assert type(first).objects.values().get(pk=first.pk) == before
+    assert type(first).objects.exclude(pk=first.pk).get().vehicle_plate == "NOVA"
+
+
+@pytest.mark.parametrize("field,value", [
+    ("vehicle_model", ""), ("vehicle_model", "  "), ("vehicle_color", ""),
+    ("vehicle_color", "  "), ("vehicle_plate", "  "), ("seats", "0"),
+    ("seats", "-1"), ("seats", "1.5"), ("origin", "999999"),
+    ("destination", ""), ("departure_at", "2000-01-01T12:00"),
+])
+def test_invalid_offer_preserves_fields_and_clears_plate(client, active_driver, publication_data, field, value):
+    client.force_login(active_driver)
+    data = dict(publication_data, **{field: value})
+    response = client.post(reverse("rides:offer-create"), data)
+    assert response.status_code == 200
+    form = response.context["form"]
+    assert field in form.errors
+    assert form["vehicle_plate"].value() == ""
+    assert form["vehicle_color"].value() == data["vehicle_color"]
+    assert "Informe novamente a placa" in response.content.decode()
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+    assert not apps.get_model("rides", "Waypoint").objects.exists()
+
+
+@pytest.mark.parametrize("management", ["missing", "negative", "invalid", "initial"])
+def test_invalid_management_form(client, active_driver, publication_data, management):
+    client.force_login(active_driver)
+    data = dict(publication_data)
+    if management == "missing":
+        del data["waypoints-TOTAL_FORMS"]
+    elif management == "negative":
+        data["waypoints-TOTAL_FORMS"] = "-1"
+    elif management == "initial":
+        data["waypoints-INITIAL_FORMS"] = "1"
+    else:
+        data["waypoints-TOTAL_FORMS"] = "invalido"
+    response = client.post(reverse("rides:offer-create"), data)
+    assert response.status_code == 200
+    assert response.context["waypoint_formset"].non_form_errors()
+    assert response.context["form"]["vehicle_plate"].value() == ""
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+
+
+@pytest.mark.parametrize("kind", ["empty", "unknown", "repeated", "endpoint"])
+def test_invalid_stop_rejects_complete_publication(client, active_driver, publication_data, kind):
+    client.force_login(active_driver)
+    data = dict(publication_data)
+    america = apps.get_model("rides", "RoutePoint").objects.get(code="bairro-america").pk
+    second = {"empty": "", "unknown": "999999", "repeated": america, "endpoint": data["origin"]}[kind]
+    data.update({"waypoints-TOTAL_FORMS": "2", "waypoints-0-point": america, "waypoints-1-point": second})
+    response = client.post(reverse("rides:offer-create"), data)
+    assert response.status_code == 200
+    assert response.context["waypoint_formset"][0]["point"].value() == str(america)
+    assert response.context["form"]["vehicle_plate"].value() == ""
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+    assert not apps.get_model("rides", "Waypoint").objects.exists()
+
+
+def test_invalid_departure_exactly_now(client, active_driver, publication_data, monkeypatch):
+    now = timezone.now().replace(second=0, microsecond=0)
+    monkeypatch.setattr(timezone, "now", lambda: now)
+    client.force_login(active_driver)
+    data = dict(publication_data, departure_at=timezone.localtime(now).strftime("%Y-%m-%dT%H:%M"))
+    response = client.post(reverse("rides:offer-create"), data)
+    assert response.status_code == 200
+    assert "departure_at" in response.context["form"].errors
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+
+
+def test_invalid_correction_then_resubmit(client, active_driver, publication_data):
+    client.force_login(active_driver)
+    url = reverse("rides:offer-create")
+    assert client.post(url, dict(publication_data, seats="0")).status_code == 200
+    assert client.post(url, publication_data).status_code == 302
+    assert apps.get_model("rides", "RideOffer").objects.count() == 1
+
+
+def test_invalid_same_endpoints(client, active_driver, publication_data):
+    client.force_login(active_driver)
+    response = client.post(reverse("rides:offer-create"), dict(publication_data, destination=publication_data["origin"]))
+    assert response.status_code == 200
+    assert "destination" in response.context["form"].errors
+    assert response.context["form"]["vehicle_plate"].value() == ""
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+
+
+def test_invalid_service_error_returns_field_feedback(client, active_driver, publication_data, monkeypatch):
+    def fail_publication(**kwargs):
+        raise ValidationError({"departure_at": "A saída deve ser estritamente futura."})
+
+    monkeypatch.setattr("rides.views.publish_offer", fail_publication)
+    client.force_login(active_driver)
+    response = client.post(reverse("rides:offer-create"), publication_data)
+    assert response.status_code == 200
+    assert "departure_at" in response.context["form"].errors
+    assert response.context["form"]["vehicle_plate"].value() == ""
+    assert not apps.get_model("rides", "RideOffer").objects.exists()
+
+
+def test_invalid_service_unknown_catalog_point(offer_factory, active_driver):
+    from rides.services import publish_offer
+    source = offer_factory()
+    data = {field: getattr(source, field) for field in (
+        "origin", "destination", "departure_at", "seats", "vehicle_model", "vehicle_color", "vehicle_plate",
+    )}
+    phantom = apps.get_model("rides", "RoutePoint")(pk=999999, code="sintetico-ausente", name="Ponto Sintético")
+    with pytest.raises(ValidationError, match="catálogo"):
+        publish_offer(driver=active_driver, data=data, points=[phantom])
+    assert type(source).objects.count() == 1
+    assert not apps.get_model("rides", "Waypoint").objects.exists()

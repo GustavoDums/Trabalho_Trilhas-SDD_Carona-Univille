@@ -10,9 +10,9 @@ Reproduzir: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-q
 <!-- feature-001-quality:end -->
 
 <!-- feature-002-quality:start -->
-Feature 002 / roadmap T014 (parcial) / T003 local — **70 testes aprovados**.
-Modelos e publicação; T004 e tarefas seguintes ainda pendentes. Cobertura de `rides/`: **97.89915966386555%** combinada;
-linhas: 191/192 (99.47916666666667%); ramificações: 42/46 (91.30434782608695%). Meta: 80%.
+Feature 002 / roadmap T014 / T004 local — **97 testes aprovados**.
+Modelos, publicação e reutilização de veículo; T005 e tarefas seguintes pendentes. Cobertura de `rides/`: **98.83268482490273%** combinada;
+linhas: 205/205 (100%); ramificações: 49/52 (94.23076923076923%). Meta: 80%.
 Relatórios: [coverage-feature002.json](coverage-feature002.json) e [test-results-feature002.xml](test-results-feature002.xml).
 Medição: 2026-11-22. Reproduzir: `venv/Scripts/python.exe -m pytest tests/test_rides_offer.py --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature002.json --junitxml=test-results-feature002.xml`.
 <!-- feature-002-quality:end -->

@@ -2,7 +2,7 @@
 
 **Feature**: 002-oferta-caronas-paradas. IDs abaixo são locais à Feature 002.
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contratos](contracts/web-routes.md), [quickstart.md](quickstart.md).
-**Prerequisites**: Feature 001 concluída; identidade e middleware disponíveis; PostgreSQL e venv existentes. Rodada de implementação autorizada: roadmap T013 corresponde a T002 local; preparação T001 e fundação T002 concluídas. T003 concluída em recorte posterior da T014; T004–T007 permanecem abertas.
+**Prerequisites**: Feature 001 concluída; identidade e middleware disponíveis; PostgreSQL e venv existentes. Rodada de implementação autorizada: roadmap T013 corresponde a T002 local; preparação T001 e fundação T002 concluídas. T003 e T004 concluídas nos recortes da T014; T005–T007 permanecem abertas.
 **Tests**: obrigatórios pela constitution, com dados sintéticos e TDD dentro de cada tarefa: escrever/rodar testes, registrar falha esperada, implementar, rodar novamente. Não aceitar erro de configuração como prova de comportamento.
 
 ## Phase 1: Setup
@@ -27,7 +27,7 @@
 **Goal**: reutilização segura de veículo próprio e feedback consistente de entradas inválidas.
 **Independent Test**: pré-preencher com última oferta própria, submeter erros e corrigir, mantendo snapshots anteriores intactos.
 
-- [ ] T004 [US2] Expandir testes `test_vehicle_*` e `test_invalid_*` em `tests/test_rides_offer.py` e completar tratamento de erros/reutilização em `rides/forms.py`, `rides/views.py`, `rides/services.py` e `rides/templates/rides/offer_create.html`, conforme [contratos](contracts/web-routes.md) e [data-model.md](data-model.md): `RideOffer.vehicle_model`, `RideOffer.vehicle_color`, `RideOffer.vehicle_plate`, `RideOffer.origin`, `RideOffer.destination`, `RideOffer.departure_at`, `RideOffer.seats`, `Waypoint.point`, `Waypoint.position`. Reutilizar somente snapshot da última oferta do próprio autor, copiar novos valores sem mutar a anterior; erros preservam dados não sensíveis e limpam placa. Cobrir campos ausentes/espaços, vagas fracionárias, horário exatamente agora/passado, catálogo desconhecido, pontos repetidos, management form inválido e falha intermediária sem gravação parcial. REQ-004, REQ-003; FR-004–FR-008; US2.1–2.3; dependência T003; conclusão: correção/reenvio e reutilização cumprem contrato, com testes aprovados.
+- [x] T004 [US2] Expandir testes `test_vehicle_*` e `test_invalid_*` em `tests/test_rides_offer.py` e completar tratamento de erros/reutilização em `rides/forms.py`, `rides/views.py`, `rides/services.py` e `rides/templates/rides/offer_create.html`, conforme [contratos](contracts/web-routes.md) e [data-model.md](data-model.md): `RideOffer.vehicle_model`, `RideOffer.vehicle_color`, `RideOffer.vehicle_plate`, `RideOffer.origin`, `RideOffer.destination`, `RideOffer.departure_at`, `RideOffer.seats`, `Waypoint.point`, `Waypoint.position`. Reutilizar somente snapshot da última oferta do próprio autor, copiar novos valores sem mutar a anterior; erros preservam dados não sensíveis e limpam placa. Cobrir campos ausentes/espaços, vagas fracionárias, horário exatamente agora/passado, catálogo desconhecido, pontos repetidos, management form inválido e falha intermediária sem gravação parcial. REQ-004, REQ-003; FR-004–FR-008; US2.1–2.3; dependência T003; conclusão: correção/reenvio e reutilização cumprem contrato, com testes aprovados.
 
 ## Phase 5: User Story 3 — Minhas ofertas (P3)
 
@@ -67,7 +67,7 @@ Nenhuma tarefa marcada [P]: os passos compartilham `models.py`, `forms.py`, `vie
 
 ## Implementation Strategy
 
-Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de execução são marcados; T004–T007 permanecem abertos. Respeitar limites de validação do modelo de dados e nunca alegar garantias SQL de regras que dependem de serviço. Não alterar a constitution, as pendências de matching/cancelamento nem os comportamentos da Feature 001.
+Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de execução são marcados; T005–T007 permanecem abertos. Respeitar limites de validação do modelo de dados e nunca alegar garantias SQL de regras que dependem de serviço. Não alterar a constitution, as pendências de matching/cancelamento nem os comportamentos da Feature 001.
 
 ## Evidência — roadmap T013 / Feature 002 T002 local, preparação T001 (2026-11-22)
 
@@ -91,3 +91,14 @@ Uma tarefa por rodada/commit revisável. Somente checkboxes com evidência de ex
 - Regressão dos seis módulos existentes da Feature 001: 152 aprovados; total de 222 casos nas duas execuções. `manage.py check` sem problemas; `makemigrations --check --dry-run` sem diferenças; diagnósticos Python sem erros. Nenhuma mudança de esquema.
 - Navegador: prévia HTML gerada pelo template real usando catálogo local, sem publicação no banco pela prévia. Adicionar três paradas, selecionar pontos e remover a do meio preservou ordem/valores, nomes e IDs consecutivos e TOTAL_FORMS=2. Persistência HTTP/CSRF verificada separadamente pelo cliente Django nos testes. Não se alega fluxo completo em servidor/navegador nem conclusão da demo final.
 - Limites: 302 de sucesso para `/caronas/minhas-ofertas/`, cuja lista pertence à T005; destino testado sem segui-lo. Reutilização de veículo, limpeza de placa em reapresentação e bateria complementar de erros são T004 e não foram implementadas nesta rodada. T004–T007 e restante da T014 permanecem abertos. Sem staging ou commit; alteração preexistente do histórico preservada.
+
+## Evidência — roadmap T014 / Feature 002 T004 local (2026-11-22)
+
+- Ao solicitar T015, foi identificada dependência T004 local pendente. Usuário autorizou o caminho recomendado; escopo informado e executado: somente T004 local, encerrando a T014. T005 local/T015 não executada. Dependência T003 satisfeita; REQ-004, REQ-003; FR-004–FR-008 e US2.1–2.3.
+- GET sugere apenas modelo/cor/placa da última oferta do motorista da sessão, por created_at/id decrescentes. Primeira oferta sem dados alheios; sem pré-preencher trajeto, horário ou vagas. POST cria novo snapshot e não altera registros anteriores.
+- Em erro de campo, serviço ou paradas, placa é removida do formulário reapresentado; instrução pede nova digitação. Demais campos e seleções das paradas são mantidos. Management form ausente/não numérico, total negativo e initial incompatível são rejeitados sem escrita. Demais validações e rollback reutilizam modelos/serviço existentes, sem alteração de esquema.
+- TDD: execução inicial selecionou 33 casos (24 novos e nove existentes), com 20 falhas e 13 aprovações. Quatro falhas eram comparação indevida de string HTTP com inteiro no teste de preservação de ponto; ajustada após inspeção. Lacunas reais de pré-preenchimento, placa e management form corrigidas; acrescentados três casos para extremos iguais, feedback de erro do serviço e catálogo inexistente no serviço.
+- Resultado final: 97 testes da Feature 002 aprovados (27 novos nesta rodada), PostgreSQL. `venv/Scripts/python.exe -m pytest tests/test_rides_offer.py --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature002.json --junitxml=test-results-feature002.xml`.
+- Regressão dos seis módulos da Feature 001: 152 aprovados, sem alterações em identidade/acesso. Total das duas execuções: 249 casos. Cobertura de rides: 98,83268482490273% combinada, linhas 205/205 (100%) e ramificações 49/52 (94,23076923076923%). Relatórios e README separados por feature.
+- `manage.py check` sem problemas; `makemigrations --check --dry-run` sem diferenças; diagnósticos dos arquivos Python alterados sem erros; `git diff --check` sem erros. Sem novas migrações ou mudança no banco local.
+- Critérios T004 atendidos e T014 do roadmap encerrada. T005/T015 agora pode ser executada em rodada própria; destino `/caronas/minhas-ofertas/` ainda não implementado nesta rodada. Nenhum staging ou commit; alterações preexistentes preservadas.

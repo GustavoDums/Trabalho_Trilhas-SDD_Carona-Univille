@@ -6,6 +6,7 @@
 <p>Defina a origem, as paradas na ordem da viagem e o destino. Horários no fuso America/Sao_Paulo.</p>
 <form method="post">
     {% csrf_token %}
+    {% if form.is_bound %}<p role="status">Informe novamente a placa após corrigir os dados da oferta.</p>{% endif %}
     {{ form.as_p }}
     <fieldset>
         <legend>Paradas intermediárias</legend>

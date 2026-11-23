@@ -33,5 +33,13 @@ class RequiredWaypointFormSet(BaseFormSet):
         form.empty_permitted = False
         return form
 
+    def clean(self):
+        super().clean()
+        if not self.management_form.is_valid():
+            return
+        management = self.management_form.cleaned_data
+        if management["TOTAL_FORMS"] < 0 or management["INITIAL_FORMS"] != 0:
+            raise forms.ValidationError("Dados de controle das paradas inválidos. Confira as paradas e envie novamente.")
+
 
 WaypointFormSet = formset_factory(WaypointForm, formset=RequiredWaypointFormSet, extra=0)
