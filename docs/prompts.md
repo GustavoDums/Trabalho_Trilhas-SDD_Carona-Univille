@@ -1236,3 +1236,25 @@ Escopo desta rodada: somente T003; autorização da T006 fica registrada para a 
 Contrato interno da função documentado antes do código. TDD: 33 falhas por booking_service ausente, depois 33 aprovações. Testes transacionais usam duas conexões com pg_backend_pid e txid_current distintos, barreira antes dos locks, uma confirmação e uma recusa, saldo zero; caso adicional cobre duplicidade concorrente do mesmo passageiro. JUnit final inclui propriedades com IDs técnicos, resultados e saldo. Demais testes cobrem contas atuais, IDs/trechos, passado/now, esgotamento, histórico CANCELADA e rollback de falhas reais SQL após insert/savepoint.
 
 Resultados finais e arquivos em specs/004-reserva-sem-overbooking/evidence-t021.md. Sem mudanças em matching/cartões, modelos/migrações, views/rotas; sem staging ou commit.
+
+---
+
+## 2026-11-22 — Feature 004 / T006 local / integração T021–T023
+
+Prompt integral:
+
+~~~text
+ok, pode executar a T006, mas importante deixar mensagem de commit, TDD, regressão, serviços e etc
+~~~
+
+Referência anexada: docs/prompts.md.
+
+Confirma execução da T006 já autorizada para a rodada seguinte à T003. Escopo: MatchingService e cartão público; REQ-006, REQ-003, REQ-017; FR-004 e recorte de busca SC-004. Sem implementar interface/rotas de reserva T004/T005.
+
+Skills aplicadas: speckit-implement restrita à T006 e python-fact-grounded-coding. Constituição, levantamento, artefatos 004 e DTO da 003 consultados; sem checklist adicional/hooks e ponteiro ativo preservado.
+
+TDD: 7 testes novos falharam por SearchResult.available_seats ausente, antes de alterar produção. Depois, módulo de formulário/HTML/HTTP com 70 testes aprovado. Adaptações em testes anteriores somente para contrato do DTO estendido e rótulo de vagas disponíveis, mantendo asserções de privacidade, capacidade original e imutabilidade.
+
+Implementação: Count SQL das CONFIRMADA por oferta, campo transitório available_seats separado da capacidade seats, sem N+1. CANCELADA não ocupa vaga; confirmação conta na oferta inteira. Filtros preservados: esgotadas seguem visíveis com saldo zero e rótulo, sem botão de reserva. BookingService permanece sem alteração, revalidando saldo sob lock. Regressão final, métricas e arquivos em specs/004-reserva-sem-overbooking/evidence-t006.md.
+
+Sem staging ou commit; mensagem sugerida ao encerrar. Alterações existentes preservadas.

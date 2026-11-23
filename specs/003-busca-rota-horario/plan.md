@@ -75,3 +75,8 @@ Predicados de rota/tempo podem ser testados isoladamente; search aplica também 
 ## Complexity Tracking
 
 Sem violações ou exceções. Transformação do módulo em pacote é preparação técnica compatível, não nova funcionalidade; documentada como T001 local. Não ampliar matching para reserva, frota, reputação ou cancelamento.
+## Evolução de leitura — Feature 004/T006
+
+MatchingService mantém os predicados anteriores, incluindo seats > 0 como capacidade original. Count das bookings CONFIRMADA, com filter e distinct por oferta no SQL, fornece confirmed_bookings transitório. DTO recebe available_seats=max(0, seats-confirmed_bookings), mantendo seats como capacidade original. Não adicionar tabela/contador nem consultar reservas separadamente para cada resultado. Prefetch das paradas permanece separado para não multiplicar contagem.
+
+Cartão usa available_seats; zero permanece visível com Vagas esgotadas. Nenhum filtro novo por saldo, nenhum botão de reserva. Alteração executada pela T006 da Feature 004, preservando IDs/checkboxes históricos da Feature 003. O serviço transacional continua revalidando a capacidade na confirmação.

@@ -184,10 +184,10 @@ def test_projection_immutable_ordered_and_read_only(scene):
     dto = results[0]
     assert {f.name for f in fields(dto)} == {
         "offer_id", "driver_display_name", "itinerary", "departure_at", "seats",
-        "vehicle_model", "vehicle_color"}
+        "available_seats", "vehicle_model", "vehicle_color"}
     assert dto.driver_display_name == scene.driver.display_name
     assert dto.itinerary == tuple(p.name for p in scene.points)
-    assert dto.departure_at == DESIRED and dto.seats == 3
+    assert dto.departure_at == DESIRED and dto.seats == 3 and dto.available_seats == 3
     assert dto.vehicle_model == "Veículo Sintético" and dto.vehicle_color == "Azul"
     for secret in (scene.driver.full_name, scene.driver.email, scene.offer.vehicle_plate):
         assert secret not in repr(dto)

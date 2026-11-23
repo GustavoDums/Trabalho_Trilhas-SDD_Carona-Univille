@@ -20,7 +20,8 @@ A dataclass valida tipos, IDs positivos/distintos e fuso; serviço valida exist�
 | SearchResult.driver_display_name | str retornada por AcademicUser.display_name; nunca full_name ou email |
 | SearchResult.itinerary | tuple[str, ...], nomes de origem/paradas/destino na sequência real, ao menos dois itens; escapar na renderização |
 | SearchResult.departure_at | datetime aware da saída da origem; exibir data/hora no fuso indicado |
-| SearchResult.seats | int positivo, vagas ofertadas, sem deduzir reservas inexistentes |
+| SearchResult.seats | int positivo, capacidade original; não representa o saldo disponível |
+| SearchResult.available_seats | int de 0 até seats; max(0, capacidade - CONFIRMADA), agregado por oferta. Evolução Feature 004/T006; não persistido |
 | SearchResult.vehicle_model | str do snapshot da oferta, sem placa |
 | SearchResult.vehicle_color | str do snapshot da oferta, sem outros dados de veículo |
 
@@ -56,4 +57,4 @@ Nenhuma restrição ou campo das Features 001/002 é alterado. Validações tran
 
 Itinerário de IDs precisa conter pontos distintos para ser interpretado sem ambiguidade; dado legado malformado não vira resultado por aproximação. Para consulta válida, ambos os IDs devem existir na mesma lista e boarding_index < alighting_index. Zero paradas é válido. Cada oferta gera no máximo um resultado. Ordenação final: RideOffer.departure_at, created_at, id.
 
-Somente ofertas futuras/positivas e motorista ativo entram no conjunto. Query não cria registros de busca, reservas ou alterações de domínio; autenticação técnica e sessões Django permanecem existentes.
+Somente ofertas futuras com capacidade original positiva e motorista ativo entram no conjunto. Evolução Feature 004/T006: esgotadas continuam no conjunto, com available_seats=0 e aviso; preservar os filtros existentes. Query não cria registros de busca, reservas ou alterações de domínio; autenticação técnica e sessões Django permanecem existentes.

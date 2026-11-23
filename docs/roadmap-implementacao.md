@@ -125,7 +125,7 @@ flowchart TD
 ---
 
 #### Feature 004: Reserva de Vagas com Concorrência e Zero Overbooking (`REQ-006`)
-*Status*: **T020/T002 e núcleo T021/T003 locais concluídos; T022/T023 pendentes**. D004-01/D004-02 confirmadas pelo usuário em 2026-11-22: reserva instantânea, uma vaga durante toda a oferta, pontos escolhidos persistidos em ordem; WhatsApp adiado. [Evidência de modelo/migração](../specs/004-reserva-sem-overbooking/evidence-t020.md). Concorrência comprovada em [evidence-t021.md](../specs/004-reserva-sem-overbooking/evidence-t021.md): uma confirmação e saldo zero. T006 local de integração de disponibilidade permanece aberta, autorizada para a próxima rodada.
+*Status*: **T020/T002 e núcleo T021/T003 locais concluídos; T022/T023 pendentes**. D004-01/D004-02 confirmadas pelo usuário em 2026-11-22: reserva instantânea, uma vaga durante toda a oferta, pontos escolhidos persistidos em ordem; WhatsApp adiado. [Evidência de modelo/migração](../specs/004-reserva-sem-overbooking/evidence-t020.md). Concorrência comprovada em [evidence-t021.md](../specs/004-reserva-sem-overbooking/evidence-t021.md): uma confirmação e saldo zero. T006 local de disponibilidade também concluída, conforme [evidence-t006.md](../specs/004-reserva-sem-overbooking/evidence-t006.md): saldo calculado e esgotadas visíveis, sem alterar filtros. T022/T023 permanecem pendentes para interface/fluxo de reserva.
 
 - [x] **T020**: Implementar modelo `RideBooking` em `rides/models.py` com status `CONFIRMADA`/`CANCELADA`, validação impedindo auto-reserva e migrações no PostgreSQL.
   - *Requisitos*: REQ-006 | *Dependências*: T002, T013 | *Como verificar*: Teste unitário barra motorista tentando reservar vaga na própria carona.

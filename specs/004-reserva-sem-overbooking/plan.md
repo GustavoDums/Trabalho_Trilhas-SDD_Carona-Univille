@@ -2,7 +2,7 @@
 
 **Feature**: 004-reserva-sem-overbooking | **Date**: 2026-11-22 | **Spec**: [spec.md](spec.md)
 **Branch**: nenhuma criada/alterada; ponteiro da Feature 003 preservado.
-**Status**: modelo T002/T020 e serviço/concorrência T003/T021 concluídos; integração T006 e HTTP pendentes. [Evidência transacional](evidence-t021.md).
+**Status**: modelo T002/T020 e serviço/concorrência T003/T021 concluídos; integração T006 concluída ([evidência](evidence-t006.md)); HTTP de reserva pendente. [Evidência transacional](evidence-t021.md).
 
 ## Summary
 
@@ -31,7 +31,7 @@ Caminhos novos são planejados. Pacote rides/services já disponível pela Featu
 
 ## Data & Interfaces
 
-[data-model.md](data-model.md) é fonte canônica do desenho proposto; [contratos](contracts/web-routes.md) define interfaces e autorização. T002 adicionou RideBooking, boarding_point/alighting_point, enum de status e unicidade ativa conforme desenho canônico; sem contador de vagas. Modelo valida autorreserva, passageiro elegível na criação e ordem de pontos. Limite agregado/concorrência implementado na T003; assinatura e erros em contracts/web-routes.md. T006 mantém separada a integração da disponibilidade exibida. Na implementação: revisar dados legados e plano, aplicar migração e verificar no PostgreSQL local sem reset.
+[data-model.md](data-model.md) é fonte canônica do desenho proposto; [contratos](contracts/web-routes.md) define interfaces e autorização. T002 adicionou RideBooking, boarding_point/alighting_point, enum de status e unicidade ativa conforme desenho canônico; sem contador de vagas. Modelo valida autorreserva, passageiro elegível na criação e ordem de pontos. Limite agregado/concorrência implementado na T003; assinatura e erros em contracts/web-routes.md. T006 integrou disponibilidade por Count SQL filtrado/distinto das CONFIRMADA, sem N+1, com campo transitório SearchResult.available_seats separado da capacidade. Esgotadas seguem visíveis; filtros/ordenação preservados e BookingService inalterado. Na implementação: revisar dados legados e plano, aplicar migração e verificar no PostgreSQL local sem reset.
 
 ## Implementation Order
 

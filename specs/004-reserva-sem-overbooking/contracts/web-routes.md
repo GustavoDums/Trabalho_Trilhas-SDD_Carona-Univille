@@ -21,3 +21,9 @@ Sob lock da oferta: recusar duplicidade CONFIRMADA por passageiro; contar todas 
 Erros: PermissionDenied para usuário não autenticado/inelegível ou autorreserva; ValidationError por ID/trecho/oferta inválida ou duplicidade (code already_booked); NoSeatsAvailable, subclasse de ValidationError com code no_seats, para esgotamento. Erro SQL de unicidade ativa é traduzido somente após rollback do savepoint; demais IntegrityError são propagados com rollback. Erros não incluem e-mail/placa/nome completo.
 
 Todos os escritores de reservas/cancelamentos futuros devem respeitar o mesmo lock/ordem. Criação direta por modelo/bulk/SQL não é API de reserva; constraints locais não substituem limite agregado. Sem HTTP ou notificações nesta tarefa.
+
+## Disponibilidade pública — T006 local
+
+Implementada no matching e no cartão da busca: Count de CONFIRMADA por oferta, SearchResult.available_seats separado de seats, nenhuma escrita ou novo dado pessoal. Preservar filtros e ordenação; zero exibe Vagas esgotadas, mantendo a oferta compatível na lista. Não adicionar ação de reserva.
+
+Capacidade e saldo seguem [data-model.md](../data-model.md). CANCELADA não entra na contagem; trecho não reutiliza vaga. GET não garante saldo futuro; BookingService revalida sob lock. [Evidência de TDD/regressão](../evidence-t006.md).

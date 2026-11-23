@@ -2,7 +2,7 @@
 
 **Feature**: 004-reserva-sem-overbooking; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001–T003 concluídas; T004–T007 abertas. T006 autorizada pelo usuário para a próxima rodada, não executada aqui. [Modelo](evidence-t020.md) e [serviço/concorrência](evidence-t021.md).
+**Status**: T001–T003 e T006 concluídas; T004/T005/T007 abertas. [Evidência de disponibilidade](evidence-t006.md). [Modelo](evidence-t020.md) e [serviço/concorrência](evidence-t021.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -23,7 +23,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 - [x] T003 [US1] Implementar BookingService.create_booking em rides/services/booking_service.py após testes em tests/test_concurrency_booking.py com TransactionTestCase ou pytest transaction=True, duas conexões/threads e barreira antes da disputa (nunca após obter lock); conclusão: uma confirmação, uma rejeição, rollback e capacidade preservados no PostgreSQL. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-001/FR-002/FR-005; SC-001/SC-002. **Depende**: T002; Feature 003/T001. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T021.
 
-- [ ] T006 [US1] Integrar disponibilidade calculada em rides/services/matching_service.py e cartão de busca em rides/templates/rides/_search_result.html; testes em tests/test_ride_search.py comprovam vagas ocupadas e esgotamento sem alterar filtros nem expor segredos. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-004; SC-004. **Depende**: T003; Feature 003/T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T021/T023.
+- [x] T006 [US1] Integrar disponibilidade calculada em rides/services/matching_service.py e cartão de busca em rides/templates/rides/_search_result.html; testes em tests/test_ride_search.py comprovam vagas ocupadas e esgotamento sem alterar filtros nem expor segredos. Fonte canônica [data-model.md](data-model.md): SearchResult.seats, SearchResult.available_seats; RideOffer.seats, RideBooking.offer e RideBooking.status. Capacidade preservada, Count SQL sem N+1; saldo zero permanece visível. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-004; SC-004. **Depende**: T003; Feature 003/T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T021/T023.
 
 ## Phase 4: User Story 2 (P2)
 
@@ -47,7 +47,7 @@ Dependências explícitas de cada tarefa são obrigatórias; número não permit
 | Roadmap | Requisito / objetivo detalhado na tarefa | IDs locais |
 | --- | --- | --- |
 | T020 | REQ-006 | T002 |
-| T021 | REQ-006; núcleo de serviço/concorrência concluído | T003; T006 é integração em rodada própria |
+| T021 | REQ-006; serviço/concorrência e integração de saldo concluídos | T003, T006 |
 | T022 | REQ-006 | T004 |
 | T023 | REQ-006 | T005, T006 |
 | Preparação/qualidade | Decisões e evidência | T001, T007 |

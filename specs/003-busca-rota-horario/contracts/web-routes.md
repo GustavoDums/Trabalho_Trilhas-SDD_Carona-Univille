@@ -33,7 +33,7 @@ Qualquer query string cria tentativa de consulta (`searched=True`). Campos ausen
 
 Consulta válida: 200 com DTOs autorizados. No topo e junto ao horário, informar: **“Janela fixa de ±30 minutos em relação à saída da origem. Não representa previsão de passagem nas paradas.”**
 
-Cartão `rides/_search_result.html`: nome abreviado, itinerário público na ordem, data/hora de saída, vagas ofertadas, modelo/cor. Escapar rótulos. Não incluir e-mail, nome completo, placa, nota, JSON oculto ou botão de reserva. No contexto de resultados, apenas DTO público; contexto técnico de request/session não deve ser serializado.
+Cartão `rides/_search_result.html`: nome abreviado, itinerário público na ordem, data/hora de saída, vagas disponíveis, modelo/cor. Evolução Feature 004/T006: SearchResult.seats preserva capacidade e SearchResult.available_seats informa saldo; zero exibe Vagas esgotadas, sem retirar a oferta compatível. A disponibilidade pode mudar até a confirmação. Escapar rótulos. Não incluir e-mail, nome completo, placa, nota, JSON oculto ou botão de reserva. No contexto de resultados, apenas DTO público; contexto técnico de request/session não deve ser serializado.
 
 Sem resultados válidos: “Nenhuma oferta compatível com os filtros informados.” Não substituir por viagens aproximadas nem relaxar janela. Mostrar filtros para nova busca.
 

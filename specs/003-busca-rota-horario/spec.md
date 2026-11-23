@@ -62,7 +62,7 @@ Como passageiro ativo, quero ver as informações necessárias para comparar ofe
 **Acceptance Scenarios**:
 
 1. **Given** várias ofertas compatíveis, **When** busca, **Then** aparecem em ordem crescente do horário de saída, com desempate por criação e identificador da oferta, preservando a ordem real das paradas. Cada oferta aparece uma única vez. (FR-007)
-2. **Given** oferta compatível, **When** o cartão é exibido, **Then** mostra nome abreviado do motorista, trajeto, data/horário de saída, vagas ofertadas, modelo/cor e a referência temporal da busca; não contém nome completo, e-mail nem placa em texto, atributos ocultos ou dados incorporados. (FR-008)
+2. **Given** oferta compatível, **When** o cartão é exibido, **Then** mostra nome abreviado do motorista, trajeto, data/horário de saída, vagas disponíveis calculadas, modelo/cor e a referência temporal da busca; não contém nome completo, e-mail nem placa em texto, atributos ocultos ou dados incorporados. (FR-008)
 3. **Given** nenhuma oferta compatível, **When** busca, **Then** vê estado vazio e pode ajustar a consulta, sem receber ofertas incompatíveis como se fossem resultados. (FR-009)
 4. **Given** visitante ou conta pendente, **When** tenta pesquisar, **Then** vai ao login ou ativação, respectivamente; motorista ativo recebe recusa de permissão na busca destinada ao papel PASSAGEIRO. (FR-001)
 5. **Given** um motorista deixou de ter vínculo ativo ou oferta já partiu, **When** passageiro pesquisa, **Then** essa oferta não aparece, ainda que trajeto e janela coincidam. (FR-010)
@@ -75,7 +75,7 @@ Como passageiro ativo, quero ver as informações necessárias para comparar ofe
 - Comparar data e horário completos no fuso apresentado, America/Sao_Paulo; duas representações do mesmo instante precisam produzir a mesma classificação.
 - Partida exatamente no instante atual não é futura e não aparece. A disponibilidade é consultada novamente a cada busca; não se promete reserva ou manutenção da oferta vista.
 - Não existe campo de tolerância customizável nesta versão. A janela de ±30 minutos é fixa; parâmetros enviados pelo cliente não ampliam nem reduzem essa janela.
-- Nenhuma busca altera ofertas, paradas, usuários ou cria reservas. Vagas são as ofertadas; ainda não há cálculo de lugares reservados.
+- Nenhuma busca altera ofertas, paradas, usuários ou cria reservas. Evolução Feature 004/T006: a disponibilidade exibida desconta CONFIRMADA da capacidade original; esgotadas continuam compatíveis por rota/horário e exibem saldo zero. A busca não garante vaga até confirmação pelo serviço transacional.
 - Não fabricar avaliação/reputação: o roadmap menciona nota, mas essa informação depende das features posteriores de avaliação/reputação, que ainda não existem.
 
 ## Requirements *(mandatory)*
@@ -89,7 +89,7 @@ Como passageiro ativo, quero ver as informações necessárias para comparar ofe
 - **FR-005**: O horário comparado DEVE ser a saída da origem da oferta, inclusive quando o embarque escolhido é intermediário. A interface DEVE informar explicitamente que a janela é relativa à saída da origem e não representa previsão de passagem na parada. (REQ-005, REQ-003)
 - **FR-006**: A janela DEVE comparar instantes completos com data e fuso, incluindo limites e mudanças de dia. Formulário e resultados informam o fuso de Joinville. (REQ-005)
 - **FR-007**: Resultados DEVEM ser únicos por oferta e ordenados por saída crescente, depois criação e identificador; a apresentação do itinerário conserva a sequência das paradas. (REQ-005)
-- **FR-008**: Cartões DEVEM mostrar somente nome abreviado, trajeto público, saída, vagas ofertadas e modelo/cor. Não expor nome completo, e-mail ou placa do motorista; não inventar nota de reputação. (REQ-003)
+- **FR-008**: Cartões DEVEM mostrar somente nome abreviado, trajeto público, saída, vagas disponíveis e modelo/cor. Não expor nome completo, e-mail ou placa do motorista; não inventar nota de reputação. (REQ-003)
 - **FR-009**: A interface DEVE distinguir estado inicial ainda não pesquisado de consulta válida sem resultados, permitindo corrigir filtros. (REQ-005)
 - **FR-010**: Somente ofertas com partida estritamente futura, vagas ofertadas positivas e motorista tecnicamente habilitado com papel MOTORISTA e vínculo ATIVA podem aparecer. (REQ-002, REQ-005)
 - **FR-011**: Busca DEVE ser somente leitura; não inclui reserva, confirmação, contato, cancelamento ou notificação. A existência de resultado não garante vaga reservada. (REQ-005; limite de escopo)
@@ -127,7 +127,7 @@ Como passageiro ativo, quero ver as informações necessárias para comparar ofe
 - O cadastro de ofertas registra apenas saída da origem, sem horário por parada. O exemplo de passagem no levantamento é proposta, não capacidade existente. O usuário confirmou a saída da origem como referência da PoC, com aviso explícito de que não há previsão por parada.
 - Janela confirmada: ±30 minutos fixos, inclusivos. O exemplo anterior de ±15 minutos no levantamento é histórico e não rege esta feature; tolerância customizável fica fora desta versão.
 - Uma consulta válida sem resultados retorna estado vazio; não relaxa filtros automaticamente. Não exigir horário desejado futuro como nova restrição: a elegibilidade temporal dos resultados já exclui partidas não futuras.
-- Reputação, vagas reservadas e liberação de contato dependem de features posteriores. Não implementar nem prometer esses comportamentos nesta especificação.
+- Reputação e liberação de contato dependem de features posteriores. A integração Feature 004/T006 adiciona apenas disponibilidade calculada à leitura, sem ação de reserva nesta busca.
 - A decisão de estrutura de serviço e sua integração com a publicação existente pertence ao planejamento técnico, preservando o comportamento da Feature 002.
 - As duas confirmações temporais foram registradas; em 2026-11-22, T001–T003 locais foram implementadas com autorização das dependências. T017–T019 do roadmap concluídas; qualidade/demo final T005 local pendente. Em 2026-11-22, o usuário confirmou executar T019/T004 sem paginação, conforme plano.
 - Pendências constitucionais de homologação acadêmica simulada, domínios e cancelamento não são resolvidas por esta feature. As regras de matching desta spec foram confirmadas e alinhadas ao levantamento/roadmap. O texto da constitution não é emendado nesta rodada; seu marcador histórico deve ser considerado junto desta decisão documentada.

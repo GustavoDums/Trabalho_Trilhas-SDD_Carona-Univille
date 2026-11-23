@@ -1,5 +1,15 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-004-t006-quality:start -->
+Feature 004 / T006 local / integração T021–T023 — **484 testes aprovados na suíte de regressão**, 0 ignorados.
+**7 novos testes de disponibilidade nesta tarefa**; 89 acumulados da Feature 004 (49 modelo + 33 serviço + 7 integração), 395 de regressão anterior.
+Cobertura de `rides/`: **99.41747572815534%** combinada; linhas: 403/403 (100%); ramificações: 109/112 (97.32142857142857%). Matching e serviço de reserva: 100% de linhas/ramificações. Meta: 80%.
+Relatórios: [coverage-feature004-t006.json](coverage-feature004-t006.json), [test-results-feature004-t006.xml](test-results-feature004-t006.xml) e [evidência](specs/004-reserva-sem-overbooking/evidence-t006.md). Medição: 2026-11-22.
+Reproduzir: `venv/Scripts/python.exe -m pytest tests -q --tb=short --cov=rides --cov-branch --cov-report=term-missing --cov-report=json:coverage-feature004-t006.json --junitxml=test-results-feature004-t006.xml`.
+Busca exibe saldo atual; esgotadas permanecem compatíveis com aviso e saldo zero. Interface/rotas de reserva e qualidade final ainda pendentes.
+<!-- feature-004-t006-quality:end -->
+
+
 <!-- feature-004-t021-quality:start -->
 Feature 004 / T003 local / núcleo do roadmap T021 — **477 testes aprovados na suíte de regressão**, 0 ignorados.
 **33 testes novos de serviço/concorrência nesta tarefa**; 82 acumulados da Feature 004 (49 modelo + 33 serviço), 395 de regressão anterior.

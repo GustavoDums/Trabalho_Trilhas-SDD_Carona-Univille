@@ -24,7 +24,7 @@ A elegibilidade do passageiro na criação não impede manutenção do históric
 ## Capacidade e estados
 
 RideOffer.seats continua capacidade original, inteiro positivo já existente; não adicionar contador nem incrementar capacidade ao cancelar. Uma reserva CONFIRMADA ocupa uma vaga durante toda a oferta; não reutilizar vaga entre trechos.
-Disponibilidade = seats - quantidade de CONFIRMADA. BookingService transacional da T003 protege o limite agregado; integração na busca T006 ainda pendente. A migração sozinha não substitui o serviço/locks.
+Disponibilidade = seats - quantidade de CONFIRMADA. BookingService transacional da T003 protege o limite agregado; integração na busca T006 implementada/verificada ([evidência](evidence-t006.md)). A migração sozinha não substitui o serviço/locks.
 
 Estados persistidos: CONFIRMADA e CANCELADA. Não há espera por aceite do motorista. Sem fluxo de cancelamento, reconfirmação ou HTTP implementado pela T002; esses estados permitem evolução sem apagar histórico.
 
@@ -33,3 +33,11 @@ Estados persistidos: CONFIRMADA e CANCELADA. Não há espera por aceite do motor
 PostgreSQL, FKs protegidas e timestamps aware. Criar tabela vazia para reservas sem reescrever ofertas/contas/catálogo atuais. Verificar plano/aplicação local e constraints no banco isolado de testes, sem reset destrutivo.
 
 Não adicionar telefone, e-mail, nome completo ou placa ao registro de reserva; relações referem os registros existentes. WhatsApp adiado; e-mail nunca divulgado a terceiros. Contato/placa por contraparte pertence às tarefas de apresentação.
+
+## Projeção de disponibilidade — T006 local
+
+SearchResult.seats preserva a capacidade original da oferta. Novo campo canônico SearchResult.available_seats: inteiro entre zero e seats, calculado como max(0, seats - quantidade de RideBooking CONFIRMADA). RideBooking CANCELADA não consome vaga; cada confirmação conta uma vez na oferta inteira, independentemente do trecho. Não persistir contador nem alterar RideOffer.seats.
+
+A consulta agrega reservas no SQL por oferta e mantém prefetch das paradas, sem consultas extras por cartão. Preservar filtros de rota/tempo/elegibilidade e ordenação da Feature 003; oferta compatível esgotada continua visível com saldo zero e rótulo Vagas esgotadas. O cartão exibe somente available_seats e dados públicos já aprovados; sem novos dados pessoais.
+
+Busca continua somente leitura e sem lock de escrita. Uma nova consulta reflete reservas comprometidas no banco, mas o resultado não garante disponibilidade até a confirmação: BookingService permanece responsável por revalidar saldo sob lock.

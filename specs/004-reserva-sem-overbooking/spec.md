@@ -1,7 +1,7 @@
 # Feature Specification: Reserva de vagas sem overbooking
 
 **Feature**: 004-reserva-sem-overbooking | **Created**: 2026-11-22
-**Status**: decisões/modelo T001/T002 e serviço transacional T003 concluídos; T004–T007 abertas. T006 autorizada para a próxima rodada. [Modelo](evidence-t020.md) e [concorrência](evidence-t021.md).
+**Status**: decisões/modelo T001/T002, serviço T003 e disponibilidade T006 concluídos; T004/T005/T007 abertas. [Disponibilidade](evidence-t006.md). [Modelo](evidence-t020.md) e [concorrência](evidence-t021.md).
 **Input**: REQ-006 e solicitação de preparação documental.
 
 ## Contexto e rastreabilidade
@@ -34,7 +34,7 @@ Participante consulta suas reservas e dados autorizados da contraparte; terceiro
 - FR-001 / REQ-006: quantidade de reservas CONFIRMADA nunca supera RideOffer.seats, inclusive sob concorrência; capacidade original permanece inalterada.
 - FR-002 / REQ-002, REQ-006: impedir autorreserva, passageiro inelegível, oferta passada/fechada, duplicidade ativa e motorista sem vínculo ativo; revalidar no serviço.
 - FR-003 / REQ-003: nome completo e placa somente à contraparte confirmada, sem e-mail em HTML, contexto público ou resposta de erro; WhatsApp adiado conforme D004-02, sem coleta de telefone.
-- FR-004 / REQ-006: disponibilidade exibida é capacidade menos reservas confirmadas; a confirmação sempre reconsulta o banco, sem confiar no cartão.
+- FR-004 / REQ-006: disponibilidade exibida é capacidade menos reservas confirmadas; a confirmação sempre reconsulta o banco, sem confiar no cartão. Preservar filtros/ordenação; ofertas compatíveis esgotadas permanecem visíveis com saldo zero e indicação de esgotamento.
 - FR-005 / REQ-006: uma solicitação rejeitada não grava reserva nem reduz capacidade. Confirmação é instantânea conforme D004-01; interface pertence às tarefas posteriores.
 
 - FR-006 / REQ-005, REQ-006: persistir embarque/desembarque do catálogo na reserva; devem constar no itinerário da oferta, em ordem estrita anterior/posterior e sem ambiguidade. Pontos não permitem reutilização de vaga entre trechos.

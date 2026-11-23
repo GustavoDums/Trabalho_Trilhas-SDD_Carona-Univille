@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied, ValidationError
-from django.db.models import Prefetch
+from django.db.models import Count, Prefetch, Q
 from django.utils import timezone
 
-from ..models import RideOffer, RoutePoint, Waypoint
+from ..models import RideBooking, RideOffer, RoutePoint, Waypoint
 
 WINDOW = timedelta(minutes=30)
 
@@ -39,6 +39,7 @@ class SearchResult:
     itinerary: tuple[str, ...]
     departure_at: datetime
     seats: int
+    available_seats: int
     vehicle_model: str
     vehicle_color: str
 
@@ -84,6 +85,10 @@ class MatchingService:
             departure_at__lte=query.desired_at + WINDOW,
             seats__gt=0,
             driver__role="MOTORISTA", driver__academic_status="ATIVA", driver__is_active=True,
+        ).annotate(
+            confirmed_bookings=Count(
+                "bookings", filter=Q(bookings__status=RideBooking.Status.CONFIRMADA), distinct=True,
+            ),
         ).select_related("driver", "origin", "destination").prefetch_related(
             Prefetch("waypoints", queryset=Waypoint.objects.select_related("point").order_by("position"))
         ).order_by("departure_at", "created_at", "id")
@@ -93,6 +98,7 @@ class MatchingService:
                 offer_id=offer.pk, driver_display_name=offer.driver.display_name,
                 itinerary=tuple(point.name for point in cls._itinerary(offer)),
                 departure_at=offer.departure_at, seats=offer.seats,
+                available_seats=max(0, offer.seats - offer.confirmed_bookings),
                 vehicle_model=offer.vehicle_model, vehicle_color=offer.vehicle_color,
             )
             for offer in candidates if cls.route_matches(offer, query)

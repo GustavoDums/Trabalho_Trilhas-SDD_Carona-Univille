@@ -30,7 +30,7 @@ def result():
         offer_id=7, driver_display_name="Pessoa S.",
         itinerary=("Origem Sintética", "Parada Sintética", "Destino Sintético"),
         departure_at=datetime(2030, 1, 3, 11, 15, 42, tzinfo=dt_timezone.utc),
-        seats=3, vehicle_model="Veículo Sintético", vehicle_color="Azul")
+        seats=3, available_seats=3, vehicle_model="Veículo Sintético", vehicle_color="Azul")
 
 
 def page(form, *, searched=False, results=()):
@@ -168,7 +168,7 @@ def test_public_cards_and_partial_escape_labels_without_secrets(search_data):
     assert "<script>" not in html and "<img src=x" not in html
     assert html.index("Origem &lt;script") < html.index("Parada &amp; Demo") < html.index(">Destino<")
     assert 'data-offer-id="7"' in html
-    assert "3 vagas ofertadas" in html and "03/01/2030 08:15:42" in html
+    assert "3 vagas disponíveis" in html and "03/01/2030 08:15:42" in html
     for secret in ("Pessoa Sintética", "motorista.sintetico@univille.br", "PRIVADA-123",
                    "vehicle_plate", "full_name", "driver_email", "application/json"):
         assert secret not in html
@@ -471,3 +471,183 @@ def test_existing_routes_preserved(http_scene):
     http_scene.client.force_login(http_scene.driver)
     for url in ("/caronas/oferecer/", "/caronas/minhas-ofertas/", "/caronas/"):
         assert http_scene.client.get(url).status_code == 200
+
+
+# Feature 004/T006 local — disponibilidade pública, REQ-006/REQ-003/REQ-017.
+@pytest.fixture
+def reservation_actor(academic_user_factory):
+    def create():
+        user = academic_user_factory(password=None, full_name="Reserva Sintética")
+        user.academic_status = "ATIVA"
+        user.save(update_fields=["academic_status", "updated_at"])
+        return user
+    return create
+
+
+def book_for_search(scene, actor, *, offer=None, boarding=None, alighting=None):
+    from rides.services.booking_service import BookingService
+    return BookingService.create_booking(
+        passenger=actor, offer_id=(offer or scene.first).pk,
+        boarding_point_id=(boarding or scene.points[0]).pk,
+        alighting_point_id=(alighting or scene.points[-1]).pk)
+
+
+def public_card(response, offer_id):
+    return response.content.decode().split(
+        f'<article data-offer-id="{offer_id}">', 1)[1].split("</article>", 1)[0]
+
+
+@pytest.mark.django_db
+def test_availability_follows_confirmations_to_exhaustion(http_scene, reservation_actor):
+    from rides.models import RideOffer
+    expected_order = [http_scene.second.pk, http_scene.first.pk]
+    for expected in (3, 2, 1, 0):
+        response = http_search(http_scene, http_scene.data)
+        assert response.status_code == 200
+        results = response.context["results"]
+        assert [item.offer_id for item in results] == expected_order
+        first = results[1]
+        assert first.seats == 3 and first.available_seats == expected
+        assert results[0].available_seats == 3
+        card = public_card(response, http_scene.first.pk)
+        if expected == 1:
+            assert "1 vaga disponível" in card
+        else:
+            assert f"{expected} vagas disponíveis" in card
+        assert ("Vagas esgotadas." in card) is (expected == 0)
+        assert "vagas ofertadas" not in card
+        if expected:
+            book_for_search(http_scene, reservation_actor())
+    assert RideOffer.objects.get(pk=http_scene.first.pk).seats == 3
+
+
+@pytest.mark.django_db
+def test_availability_cancelled_history_is_not_counted(http_scene, reservation_actor):
+    from rides.models import RideBooking
+    actor = reservation_actor()
+    RideBooking.objects.create(
+        offer=http_scene.first, passenger=actor,
+        boarding_point=http_scene.points[0], alighting_point=http_scene.points[-1],
+        status="CANCELADA")
+    book_for_search(http_scene, actor)
+    response = http_search(http_scene, http_scene.data)
+    by_id = {dto.offer_id: dto for dto in response.context["results"]}
+    assert by_id[http_scene.first.pk].available_seats == 2
+    assert by_id[http_scene.second.pk].available_seats == 3
+
+
+@pytest.mark.django_db
+def test_availability_counts_whole_offer_without_segment_reuse(http_scene, reservation_actor):
+    book_for_search(http_scene, reservation_actor(), alighting=http_scene.points[1])
+    book_for_search(http_scene, reservation_actor(), boarding=http_scene.points[2])
+    response = http_search(http_scene, dict(
+        http_scene.data, boarding_id=str(http_scene.points[1].pk),
+        alighting_id=str(http_scene.points[2].pk)))
+    assert response.status_code == 200
+    assert len(response.context["results"]) == 1
+    assert response.context["results"][0].available_seats == 1
+
+
+@pytest.mark.django_db
+def test_availability_rollback_does_not_reduce_public_balance(http_scene, reservation_actor):
+    from django.db import transaction
+    actor = reservation_actor()
+    with pytest.raises(RuntimeError):
+        with transaction.atomic():
+            book_for_search(http_scene, actor)
+            raise RuntimeError("Rollback sintético")
+    response = http_search(http_scene, http_scene.data)
+    assert next(dto for dto in response.context["results"]
+                if dto.offer_id == http_scene.first.pk).available_seats == 3
+
+
+@pytest.mark.django_db
+def test_availability_stale_result_never_overrides_booking_service(http_scene, reservation_actor):
+    from rides.models import RideOffer, RideBooking
+    from rides.services.booking_service import NoSeatsAvailable
+    RideOffer.objects.filter(pk=http_scene.first.pk).update(seats=1)
+    before = http_search(http_scene, http_scene.data)
+    old = next(dto for dto in before.context["results"] if dto.offer_id == http_scene.first.pk)
+    assert old.available_seats == 1
+    book_for_search(http_scene, reservation_actor())
+    with pytest.raises(NoSeatsAvailable):
+        book_for_search(http_scene, http_scene.passenger)
+    after = http_search(http_scene, http_scene.data)
+    new = next(dto for dto in after.context["results"] if dto.offer_id == http_scene.first.pk)
+    assert new.available_seats == 0
+    assert old.available_seats == 1
+    assert "Vagas esgotadas." in public_card(after, http_scene.first.pk)
+    assert RideBooking.objects.filter(offer=http_scene.first, status="CONFIRMADA").count() == 1
+
+
+@pytest.mark.django_db
+def test_availability_keeps_filters_order_and_privacy_without_domain_writes(http_scene, reservation_actor):
+    from dataclasses import fields
+    from datetime import timedelta
+    from django.contrib.auth import get_user_model
+    from rides.models import RideBooking, RideOffer, Waypoint
+
+    book_for_search(http_scene, reservation_actor())
+    def snapshot():
+        return tuple(list(model.objects.order_by("pk").values()) for model in
+                     (RideBooking, RideOffer, Waypoint, RoutePoint, get_user_model()))
+    before = snapshot()
+    response = http_search(http_scene, dict(http_scene.data, tolerance="999", page="999"))
+    assert response.status_code == 200
+    results = response.context["results"]
+    assert [dto.offer_id for dto in results] == [http_scene.second.pk, http_scene.first.pk]
+    assert results[1].available_seats == 2
+    assert {field.name for field in fields(results[1])} == {
+        "offer_id", "driver_display_name", "itinerary", "departure_at", "seats",
+        "available_seats", "vehicle_model", "vehicle_color"}
+    html = response.content.decode()
+    for secret in (http_scene.driver.full_name, http_scene.driver.email, "PRIVADA-123",
+                   "Reserva Sintética", "boarding_bookings", "passenger_id", "application/json"):
+        assert secret not in html
+    inverted = dict(http_scene.data, boarding_id=http_scene.data["alighting_id"],
+                    alighting_id=http_scene.data["boarding_id"])
+    assert http_search(http_scene, inverted).context["results"] == ()
+    # An available offer outside the original window must remain excluded.
+    outside = dict(http_scene.data, desired_at=(http_scene.departure+timedelta(hours=2)).isoformat())
+    assert http_search(http_scene, outside).context["results"] == ()
+    assert snapshot() == before
+
+
+@pytest.mark.django_db
+def test_availability_has_no_n_plus_one_or_double_count_with_stops_and_history(
+        http_scene, reservation_actor):
+    from datetime import timedelta
+    from django.db import connection
+    from django.test.utils import CaptureQueriesContext
+    from rides.models import RideBooking, RideOffer, Waypoint
+    from rides.services.matching_service import MatchingService
+
+    actor = reservation_actor()
+    book_for_search(http_scene, actor)
+    q = SearchQuery(boarding_id=http_scene.points[0].pk, alighting_id=http_scene.points[-1].pk,
+                    desired_at=http_scene.departure)
+    def search():
+        with CaptureQueriesContext(connection) as captured:
+            results = MatchingService.search(passenger=http_scene.passenger, query=q)
+        return results, len(captured)
+    small, initial_queries = search()
+    assert next(dto for dto in small if dto.offer_id == http_scene.first.pk).available_seats == 2
+    added_ids = []
+    for offset in range(1, 5):
+        offer = RideOffer.objects.create(
+            driver=http_scene.driver, origin=http_scene.points[0], destination=http_scene.points[-1],
+            departure_at=http_scene.departure+timedelta(minutes=offset), seats=3,
+            vehicle_model="Outro Sintético", vehicle_color="Verde", vehicle_plate="SEGREDO")
+        for position in (1, 2):
+            Waypoint.objects.create(offer=offer, point=http_scene.points[position], position=position)
+        book_for_search(http_scene, actor, offer=offer)
+        for _ in range(2):
+            RideBooking.objects.create(
+                offer=offer, passenger=actor, boarding_point=http_scene.points[0],
+                alighting_point=http_scene.points[-1], status="CANCELADA")
+        added_ids.append(offer.pk)
+    large, total_queries = search()
+    assert total_queries == initial_queries
+    assert len(large) == 6 and len({dto.offer_id for dto in large}) == 6
+    assert all(dto.available_seats == 2 for dto in large if dto.offer_id in added_ids)
+    assert connection.vendor == "postgresql"
