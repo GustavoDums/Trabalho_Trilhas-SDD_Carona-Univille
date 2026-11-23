@@ -3,7 +3,7 @@ from decimal import Decimal, InvalidOperation
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 
 from rides.models import ValidatedModel, require_integer, require_aware_datetime
@@ -24,6 +24,11 @@ class RideReview(ValidatedModel):
             models.CheckConstraint(condition=~models.Q(reviewer=models.F('reviewed_user')), name='review_users_distinct'),
         ]
 
+    @transaction.atomic
+    def save(self, *args, **kwargs):
+        # A avaliação e a projeção disparada pelo post_save são persistidas juntas.
+        return super().save(*args, **kwargs)
+
     def clean_fields(self, exclude=None):
         if 'rating' not in (exclude or []):
             require_integer(self.rating, 'rating')
@@ -43,7 +48,7 @@ class RideReview(ValidatedModel):
 
 
 class ReputationProfile(ValidatedModel):
-    """Feature 007/T002 — projeção reconstruível, sem sinal automático nesta tarefa."""
+    """Projeção reconstruível das avaliações recebidas."""
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.PROTECT,
                                related_name='reputation_profile')

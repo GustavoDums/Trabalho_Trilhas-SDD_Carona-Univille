@@ -34,7 +34,8 @@ class ReputationService:
     def rebuild(*, user_id, at=None):
         if isinstance(user_id, bool) or not isinstance(user_id, int) or user_id <= 0:
             raise ValidationError({'user_id': 'Selecione um usuário válido.'})
-        user = get_user_model().objects.select_for_update().filter(pk=user_id).first()
+        # Serializa recálculos sem bloquear a verificação das FKs de avaliações concorrentes.
+        user = get_user_model().objects.select_for_update(no_key=True).filter(pk=user_id).first()
         if user is None:
             raise ValidationError({'user_id': 'Selecione um usuário existente.'})
         instant = timezone.now() if at is None else at

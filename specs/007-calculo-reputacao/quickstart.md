@@ -1,6 +1,6 @@
 # Quickstart de validação: Feature 007
 
-**Estado 2026-11-23**: T001 homologada e T002 unificada concluída ([evidência](evidence-t030.md)); modelo/cálculo/rebuild explícitos implementados. Signals, interface e tests/test_reputation_integration.py ainda futuros na T031.
+**Estado 2026-11-23**: T001 homologada, [cálculo e rebuild explícito](evidence-t030.md) na T002 e recálculo automático na T004. Perfil e busca são critérios da T005.
 
 1. Fechar decisões da [spec](spec.md), implementar dependências, usar venv e PostgreSQL existentes, sem imprimir segredos.
 2. Após implementação, da raiz:
@@ -11,6 +11,7 @@
 .\venv\Scripts\python.exe manage.py migrate --plan
 .\venv\Scripts\python.exe manage.py migrate
 .\venv\Scripts\python.exe -m pytest tests/test_reputation_calc.py
+.\venv\Scripts\python.exe -m pytest tests/test_reputation_integration.py -q --tb=short
 ~~~
 
 3. Executar SC-001, SC-002, SC-003, SC-004 da [spec](spec.md), com contas/ofertas fictícias; conferir banco antes/depois, autorização e rollback.

@@ -1825,3 +1825,43 @@ Plano/SQL de reviews 0002 revisados e migração aplicada no PostgreSQL local se
 Verificação adicional de determinismo: regressão inicial 819 aprovados. Novo teste de contexto Decimal externo com trap Inexact confirmou falha de arredondamento; calculate_score passou a usar Context próprio (prec=28, ROUND_HALF_UP), isolando precisão, modo e traps. Focado final 55 aprovados, serviço 100% linhas/branches; regressão final repetida após essa correção. Não houve alteração de fórmula ou regra de produto.
 
 Resultado final T030/T002: 820 aprovados (55 novos/765 anteriores), 89.57s; serviço 100% linhas/branches, consolidado 98.72122762148338% linhas/96.78571428571429% branches. Rebuild concorrente: PIDs 30520/37156, TxIDs 69690/69691, ambos score4.60 e mesmo profile26. T001/T002 e T030 concluídas; T003 incorporada, T004–T006 abertas. Sem signals/exibição, staging ou commit.
+
+## Rodada T031 do roadmap / T004 da Feature 007 — 2026-11-23
+
+~~~text
+Execute somente a tarefa T031 do Carona Univille.\
+\
+Área da tarefa — Features 006 a 009, Escopo completo.\
+\
+Consulte a constitution, docs/levantamento.md e os artefatos de spec, plan e\
+tasks da feature antes de editar. Confirme o requisito, as dependências e os\
+critérios de conclusão da tarefa selecionada.\
+\
+Localize T031 em docs/roadmap-implementacao.md para identificar a feature e\
+o objetivo exato. Faça a correspondência por objetivo e requisito com o\
+tasks.md da feature, pois o ID local pode diferir do ID do roadmap. Se\
+houver mais de uma correspondência, informe os IDs e aguarde a escolha. Para\
+implementação, se o item ainda estiver apenas no roadmap, informe quais\
+artefatos da feature faltam e aguarde. Se o próprio item for de\
+planejamento, gere apenas os artefatos previstos para ele.\
+\
+Se a tarefa já estiver concluída, confira a evidência existente e encerre.\
+Se houver divergência entre os artefatos ou uma decisão pendente que afete\
+esta tarefa, explique o ponto e aguarde. Preserve as alterações já\
+existentes no repositório.\
+\
+Realize apenas o trabalho desta tarefa e execute os testes ou verificações\
+pertinentes. Registre sua conclusão no checklist somente se os critérios\
+forem atendidos. Informe a feature, o ID oficial da tarefa, os requisitos,\
+os arquivos alterados e os resultados das verificações. Sugira uma mensagem\
+de commit com a referência feature / task / requisito. Deixe o staging e o\
+commit para minha revisão e encerre a rodada.
+~~~
+
+A análise do checklist encontrou duas correspondências locais, T004 (recálculo automático) e T005 (exibição), e aguardou a escolha.
+
+~~~text
+Faça a T004
+~~~
+
+O usuário selecionou a T004 local. Registro da implementação e das verificações em [evidence-t004.md](../specs/007-calculo-reputacao/evidence-t004.md).

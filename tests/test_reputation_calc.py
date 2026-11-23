@@ -127,7 +127,7 @@ def test_database_range_and_one_to_one_constraints(academic_user_factory, invali
 def test_rebuild_examples_and_repeated_execution_preserve_sources(cancellation_scene, ratings, expected):
     scene = cancellation_scene
     received_reviews(scene, ratings)
-    assert not profile_model().objects.exists()  # T031 não conectada nesta tarefa.
+    profile_model().objects.filter(user=scene.driver).delete()
     before = list(RideReview.objects.values())
     first = rebuild(scene)
     assert first.score == Decimal(expected)
@@ -182,7 +182,9 @@ def test_no_thirty_day_expiration_and_other_recipients_are_not_counted(cancellat
 def test_historical_ratings_remain_after_account_is_disabled_and_rebuild_replaces_stale_cache(cancellation_scene):
     scene = cancellation_scene
     received_reviews(scene, [4])
-    existing = profile_model().objects.create(user=scene.driver, score=Decimal('1.00'))
+    existing = profile_model().objects.get(user=scene.driver)
+    existing.score = Decimal('1.00')
+    existing.save(update_fields=['score'])
     get_user_model().objects.filter(pk=scene.driver.pk).update(is_active=False)
     result = rebuild(scene)
     assert result.pk == existing.pk and result.score == Decimal('4.00')
@@ -227,8 +229,8 @@ def test_default_reference_captures_server_clock_once(cancellation_scene, monkey
 def test_rebuild_failure_rolls_back_cache_and_keeps_reviews(cancellation_scene, monkeypatch, existing):
     scene = cancellation_scene
     received_reviews(scene, [4])
-    if existing:
-        profile_model().objects.create(user=scene.driver, score=Decimal('1.00'))
+    if not existing:
+        profile_model().objects.filter(user=scene.driver).delete()
     before_cache, before_reviews = list(profile_model().objects.values()), list(RideReview.objects.values())
     original = profile_model().save
     def fail_after_save(self, *args, **kwargs):
@@ -248,6 +250,7 @@ def test_two_rebuilds_serialize_missing_cache_on_independent_postgresql_transact
     import json
     scene = cancellation_scene
     received_reviews(scene, [5,5,4,5,4])
+    profile_model().objects.filter(user=scene.driver).delete()
     assert connection.vendor == 'postgresql' and not connection.in_atomic_block
     barrier = Barrier(2, timeout=10)
     def worker():

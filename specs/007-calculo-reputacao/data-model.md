@@ -18,4 +18,4 @@ ReputationService.rebuild(*, user_id, at=None) é operação interna atômica. S
 
 Atualizar/criar profile e computed_at na mesma transação; reexecução com fontes/referência iguais preserva score e mesmo profile. Serviço pode reconstruir instante histórico explícito, restrito a chamador interno; não há entrada HTTP de user_id/score/at. Fontes não são alteradas. Lock do usuário serializa dois rebuilds e protege cache ausente; constraint OneToOne complementa a API. SQL/bulk não são API de domínio.
 
-Signals, interação com transação da criação de RideReview, atualização automática e projeção de busca/perfil pertencem à T031; nenhum signal nesta rodada. Feature 008 integrará penalidades depois, sem inventar deltas na T030.
+Na T004 da T031, inserir RideReview recalcula a projeção na mesma transação. O signal ignora fixtures raw e saves de avaliações já existentes. A projeção em busca/perfil pertence à T005 da T031. A Feature 008 integra penalidades.

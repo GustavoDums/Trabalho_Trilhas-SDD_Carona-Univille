@@ -25,9 +25,9 @@ Python 3.12+, Django 5.1.x, PostgreSQL 15+, pytest/pytest-django/pytest-cov, tem
 
 [Spec](spec.md), [pesquisa](research.md), [dados](data-model.md), [contratos](contracts/web-routes.md), [validação](quickstart.md) e [tarefas](tasks.md).
 
-ReputationService em reviews/services/reputation_service.py separa cálculo puro Decimal de seleção de fontes e persistência. Serializar atualização pelo usuário (bloquear AcademicUser, inclusive quando Profile ainda não existe) e recalcular fontes comprometidas, sem acumular delta em memória. Na futura T031, signal post_save RideReview encaminhará serviço com cuidado para transação/rollback e registro em AppConfig.ready sem duplicação. Integrar DTO de busca e perfil existentes; sem página pública nova. Se janela por dias, prever rebuild no instante de leitura ou comando explícito para expiração sem novas avaliações.
+ReputationService em reviews/services/reputation_service.py separa cálculo puro Decimal de seleção de fontes e persistência. O recálculo lê as fontes persistidas e usa o lock de AcademicUser para serializar atualizações, inclusive quando o cache ainda não existe.
 
-reviews/services/reputation_service.py implementado; pacote rides/services e import público publish_offer preservados. Signals e projeção de interface permanecem na T031.
+Na T004, o signal post_save de RideReview é registrado em AppConfig.ready e chama o serviço dentro da mesma transação da nova avaliação. Os locks PostgreSQL FOR NO KEY UPDATE permitem a checagem concorrente de chaves estrangeiras. A T005 integra a projeção ao DTO de busca e ao perfil existentes.
 
 ## Data & Interfaces
 

@@ -1,5 +1,11 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-007-t004-quality:start -->
+Feature 007 / T004 local / roadmap T031 — **829 testes aprovados**, 0 ignorados, com 9 novos e 820 de regressão.
+Cobertura de accounts/rides/reviews/carona_univille — **98.73524451939292% em linhas** (1171/1186) e **96.80851063829788% em ramificações** (273/282). O signal e o serviço de reputação atingiram 100% em ambas as medidas.
+Medição em 2026-11-23 no PostgreSQL 16.15. [Cobertura JSON](coverage-feature007-t004.json) · [JUnit](test-results-feature007-t004.xml) · [Evidência e reprodução](specs/007-calculo-reputacao/evidence-t004.md).
+<!-- feature-007-t004-quality:end -->
+
 <!-- feature-007-t030-quality:start -->
 Feature 007 / T001 documental + T002 unificada / roadmap T030 — **820 testes aprovados**, 0 ignorados: 55 novos e 765 anteriores. TDD inicial: 53 falhas pelo recurso ausente, depois verde; caso adicional de contexto Decimal externo falhou e foi corrigido antes da regressão final.
 Cobertura consolidada de accounts/rides/reviews/carona_univille: **98.34824501032347%** combinada; linhas 1158/1173 (**98.72122762148338%**); ramificações 271/280 (**96.78571428571429%**). Serviço de reputação: **100% de linhas e ramificações**. Meta: 80%.

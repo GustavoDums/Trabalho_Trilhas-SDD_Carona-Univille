@@ -22,14 +22,15 @@ def _valid_id(value, field):
 
 def _offer(offer_id):
     _valid_id(offer_id, 'offer_id')
-    offer = RideOffer.objects.select_for_update().filter(pk=offer_id).first()
+    # Impede alterações concorrentes sem bloquear a checagem das FKs de RideReview.
+    offer = RideOffer.objects.select_for_update(no_key=True).filter(pk=offer_id).first()
     if offer is None:
         raise ValidationError({'offer_id': 'Selecione uma oferta existente.'})
     return offer
 
 
 def _accounts(*ids):
-    return {user.pk: user for user in get_user_model().objects.select_for_update().filter(
+    return {user.pk: user for user in get_user_model().objects.select_for_update(no_key=True).filter(
         pk__in=ids).order_by('pk')}
 
 

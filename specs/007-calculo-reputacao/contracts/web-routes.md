@@ -1,6 +1,6 @@
 # Contratos: Cálculo matemático de reputação
 
-**Status**: política homologada e cálculo/rebuild T002 implementados ([evidência](../evidence-t030.md)); signals/exibição T031 futuros.
+**Status**: cálculo/rebuild entregues na [T002](../evidence-t030.md) e recálculo por signal integrado na T004. Projeção nas rotas de perfil e busca prevista na T005.
 
 Não cria endpoint de alteração pública da nota. Signal/serviço interno recebe user_id e instante aware; devolve projeção decimal. Templates de perfil e resultado de busca recebem score pronto e formato acessível; cliente não escolhe pontuação/pesos. Rebuild autorizado por comando administrativo futuro apenas se necessário à política aprovada.
 

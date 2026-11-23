@@ -179,7 +179,7 @@ flowchart TD
 ---
 
 #### Feature 007: Cálculo Matemático de Reputação (`REQ-009`)
-*Status*: D007-01/D007-02 homologadas; T030/T002 unificada concluída, [evidência](../specs/007-calculo-reputacao/evidence-t030.md). Média simples das últimas 20 avaliações recebidas, sem corte por dias; T031/signals/exibição pendentes.
+*Status*: D007-01/D007-02 homologadas. Média simples das últimas 20 avaliações recebidas, sem corte por dias, validada na [T030/T002](../specs/007-calculo-reputacao/evidence-t030.md). O recálculo automático da T031 foi entregue na [T004 local](../specs/007-calculo-reputacao/evidence-t004.md). A exibição corresponde à T005 local.
 
 - [x] **T030**: **[TESTE ESPECÍFICO DE CÁLCULO NUMÉRICO DE REPUTAÇÃO]**: Implementar modelo `ReputationProfile` em `reviews/models.py` e testes unitários em `tests/test_reputation_calc.py` cobrindo cenários numéricos determinísticos:
   - (1) *Novato*: pontuação base inicial `5.00★`.
