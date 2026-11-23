@@ -6,9 +6,11 @@ from django.views.generic import TemplateView
 from django.views.generic import ListView
 from django.db.models import Prefetch
 
-from .forms import RideOfferForm, RideSearchForm, WaypointFormSet
+from .forms import RideBookingForm, RideOfferForm, RideSearchForm, WaypointFormSet
 from .models import RideOffer, Waypoint
 from .services import publish_offer
+from .services.booking_service import BookingService
+from .services.booking_queries import BookingQueryService
 from .services.matching_service import MatchingService, SearchQuery
 
 
@@ -99,4 +101,55 @@ class RideSearchView(ActivePassengerRequiredMixin, TemplateView):
                 form.add_error(None, error)
         return self.render_to_response(self.get_context_data(
             form=form, searched=searched, results=results,
+        ))
+
+
+class ActiveAcademicRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    login_url = "/accounts/login/"
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_active and user.is_activated and user.role in ("MOTORISTA", "PASSAGEIRO")
+
+
+class MyBookingsView(ActiveAcademicRequiredMixin, TemplateView):
+    """Feature 004/T004 local — leitura própria, rotas na T005."""
+
+    template_name = "rides/my_bookings.html"
+    http_method_names = ["get"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["bookings"] = BookingQueryService.list_for(user=self.request.user)
+        return context
+
+
+class BookRideView(ActivePassengerRequiredMixin, TemplateView):
+    """Feature 004/T004 local — POST de reserva, sem registrar rota nesta tarefa."""
+
+    template_name = "rides/my_bookings.html"
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        form = RideBookingForm(request.POST)
+        if form.is_valid():
+            try:
+                BookingService.create_booking(
+                    passenger=request.user, offer_id=kwargs["offer_id"],
+                    boarding_point_id=form.cleaned_data["boarding_point_id"].pk,
+                    alighting_point_id=form.cleaned_data["alighting_point_id"].pk,
+                )
+            except ValidationError as error:
+                if hasattr(error, "error_dict"):
+                    for field, errors in error.message_dict.items():
+                        target = {"boarding_point": "boarding_point_id",
+                                  "alighting_point": "alighting_point_id"}.get(field, field)
+                        form.add_error(target if target in form.fields else None, errors)
+                else:
+                    form.add_error(None, error)
+            else:
+                messages.success(request, "Reserva confirmada com sucesso.")
+                return redirect("/caronas/minhas-reservas/")
+        return self.render_to_response(self.get_context_data(
+            form=form, bookings=BookingQueryService.list_for(user=request.user),
         ))

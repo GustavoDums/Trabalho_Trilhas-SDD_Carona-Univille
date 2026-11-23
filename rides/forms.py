@@ -72,3 +72,16 @@ class RideSearchForm(forms.Form):
         if boarding is not None and alighting is not None and boarding.pk == alighting.pk:
             self.add_error("alighting_id", "Embarque e desembarque devem ser distintos.")
         return cleaned
+
+
+class RideBookingForm(forms.Form):
+    boarding_point_id = PointChoiceField(queryset=RoutePoint.objects.all(), label="Embarque")
+    alighting_point_id = PointChoiceField(queryset=RoutePoint.objects.all(), label="Desembarque")
+
+    def clean(self):
+        cleaned = super().clean()
+        boarding = cleaned.get("boarding_point_id")
+        alighting = cleaned.get("alighting_point_id")
+        if boarding is not None and alighting is not None and boarding.pk == alighting.pk:
+            self.add_error("alighting_point_id", "Embarque e desembarque devem ser distintos.")
+        return cleaned

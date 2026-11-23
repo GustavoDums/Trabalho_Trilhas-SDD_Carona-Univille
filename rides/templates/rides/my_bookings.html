@@ -1,0 +1,35 @@
+{% extends "accounts/base.html" %}
+{% load tz %}
+{% block title %}Minhas reservas | Carona Univille{% endblock %}
+{% block content %}
+<h1>Minhas reservas</h1>
+<p>Horários no fuso America/Sao_Paulo.</p>
+{% if form %}
+<section aria-label="Corrigir reserva">
+    <h2>Confira os pontos da reserva</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Confirmar reserva</button>
+    </form>
+</section>
+{% endif %}
+{% timezone "America/Sao_Paulo" %}
+{% for booking in bookings %}
+<article data-booking-id="{{ booking.booking_id }}">
+    <h2>{% if booking.counterpart_role == "MOTORISTA" %}Motorista{% else %}Passageiro{% endif %}: {{ booking.counterpart_name }}</h2>
+    <p>Estado: {{ booking.status }}</p>
+    <p>Embarque: {{ booking.boarding_name }} — Desembarque: {{ booking.alighting_name }}</p>
+    <p>Saída da origem: <time datetime="{{ booking.departure_at|date:'c' }}">{{ booking.departure_at|date:"d/m/Y H:i:s" }}</time></p>
+    <p>Veículo: {{ booking.vehicle_model }} — {{ booking.vehicle_color }}</p>
+    {% if booking.vehicle_plate %}
+    <p>Placa: {{ booking.vehicle_plate }}</p>
+    {% else %}
+    <p>Dados privados indisponíveis para esta reserva.</p>
+    {% endif %}
+</article>
+{% empty %}
+<p>Você ainda não tem reservas para consultar.</p>
+{% endfor %}
+{% endtimezone %}
+{% endblock %}

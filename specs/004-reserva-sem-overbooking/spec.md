@@ -1,7 +1,7 @@
 # Feature Specification: Reserva de vagas sem overbooking
 
 **Feature**: 004-reserva-sem-overbooking | **Created**: 2026-11-22
-**Status**: decisões/modelo T001/T002, serviço T003 e disponibilidade T006 concluídos; T004/T005/T007 abertas. [Disponibilidade](evidence-t006.md). [Modelo](evidence-t020.md) e [concorrência](evidence-t021.md).
+**Status**: decisões/modelo T001/T002, serviço T003, disponibilidade T006 e apresentação T004 concluídos; T005/T007 abertas. [Apresentação](evidence-t022.md). [Disponibilidade](evidence-t006.md). [Modelo](evidence-t020.md) e [concorrência](evidence-t021.md).
 **Input**: REQ-006 e solicitação de preparação documental.
 
 ## Contexto e rastreabilidade

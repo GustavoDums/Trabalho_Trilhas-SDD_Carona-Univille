@@ -2,7 +2,7 @@
 
 **Feature**: 004-reserva-sem-overbooking; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001–T003 e T006 concluídas; T004/T005/T007 abertas. [Evidência de disponibilidade](evidence-t006.md). [Modelo](evidence-t020.md) e [serviço/concorrência](evidence-t021.md).
+**Status**: T001–T004 e T006 concluídas; T005/T007 abertas. [Evidência de apresentação](evidence-t022.md). [Evidência de disponibilidade](evidence-t006.md). [Modelo](evidence-t020.md) e [serviço/concorrência](evidence-t021.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -30,7 +30,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 **Objetivo**: Participante consulta suas reservas e dados autorizados da contraparte; terceiros não obtêm acesso por troca de ID.
 **Teste independente**: SC-004: busca e consulta própria refletem disponibilidade atual sem N+1; GET não cria reserva.
 
-- [ ] T004 [US2] Testar e implementar BookRideView e projeção privada de minhas reservas em rides/views.py e rides/templates/rides/my_bookings.html; verificar matriz de contrapartes e ausência de e-mail, conforme contracts/web-routes.md. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-003; SC-003. **Depende**: T003. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T022.
+- [x] T004 [US2] Testar e implementar BookRideView e projeção privada de minhas reservas em rides/views.py e rides/templates/rides/my_bookings.html; verificar matriz de contrapartes e ausência de e-mail, conforme contracts/web-routes.md. Implementar RideBookingForm em rides/forms.py e MyBookingsView/BookingQueryService em rides/views.py e rides/services/booking_queries.py; testes por RequestFactory sem registrar rotas (T005). Fonte canônica [data-model.md](data-model.md): BookingSummary.booking_id, BookingSummary.offer_id, BookingSummary.status, BookingSummary.departure_at, BookingSummary.boarding_name, BookingSummary.alighting_name, BookingSummary.counterpart_role, BookingSummary.counterpart_name, BookingSummary.vehicle_model, BookingSummary.vehicle_color e BookingSummary.vehicle_plate. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-003; SC-003. **Depende**: T003. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T022.
 
 - [ ] T005 [US2] Mapear rides:book e rides:my_bookings em rides/urls.py e completar fluxo HTTP em tests/test_booking_flow.py, incluindo CSRF, 405, repetição e IDs de terceiros; conclusão: reserva e consulta integradas conforme contrato. **Requisitos**: REQ-006, REQ-003, REQ-017; FR-002/FR-003/FR-005; SC-002/SC-003/SC-004. **Depende**: T004 e T006 (disponibilidade). **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T023.
 

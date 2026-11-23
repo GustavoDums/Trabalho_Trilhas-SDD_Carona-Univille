@@ -2,7 +2,7 @@
 
 **Feature**: 004-reserva-sem-overbooking | **Date**: 2026-11-22 | **Spec**: [spec.md](spec.md)
 **Branch**: nenhuma criada/alterada; ponteiro da Feature 003 preservado.
-**Status**: modelo T002/T020 e serviço/concorrência T003/T021 concluídos; integração T006 concluída ([evidência](evidence-t006.md)); HTTP de reserva pendente. [Evidência transacional](evidence-t021.md).
+**Status**: modelo T002/T020 e serviço/concorrência T003/T021 concluídos; integração T006 concluída ([evidência](evidence-t006.md)); Views/projeção T004 verificadas isoladamente ([evidência](evidence-t022.md)); rotas/fluxo T005 pendentes. [Evidência transacional](evidence-t021.md).
 
 ## Summary
 
@@ -25,7 +25,7 @@ Python 3.12+, Django 5.1.x, PostgreSQL 15+, pytest/pytest-django/pytest-cov, tem
 
 [Spec](spec.md), [pesquisa](research.md), [dados](data-model.md), [contratos](contracts/web-routes.md), [validação](quickstart.md) e [tarefas](tasks.md).
 
-BookingService.create_booking em rides/services/booking_service.py: transaction.atomic, bloquear RideOffer com select_for_update e depois as contas por PK crescente, revalidar contas e oferta, contar CONFIRMADA e criar reserva. Todos os escritores futuros usam o mesmo lock da oferta. Constraint parcial cobre duplicidade, mas limite agregado depende do serviço transacional. Usar ordem estável de locks e tratar IntegrityError fora do bloco quebrado. DTOs de leitura filtram dados por participante. Integrar MatchingService com disponibilidade sem mudar matching de rota/tempo.
+BookingService.create_booking em rides/services/booking_service.py: transaction.atomic, bloquear RideOffer com select_for_update e depois as contas por PK crescente, revalidar contas e oferta, contar CONFIRMADA e criar reserva. Todos os escritores futuros usam o mesmo lock da oferta. Constraint parcial cobre duplicidade, mas limite agregado depende do serviço transacional. Usar ordem estável de locks e tratar IntegrityError fora do bloco quebrado. DTO BookingSummary em rides/services/booking_queries.py é filtrado por participante e papel atual por BookingQueryService; CONFIRMADA recebe nome completo/placa e CANCELADA somente abreviação/placa None. MyBookingsView e BookRideView em rides/views.py usam essa projeção; formulário mínimo em rides/forms.py. Select_related evita N+1, templates não recebem modelos de usuário/oferta. T004 valida classes por RequestFactory, sem registrar URLs da T005. Integrar MatchingService com disponibilidade sem mudar matching de rota/tempo.
 
 Caminhos novos são planejados. Pacote rides/services já disponível pela Feature 003/T001; preservar import público publish_offer.
 

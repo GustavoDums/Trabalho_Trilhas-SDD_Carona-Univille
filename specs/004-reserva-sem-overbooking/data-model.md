@@ -41,3 +41,25 @@ SearchResult.seats preserva a capacidade original da oferta. Novo campo canônic
 A consulta agrega reservas no SQL por oferta e mantém prefetch das paradas, sem consultas extras por cartão. Preservar filtros de rota/tempo/elegibilidade e ordenação da Feature 003; oferta compatível esgotada continua visível com saldo zero e rótulo Vagas esgotadas. O cartão exibe somente available_seats e dados públicos já aprovados; sem novos dados pessoais.
 
 Busca continua somente leitura e sem lock de escrita. Uma nova consulta reflete reservas comprometidas no banco, mas o resultado não garante disponibilidade até a confirmação: BookingService permanece responsável por revalidar saldo sob lock.
+
+## Projeção privada — T004 local
+
+BookingSummary é dataclass frozen transitória em rides/services/booking_queries.py; não persistir campos novos nem enviar instâncias ORM ao template.
+
+| Campo canônico | Tipo e regra |
+| --- | --- |
+| BookingSummary.booking_id | int positivo da reserva própria |
+| BookingSummary.offer_id | int positivo da oferta vinculada |
+| BookingSummary.status | CONFIRMADA/CANCELADA do registro atual |
+| BookingSummary.departure_at | datetime aware da saída da origem |
+| BookingSummary.boarding_name | str do ponto de embarque; escapar no HTML |
+| BookingSummary.alighting_name | str do ponto de desembarque; escapar no HTML |
+| BookingSummary.counterpart_role | MOTORISTA para passageiro que consulta; PASSAGEIRO para motorista |
+| BookingSummary.counterpart_name | full_name da contraparte somente se CONFIRMADA; display_name se CANCELADA; escapar no HTML |
+| BookingSummary.vehicle_model | str do snapshot existente, sem alterar seus limites |
+| BookingSummary.vehicle_color | str do snapshot existente |
+| BookingSummary.vehicle_plate | str somente se CONFIRMADA; None se CANCELADA; escapar no HTML |
+
+BookingQueryService reconsulta a conta ativa e filtra por passenger_id para PASSAGEIRO ou offer.driver_id para MOTORISTA. Query string não governa identidade. Um passageiro não recebe nome/registro de outro passageiro da mesma oferta. Ordem: saída, criação da reserva, ID. Sem email, telefone, IDs de contas ou objetos completos no DTO.
+
+RideBookingForm possui boarding_point_id/alighting_point_id como ModelChoiceFields obrigatórios do catálogo, distintos. View converte para PKs e delega validação da rota/capacidade ao BookingService. Identidade/status não são campos editáveis.
