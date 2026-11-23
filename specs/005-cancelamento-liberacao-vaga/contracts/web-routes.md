@@ -25,3 +25,10 @@ CancellationService.cancel_offer(*, user, offer_id, clock=None) retorna RideOffe
 Grava status CANCELADA e cancelled_at da oferta e de todas as reservas confirmadas no mesmo atomic. Preserva capacidade, reservas já canceladas e auditorias anteriores. Um CancellationRecord com booking=None representa a transição da oferta e o lote causado pelo motorista, sem imputar cancelamento aos passageiros. Erro em qualquer gravação reverte todo o lote.
 
 Repetição autorizada retorna oferta já cancelada sem consultar relógio, alterar datas ou fabricar auditoria legada. IDs inválidos/ausentes: ValidationError; ator inelegível/terceiro: PermissionDenied. MatchingService exclui a oferta e BookingService rejeita novas reservas após commit. Nenhuma rota, interface ou notificação adicionada na T004.
+## Interface de reserva — T005 local / parcela da T026
+
+POST /caronas/reservas/<booking_id>/cancelar/, nome rides:cancel_booking, CancelBookingView. Somente passageiro titular ativo, identidade da sessão e alvo da URL; campos user_id/booking_id/next enviados no corpo não substituem esses valores. CSRF obrigatório, métodos diferentes de POST retornam 405 para ator elegível. Contas anônimas/inativas seguem autenticação existente, pendentes seguem ativação e terceiros recebem 403 sem detalhes privados.
+
+Minhas reservas exibe confirmação em details/summary acessível apenas para passageiro com reserva CONFIRMADA. Formulário com CSRF e botão explícito, sem JavaScript obrigatório. Texto informa referência na origem, 2h inclusivas, tardio aceito antes da partida e recusa na partida/depois. GET da lista não altera o estado; GET da ação retorna 405.
+
+View delega a CancellationService.cancel_booking; sucesso/repetição redireciona somente a /caronas/minhas-reservas/ e informa que a reserva está cancelada. Recusa temporal retorna 400 com alerta de prazo; outro ValidationError retorna 400 genérico. Reexibe somente projeções próprias de BookingQueryService, que retiram placa e nome completo da contraparte após CANCELADA. PermissionDenied não é convertido em sucesso. Rotas/GUI de oferta permanecem T006.

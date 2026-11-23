@@ -11,6 +11,7 @@ from .models import RideOffer, Waypoint
 from .services import publish_offer
 from .services.booking_service import BookingService
 from .services.booking_queries import BookingQueryService
+from .services.cancellation_service import CancellationRefused, CancellationService
 from .services.matching_service import MatchingService, SearchQuery
 
 
@@ -153,3 +154,25 @@ class BookRideView(ActivePassengerRequiredMixin, TemplateView):
         return self.render_to_response(self.get_context_data(
             form=form, bookings=BookingQueryService.list_for(user=request.user),
         ))
+
+
+class CancelBookingView(ActivePassengerRequiredMixin, TemplateView):
+    """Feature 005/T005 local — POST do titular; política e locks no serviço."""
+
+    template_name = "rides/my_bookings.html"
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            CancellationService.cancel_booking(user=request.user, booking_id=kwargs["booking_id"])
+        except CancellationRefused:
+            error = "Não é possível cancelar a partir do horário de saída da origem."
+        except ValidationError:
+            error = "Não foi possível cancelar a reserva."
+        else:
+            messages.success(request, "A reserva está cancelada.")
+            return redirect("/caronas/minhas-reservas/")
+        return self.render_to_response(self.get_context_data(
+            cancellation_error=error,
+            bookings=BookingQueryService.list_for(user=request.user),
+        ), status=400)

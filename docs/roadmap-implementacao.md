@@ -155,7 +155,7 @@ flowchart TD
 - [x] **T025**: Liberação atômica por disponibilidade derivada de CONFIRMADA (T003 local concluída, sem alterar capacidade) e cancelamento de oferta pelo motorista (T004 local concluída, prazo 4h) cancelando reservas atreladas. [Evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t025.md).
   - *Requisitos*: REQ-006, REQ-007 | *Dependências*: T024 | *Como verificar*: Cancelamento tempestivo incrementa vagas disponíveis na busca imediatamente.
   - *Fusão*: Agrupa antigas T067 e T068.
-- [ ] **T026**: Implementar views `CancelBookingView` e `CancelOfferView` em `rides/views.py`, modais de confirmação nos templates, rotas e testes integrados de cancelamento em `tests/test_cancellation_flow.py`.
+- [ ] **T026**: Parcela T005 local (reserva) concluída, [evidência](../specs/005-cancelamento-liberacao-vaga/evidence-t005.md); T006 local (oferta) pendente. Implementar views `CancelBookingView` e `CancelOfferView` em `rides/views.py`, modais de confirmação nos templates, rotas e testes integrados de cancelamento em `tests/test_cancellation_flow.py`.
   - *Requisitos*: REQ-007, REQ-017 | *Dependências*: T025 | *Como verificar*: `pytest tests/test_cancellation_flow.py` valida o ciclo de cancelamento.
   - *Fusão*: Agrupa antigas T069, T070, T071, T072 e T073.
 - [ ] **T027**: **[AUDITORIA DO MVP]**: Executar toda a suíte de testes do MVP (`tests/`), gerar relatório de cobertura consolidado e validar cumprimento integral de `REQ-001` a `REQ-007` com cobertura $\ge 80\%$.

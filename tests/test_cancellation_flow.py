@@ -376,3 +376,138 @@ def test_offer_cancellation_serializes_independent_transactions(
         'backend_pids': [item[1] for item in outcomes], 'txids': [item[2] for item in outcomes],
         'outcomes': [item[0] for item in outcomes], 'confirmed': 0, 'capacity': 2,
         'offer_audits': records().objects.filter(booking=None).count()}))
+
+
+# Feature 005/T005 local — interface de cancelamento de reserva (roadmap T026).
+def cancellation_url(scene):
+    return f'/caronas/reservas/{scene.booking.pk}/cancelar/'
+
+
+@pytest.mark.django_db
+def test_booking_cancel_named_route_and_confirmation_are_available_only_to_passenger(cancellation_scene):
+    from django.urls import reverse
+    scene = cancellation_scene
+    url = cancellation_url(scene)
+    assert reverse('rides:cancel_booking', kwargs={'booking_id': scene.booking.pk}) == url
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(scene.passenger)
+    response = client.get('/caronas/minhas-reservas/')
+    html = response.content.decode()
+    assert f'action="{url}"' in html and 'Confirmar cancelamento' in html
+    assert '<details' in html and 'csrfmiddlewaretoken' in html
+    client.force_login(scene.driver)
+    assert f'action="{url}"' not in client.get('/caronas/minhas-reservas/').content.decode()
+    cancel(scene)
+    client.force_login(scene.passenger)
+    assert f'action="{url}"' not in client.get('/caronas/minhas-reservas/').content.decode()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('remaining', [timedelta(hours=2, seconds=1), timedelta(hours=2),
+                                       timedelta(hours=2)-timedelta(seconds=1)])
+def test_booking_cancel_http_real_csrf_updates_search_and_revokes_privacy(
+        cancellation_scene, monkeypatch, remaining):
+    scene = cancellation_scene
+    monkeypatch.setattr('rides.services.cancellation_service.timezone.now', lambda: scene.departure-remaining)
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(scene.passenger)
+    client.get('/caronas/minhas-reservas/')
+    token = client.cookies['csrftoken'].value
+    response = client.post(cancellation_url(scene), {
+        'csrfmiddlewaretoken': token, 'user_id': scene.other.pk,
+        'booking_id': 999999, 'next': 'https://example.invalid/',
+    }, follow=True)
+    assert response.redirect_chain == [('/caronas/minhas-reservas/', 302)]
+    assert response.status_code == 200
+    assert scene.offer.vehicle_plate not in response.content.decode()
+    assert all(item.vehicle_plate is None for item in response.context['bookings'])
+    assert scene.driver.full_name not in response.content.decode()
+    assert scene.driver.email not in response.content.decode()
+    scene.booking.refresh_from_db()
+    assert scene.booking.status == 'CANCELADA'
+    event = records().objects.get(booking=scene.booking)
+    assert event.actor_id == scene.passenger.pk
+    assert event.classification == ('TEMPESTIVO' if remaining >= timedelta(hours=2) else 'TARDIO')
+    query = SearchQuery(boarding_id=scene.points[0].pk, alighting_id=scene.points[-1].pk,
+                        desired_at=scene.departure)
+    assert MatchingService.search(passenger=scene.other, query=query)[0].available_seats == 1
+    before = list(records().objects.values())
+    repeat = client.post(cancellation_url(scene), {'csrfmiddlewaretoken': token}, follow=True)
+    assert repeat.status_code == 200 and list(records().objects.values()) == before
+    assert 'cancelada' in repeat.content.decode()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('method', ['get', 'head', 'put', 'patch', 'delete', 'options'])
+def test_booking_cancel_http_unsupported_methods_return_405_without_mutation(cancellation_scene, method):
+    scene = cancellation_scene
+    client = Client()
+    client.force_login(scene.passenger)
+    response = getattr(client, method)(cancellation_url(scene))
+    assert response.status_code == 405
+    assert response.headers['Allow'] == 'POST'
+    scene.booking.refresh_from_db()
+    assert scene.booking.status == 'CONFIRMADA' and not records().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('token', [None, 'invalid'])
+def test_booking_cancel_http_requires_csrf(cancellation_scene, token):
+    scene = cancellation_scene
+    client = Client(enforce_csrf_checks=True)
+    client.force_login(scene.passenger)
+    response = client.post(cancellation_url(scene), {} if token is None else {'csrfmiddlewaretoken': token})
+    assert response.status_code == 403
+    scene.booking.refresh_from_db()
+    assert scene.booking.status == 'CONFIRMADA' and not records().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('actor_kind', ['anonymous', 'pending', 'disabled', 'other', 'driver'])
+def test_booking_cancel_http_rejects_ineligible_or_non_owner(cancellation_scene, actor_kind):
+    scene = cancellation_scene
+    client = Client()
+    actor = scene.passenger
+    if actor_kind == 'other':
+        actor = scene.other
+    elif actor_kind == 'driver':
+        actor = scene.driver
+    elif actor_kind == 'pending':
+        get_user_model().objects.filter(pk=actor.pk).update(academic_status='PENDENTE')
+    elif actor_kind == 'disabled':
+        get_user_model().objects.filter(pk=actor.pk).update(is_active=False)
+    if actor_kind != 'anonymous':
+        client.force_login(actor)
+    response = client.post(cancellation_url(scene))
+    assert response.status_code in (302, 403)
+    if response.status_code == 302:
+        assert '/accounts/' in response.url
+    assert scene.offer.vehicle_plate not in response.content.decode()
+    scene.booking.refresh_from_db()
+    assert scene.booking.status == 'CONFIRMADA' and not records().objects.exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('offset', [timedelta(), timedelta(seconds=1)])
+def test_booking_cancel_http_refusal_reports_error_without_mutation(cancellation_scene, monkeypatch, offset):
+    scene = cancellation_scene
+    monkeypatch.setattr('rides.services.cancellation_service.timezone.now', lambda: scene.departure+offset)
+    client = Client()
+    client.force_login(scene.passenger)
+    before = list(RideBooking.objects.values())
+    response = client.post(cancellation_url(scene))
+    assert response.status_code == 400
+    assert 'horário de saída' in response.content.decode()
+    assert 'role="alert"' in response.content.decode()
+    assert list(RideBooking.objects.values()) == before and not records().objects.exists()
+
+
+@pytest.mark.django_db
+def test_booking_cancel_http_unknown_id_is_generic_and_ignores_forged_owner(cancellation_scene):
+    scene = cancellation_scene
+    client = Client()
+    client.force_login(scene.passenger)
+    response = client.post('/caronas/reservas/999999/cancelar/', {'user_id': scene.driver.pk})
+    assert response.status_code == 400
+    assert 'Não foi possível cancelar a reserva.' in response.content.decode()
+    assert not records().objects.exists()

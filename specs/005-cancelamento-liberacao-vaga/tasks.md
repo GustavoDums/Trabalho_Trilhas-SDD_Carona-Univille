@@ -2,7 +2,7 @@
 
 **Feature**: 005-cancelamento-liberacao-vaga; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001–T004 concluídas; T005–T007 abertas. [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
+**Status**: T001–T005 concluídas; T006–T007 abertas. [Evidência T005](evidence-t005.md). [Evidência T004](evidence-t025.md). [Evidência](evidence-t024.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -23,7 +23,7 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 
 - [x] T003 [US1] Implementar transição de reserva idempotente e disponibilidade derivada no serviço, atualizar BookingService/MatchingService para status de oferta e tests/test_cancellation_flow.py; conclusão: repetição e corrida reservar/cancelar respeitam capacidade sem modificar RideOffer.seats. **Requisitos**: REQ-007, REQ-003, REQ-017; FR-002; SC-002. **Depende**: T002; Feature 004/T006. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T025.
 
-- [ ] T005 [US1] Implementar CancelBookingView, rota e confirmação em rides/views.py, rides/urls.py e rides/templates/rides/my_bookings.html; testar titularidade, CSRF, 405 e revogação de contato em tests/test_cancellation_flow.py. **Requisitos**: REQ-007, REQ-003, REQ-017; FR-001/FR-004; SC-004. **Depende**: T003; Feature 004/T005. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T026.
+- [x] T005 [US1] Implementar CancelBookingView, rota e confirmação em rides/views.py, rides/urls.py e rides/templates/rides/my_bookings.html; testar titularidade, CSRF, 405 e revogação de contato em tests/test_cancellation_flow.py. **Requisitos**: REQ-007, REQ-003, REQ-017; FR-001/FR-004; SC-004. **Depende**: T003; Feature 004/T005. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T026.
 
 ## Phase 4: User Story 2 (P1)
 
