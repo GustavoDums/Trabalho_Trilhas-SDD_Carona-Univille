@@ -213,13 +213,13 @@ flowchart TD
 ---
 
 #### Feature 009: Caronas Recorrentes (`REQ-011`)
-*Status*: D009-01 e D009-02 homologadas. [T035 concluída](../specs/009-caronas-recorrentes/evidence-t035.md) com modelos, gerador e cancelamento independente.
+*Status*: D009-01 e D009-02 homologadas. [T035 concluída](../specs/009-caronas-recorrentes/evidence-t035.md) com modelos, gerador e cancelamento independente. [T036 concluída](../specs/009-caronas-recorrentes/evidence-t036.md) com formulário, comando diário e integração de busca e reserva.
 
 - [x] **T035**: Implementar modelos de regras, paradas e ocorrências em `rides/models.py`, gerador de instâncias independentes para 16 dias corridos (`RecurringRideService`) e verificar autonomia de cancelamento em `tests/test_recurring_rides.py`.
   - *Requisitos*: REQ-011, REQ-003, REQ-017 | *Dependências*: T013 e homologação D009-01/D009-02 | *Como verificar*: `pytest tests/test_recurring_rides.py` valida a janela, a geração concorrente, o rollback e a preservação da série após um cancelamento. [Evidência](../specs/009-caronas-recorrentes/evidence-t035.md).
   - *Fusão*: Agrupa antigas T099, T100, T101 e T102.
-- [ ] **T036**: Implementar formulário `RecurringRideForm`, comando CLI `generate_recurring_rides`, template `recurring_offers.html` e testes de integração em `tests/test_recurring_flow.py`.
-  - *Requisitos*: REQ-011, REQ-017 | *Dependências*: T035 | *Como verificar*: `pytest tests/test_recurring_flow.py` valida agendamento e busca de caronas da série.
+- [x] **T036**: Implementar formulário `RecurringRideForm`, comando CLI `generate_recurring_rides`, template `recurring_offers.html` e testes de integração em `tests/test_recurring_flow.py`.
+  - *Requisitos*: REQ-011, REQ-003, REQ-017 | *Dependências*: T035 | *Como verificar*: `pytest tests/test_recurring_flow.py` valida geração pela interface e pelo comando, busca e reserva. [Evidência](../specs/009-caronas-recorrentes/evidence-t036.md).
   - *Fusão*: Agrupa antigas T103, T104, T105 e T106.
 
 ---

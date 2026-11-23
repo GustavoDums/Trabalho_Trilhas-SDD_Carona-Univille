@@ -1,5 +1,11 @@
 # Trabalho_Trilhas-SDD_Carona-Univille
 
+<!-- feature-009-t036-quality:start -->
+Feature 009 / T005 e T006 locais / roadmap T036 — **959 testes aprovados**, 0 ignorados, com 21 novos e 938 de regressão.
+Cobertura de accounts/rides/reviews/carona_univille — **99.08869987849332% em linhas** (1631/1646) e **96.42857142857143% em ramificações** (378/392). O comando e o serviço de recorrência atingiram 100% de linhas e ramificações.
+Medição em 2026-11-23 no PostgreSQL 16.15. [Cobertura JSON](coverage-feature009-t036.json) · [JUnit](test-results-feature009-t036.xml) · [Evidência e reprodução](specs/009-caronas-recorrentes/evidence-t036.md).
+<!-- feature-009-t036-quality:end -->
+
 <!-- feature-009-t035-quality:start -->
 Feature 009 / T002 a T004 locais / roadmap T035 — **938 testes aprovados**, 0 ignorados, com 33 novos e 905 de regressão.
 Cobertura de accounts/rides/reviews/carona_univille — **99.03969270166453% em linhas** (1547/1562) e **96.03174603174604% em ramificações** (363/378). Os modelos de recorrência atingiram 100% de linhas e 83,33% de ramificações. O gerador atingiu 100% em ambas as medidas.

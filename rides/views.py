@@ -1,19 +1,23 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.shortcuts import redirect
 from django.utils import timezone
 from django.views.generic import TemplateView
 from django.views.generic import ListView
 from django.db.models import Prefetch
 
-from .forms import RideBookingForm, RideOfferForm, RideSearchForm, WaypointFormSet
-from .models import RideOffer, Waypoint
+from .forms import RecurringRideForm, RideBookingForm, RideOfferForm, RideSearchForm, WaypointFormSet
+from .models import RECURRING_TIMEZONE, RecurringRideOccurrence, RecurringRideRule, RideOffer, Waypoint
 from .services import publish_offer
 from .services.booking_service import BookingService
 from .services.booking_queries import BookingQueryService
 from .services.cancellation_service import CancellationRefused, CancellationService
 from .services.matching_service import MatchingService, SearchQuery
+from .services.recurring_ride_service import HORIZON_DAYS, RecurringRideService
 
 
 class ActiveDriverRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -76,6 +80,48 @@ class MyOffersView(ActiveDriverRequiredMixin, ListView):
         ).prefetch_related(
             Prefetch("waypoints", queryset=Waypoint.objects.select_related("point").order_by("position")),
         ).order_by("departure_at", "created_at", "id")
+
+
+class RecurringOffersView(ActiveDriverRequiredMixin, TemplateView):
+    template_name = "rides/recurring_offers.html"
+    http_method_names = ["get", "post", "head", "options"]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        with timezone.override(RECURRING_TIMEZONE):
+            today = timezone.localdate()
+        window = RecurringRideOccurrence.objects.filter(
+            local_date__range=(today, today + timedelta(days=HORIZON_DAYS - 1)),
+        ).select_related("offer").only("rule_id", "local_date", "offer__status").order_by("local_date")
+        context["rules"] = RecurringRideRule.objects.filter(driver=self.request.user).select_related(
+            "origin", "destination",
+        ).prefetch_related(Prefetch("occurrences", queryset=window, to_attr="upcoming")).order_by("-pk")
+        context.setdefault("form", RecurringRideForm())
+        context.setdefault("waypoint_formset", WaypointFormSet(prefix="waypoints"))
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = RecurringRideForm(request.POST)
+        stops = WaypointFormSet(request.POST, prefix="waypoints")
+        valid_rule, valid_stops = form.is_valid(), stops.is_valid()
+        if valid_rule and valid_stops:
+            points = [stop.cleaned_data["point"] for stop in stops]
+            route = [form.cleaned_data["origin"], *points, form.cleaned_data["destination"]]
+            if len(route) != len(set(route)):
+                form.add_error(None, "Origem, paradas e destino devem ser pontos distintos.")
+            else:
+                try:
+                    result = RecurringRideService.create_rule(
+                        driver=request.user, data=form.cleaned_data, points=points,
+                    )
+                except (ValidationError, IntegrityError):
+                    form.add_error(None, "Não foi possível gerar as caronas. Confira os dados da regra.")
+                else:
+                    messages.success(request, f"Regra cadastrada. Caronas geradas: {len(result.created_dates)}.")
+                    return redirect("rides:recurring_offers")
+        form.data = form.data.copy()
+        form.data["vehicle_plate"] = ""
+        return self.render_to_response(self.get_context_data(form=form, waypoint_formset=stops), status=400)
 
 
 class ActivePassengerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):

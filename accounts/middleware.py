@@ -18,6 +18,7 @@ class AcademicStatusMiddleware:
     suspension_actions = {
         "rides:offer-create": {"GET", "HEAD", "POST"},
         "rides:book": {"POST"},
+        "rides:recurring_offers": {"POST"},
     }
 
     def __init__(self, get_response):

@@ -5,6 +5,7 @@
 <h1>Minhas ofertas de carona</h1>
 {% if cancellation_error %}<p role="alert">{{ cancellation_error }}</p>{% endif %}
 <p><a href="{% url 'rides:offer-create' %}">Oferecer carona</a></p>
+<p><a href="{% url 'rides:recurring_offers' %}">Caronas recorrentes</a></p>
 <p>Horários no fuso America/Sao_Paulo. As vagas informadas são para passageiros.</p>
 {% timezone "America/Sao_Paulo" %}
 {% for offer in offers %}

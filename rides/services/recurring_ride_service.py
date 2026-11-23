@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from reviews.services.conduct_service import require_unsuspended
 
-from ..models import RecurringRideOccurrence, RecurringRideRule
+from ..models import RecurringRideOccurrence, RecurringRideRule, RecurringRideStop
 from . import publish_offer
 
 HORIZON_DAYS = 16
@@ -22,6 +22,14 @@ class GenerationResult(NamedTuple):
 
 
 class RecurringRideService:
+    @staticmethod
+    @transaction.atomic
+    def create_rule(*, driver, data, points):
+        rule = RecurringRideRule.objects.create(driver=driver, **data)
+        for position, point in enumerate(points, start=1):
+            RecurringRideStop.objects.create(rule=rule, point=point, position=position)
+        return RecurringRideService.generate(rule_id=rule.pk, driver=driver)
+
     @staticmethod
     @transaction.atomic
     def generate(*, rule_id, driver, clock=None):

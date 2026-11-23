@@ -1,6 +1,9 @@
 from django.urls import path
 
-from .views import BookRideView, CancelBookingView, CancelOfferView, MyBookingsView, MyOffersView, RideCreateView, RideSearchView
+from .views import (
+    BookRideView, CancelBookingView, CancelOfferView, MyBookingsView, MyOffersView,
+    RecurringOffersView, RideCreateView, RideSearchView,
+)
 
 app_name = "rides"
 urlpatterns = [
@@ -10,5 +13,6 @@ urlpatterns = [
     path("minhas-reservas/", MyBookingsView.as_view(), name="my_bookings"),
     path("buscar/", RideSearchView.as_view(), name="search"),
     path("oferecer/", RideCreateView.as_view(), name="offer-create"),
+    path("recorrentes/", RecurringOffersView.as_view(), name="recurring_offers"),
     path("minhas-ofertas/", MyOffersView.as_view(), name="my-offers"),
 ]

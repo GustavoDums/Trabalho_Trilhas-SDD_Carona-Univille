@@ -3,7 +3,7 @@
 from django import forms
 from django.forms import BaseFormSet, formset_factory
 
-from .models import RideOffer, RoutePoint
+from .models import RecurringRideRule, RideOffer, RoutePoint
 
 
 class PointChoiceField(forms.ModelChoiceField):
@@ -21,6 +21,21 @@ class RideOfferForm(forms.ModelForm):
         labels = {"departure_at": "Saída (America/Sao_Paulo)", "seats": "Vagas para passageiros",
                   "vehicle_model": "Modelo do veículo", "vehicle_color": "Cor", "vehicle_plate": "Placa"}
         widgets = {"departure_at": forms.DateTimeInput(format="%Y-%m-%dT%H:%M", attrs={"type": "datetime-local"})}
+
+
+class RecurringRideForm(RideOfferForm):
+    weekdays = forms.TypedMultipleChoiceField(
+        label="Dias da semana", coerce=int, widget=forms.CheckboxSelectMultiple,
+        choices=enumerate(("Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira",
+                           "Sexta-feira", "Sábado", "Domingo")),
+    )
+
+    class Meta(RideOfferForm.Meta):
+        model = RecurringRideRule
+        fields = ["origin", "destination", "weekdays", "local_time", "seats",
+                  "vehicle_model", "vehicle_color", "vehicle_plate"]
+        labels = {**RideOfferForm.Meta.labels, "local_time": "Horário de saída (America/Sao_Paulo)"}
+        widgets = {"local_time": forms.TimeInput(format="%H:%M", attrs={"type": "time"})}
 
 
 class WaypointForm(forms.Form):

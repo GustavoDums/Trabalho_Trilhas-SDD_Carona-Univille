@@ -2,7 +2,7 @@
 
 **Feature**: 009-caronas-recorrentes; IDs oficiais locais, independentes do roadmap.
 **Input**: [spec](spec.md), [plan](plan.md), [dados](data-model.md), [pesquisa](research.md), [contratos](contracts/web-routes.md), [quickstart](quickstart.md).
-**Status**: T001 homologada e T002, T003 e T004 concluídas. [Evidência da T035](evidence-t035.md).
+**Status**: T001 homologada e T002–T006 concluídas. [Evidência da T035](evidence-t035.md) · [Evidência da T036](evidence-t036.md).
 **Tests**: TDD constitucional, dados fictícios, venv e PostgreSQL. Teste/falha esperada → implementação → verde/regressão. SC da spec integram conclusão da tarefa.
 
 ## Phase 1: Setup — decisões
@@ -30,9 +30,9 @@ Modelagem canônica em data-model.md: tarefas de modelo implementam integralment
 **Objetivo**: Formulário autorizado e comando compartilham gerador; resultado mostra datas criadas e já existentes.
 **Teste independente**: SC-005: formulário e comando produzem mesmo conjunto de datas; ofertas geradas aparecem na busca da 003 e podem ser reservadas pelo fluxo da 004.
 
-- [ ] T005 [US2] Implementar RecurringRideForm, view/rotas e rides/templates/rides/recurring_offers.html em rides/forms.py, rides/views.py e rides/urls.py; tests/test_recurring_flow.py cobre titularidade, CSRF, validação e datas exibidas. **Requisitos**: REQ-011, REQ-003, REQ-017; FR-003/FR-005; SC-004/SC-005. **Depende**: T004. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T036.
+- [x] T005 [US2] Implementar RecurringRideForm, view/rotas e rides/templates/rides/recurring_offers.html em rides/forms.py, rides/views.py e rides/urls.py; tests/test_recurring_flow.py cobre titularidade, CSRF, validação e datas exibidas. **Requisitos**: REQ-011, REQ-003, REQ-017; FR-003/FR-005; SC-004/SC-005. **Depende**: T004. **Conclusão**: critérios aprovados na [evidência da T036](evidence-t036.md). **Roadmap**: T036.
 
-- [ ] T006 [US2] Implementar rides/management/commands/generate_recurring_rides.py conforme contrato aprovado; tests/test_recurring_flow.py compara CLI/formulário, erro/rollback e integração de busca/reserva sem imprimir dados privados. **Requisitos**: REQ-011, REQ-003, REQ-017; FR-001/FR-003/FR-005; SC-005. **Depende**: T005; Feature 003/T004; Feature 004/T005. **Conclusão**: critérios citados aprovados com evidência; pendência mantém bloqueio. **Roadmap**: T036.
+- [x] T006 [US2] Implementar rides/management/commands/generate_recurring_rides.py conforme contrato aprovado; tests/test_recurring_flow.py compara CLI/formulário, erro/rollback e integração de busca/reserva sem imprimir dados privados. **Requisitos**: REQ-011, REQ-003, REQ-017; FR-001/FR-003/FR-005; SC-005. **Depende**: T005; Feature 003/T004; Feature 004/T005. **Conclusão**: critérios aprovados na [evidência da T036](evidence-t036.md). **Roadmap**: T036.
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
